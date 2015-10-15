@@ -1,0 +1,133 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'application'
+
+
+// TODO subst to properties. Generate current date.
+version = 417	// also set in resources/settings.properties
+// TODO configure j2se in jnlp-template.xml
+sourceCompatibility = 1.8	// see also jdk in gradle.properties, and j2se in jnlp-template.xml
+targetCompatibility = 1.8
+mainClassName = 'org.sergeys.cookbook.ui.CookBook'
+
+ext.buildWebstartDir = 'build/webstart'
+//ext.webstartUrl = 'http://svs.bugz.org.ua/cookbook3'
+ext.webstartUrl = "http://svs.bugz.org.ua/$name"
+
+//ext.jdk7fxjar = project.'org.gradle.java.home' + "/jre/lib/jfxrt.jar"
+
+
+//println "--- hello, java is " + project.'org.gradle.java.home'
+
+
+repositories {
+    mavenCentral()
+}
+
+/*
+configurations {
+    compileOnly
+}
+
+sourceSets.main.compileClasspath += configurations.compileOnly
+*/
+
+dependencies {
+
+//    println "--- deps"
+
+    //compileOnly files('c:/program files/java/jdk1.7.0_45/jre/lib/jfxrt.jar')
+    //compile files('c:/program files/java/jdk1.7.0_45/jre/lib/jfxrt.jar')
+//    compile files(jdk7fxjar)
+
+    compile 'com.h2database:h2:1.4.181'
+    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.0.2'
+    compile 'org.apache.logging.log4j:log4j-core:2.0.2'
+}
+
+// https://github.com/gmateo/gradle-webstart-example/blob/master/build.gradle
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'CookBook',
+            'Implementation-Version': version,
+            'Permissions': 'all-permissions',
+            'Application-Name': 'CookBook'
+    }
+}
+
+task copyJars(type: Copy, dependsOn: [jar]) {
+    from configurations.runtime
+    from("build/libs")
+    into("$buildWebstartDir/lib")
+    include('*.jar')
+    exclude('jfxrt.jar')
+}
+
+task copyFiles(type: Copy) {
+    from("src/main/webstart")
+    into("$buildWebstartDir/signed")
+    include('*.png')
+}
+
+
+task signAll(dependsOn: [copyJars]) << {
+    new File("$buildWebstartDir/signed").mkdirs()
+    def libFiles = files { file("$buildWebstartDir/lib").listFiles() }
+    libFiles.each {
+        ant.signjar(
+                destDir: "${buildWebstartDir}/signed",
+                alias: 'sergey.selivanov',
+                jar: it,
+                keystore: 'src/main/webstart/.keystore',
+                storepass: 'password',
+                preservelastmodified: 'true')
+    }
+}
+
+task generateJnlp(dependsOn: [signAll, copyFiles]) << {
+
+    File jnlpTemplateFile = new File('src/main/webstart/jnlp-template.xml')
+    def root = new XmlParser().parse(jnlpTemplateFile)
+    def jnlpFileName = "${project.name}.jnlp"
+
+    root.@codebase = webstartUrl
+    root.@href = jnlpFileName
+
+    def information = root.information[0]
+
+    def icon = information.icon[0]
+    icon.@href = webstartUrl + '/amor.png'
+
+
+    def resource = root.resources[0]
+
+//    def j2se = resource.j2se[0]
+//    j2se.@version = "$sourceCompatibility+"
+
+    def collection = files { file("${buildWebstartDir}/lib").listFiles() }
+    def mainJar = "$project.name-${version}.jar"
+    collection.each {
+        def resourceValues = [href: it.name]
+//println it.name + ' - ' + mainJar
+        if (mainJar == it.name) {
+            resourceValues = [href: it.name, main: 'true']	// TODO not working?
+        }
+        resource.appendNode('jar', resourceValues)
+    }
+    // Setting the main class
+    def applicationDesc = root.'application-desc'[0]
+    applicationDesc.'@main-class' = mainClassName
+    // Writing the jnlp file filled
+    File jnlpFile = new File("${buildWebstartDir}/signed/" + jnlpFileName)
+
+    //new XmlNodePrinter(new PrintWriter(jnlpFile)).print(root)
+    def prn = new XmlNodePrinter(new PrintWriter(jnlpFile))
+    prn.setPreserveWhitespace(true)
+    prn.print(root)
+}
+
+task webstart (dependsOn: [generateJnlp])<< {
+    println("Generating all webstart files in ${buildWebstartDir}/signed")
+}
+

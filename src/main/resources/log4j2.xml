@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+
+<!--
+http://logging.apache.org/log4j/2.x/manual/configuration.html
+ -->
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+        <!--
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+
+            <PatternLayout pattern="%5p [%t] (%F:%L) - %m%n" />
+            <PatternLayout pattern="%p (%F:%L) - %m%n" />
+             -->
+             <PatternLayout pattern="%5p [%t] (%F:%L) - %m%n" />
+        </Console>
+
+<!--
+    http://blog.mitemitreski.com/2012/11/temporary-directories-in-java-7-and.html#.VBmmEBpMuUk
+ -->
+
+<!--
+        <File name="File" fileName="${sys:java.io.tmpdir}/fxtest.log">
+            <PatternLayout pattern="%d %p %c: %m%n" />
+        </File>
+ -->
+        <RollingFile name="Rolling"
+            fileName="${sys:log4j.log.file}"
+            filePattern="$${sys:log4j.log.file}-%d{yyyyMMMdd-HH-mm}.%i.txt">
+            <!--
+            filePattern="${sys:java.io.tmpdir} puts to relative dir, drops disk letter on windows
+            filePattern="$${sys:java.io.tmpdir} works ok
+             -->
+
+            <PatternLayout pattern="%d %p %c: %m%n"/>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+
+            <!--
+                <TimeBasedTriggeringPolicy />
+                 -->
+                 <!--
+                <SizeBasedTriggeringPolicy size="0.001 MB"/>
+                 -->
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+
+    </Appenders>
+
+    <Loggers>
+    <!-- TRACE, DEBUG, INFO, WARN, ERROR, ALL or OFF -->
+        <Root level="debug">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="Rolling" />
+        </Root>
+    </Loggers>
+</Configuration>
