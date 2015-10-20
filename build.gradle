@@ -4,9 +4,9 @@ apply plugin: 'application'
 
 
 // TODO subst to properties. Generate current date.
-version = 417	// also set in resources/settings.properties
+version = 417    // also set in resources/settings.properties
 // TODO configure j2se in jnlp-template.xml
-sourceCompatibility = 1.8	// see also jdk in gradle.properties, and j2se in jnlp-template.xml
+sourceCompatibility = 1.8    // see also jdk in gradle.properties, and j2se in jnlp-template.xml
 targetCompatibility = 1.8
 mainClassName = 'org.sergeys.cookbook.ui.CookBook'
 
@@ -14,35 +14,16 @@ ext.buildWebstartDir = 'build/webstart'
 //ext.webstartUrl = 'http://svs.bugz.org.ua/cookbook3'
 ext.webstartUrl = "http://svs.bugz.org.ua/$name"
 
-//ext.jdk7fxjar = project.'org.gradle.java.home' + "/jre/lib/jfxrt.jar"
-
-
-//println "--- hello, java is " + project.'org.gradle.java.home'
 
 
 repositories {
     mavenCentral()
 }
 
-/*
-configurations {
-    compileOnly
-}
-
-sourceSets.main.compileClasspath += configurations.compileOnly
-*/
-
 dependencies {
-
-//    println "--- deps"
-
-    //compileOnly files('c:/program files/java/jdk1.7.0_45/jre/lib/jfxrt.jar')
-    //compile files('c:/program files/java/jdk1.7.0_45/jre/lib/jfxrt.jar')
-//    compile files(jdk7fxjar)
-
     compile 'com.h2database:h2:1.4.181'
-    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.0.2'
-    compile 'org.apache.logging.log4j:log4j-core:2.0.2'
+    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.4'
+    compile 'org.apache.logging.log4j:log4j-core:2.4'
 }
 
 // https://github.com/gmateo/gradle-webstart-example/blob/master/build.gradle
@@ -111,7 +92,7 @@ task generateJnlp(dependsOn: [signAll, copyFiles]) << {
         def resourceValues = [href: it.name]
 //println it.name + ' - ' + mainJar
         if (mainJar == it.name) {
-            resourceValues = [href: it.name, main: 'true']	// TODO not working?
+            resourceValues = [href: it.name, main: 'true']    // TODO not working?
         }
         resource.appendNode('jar', resourceValues)
     }
