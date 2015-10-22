@@ -1,14 +1,48 @@
+/*
+ * To properly substitute options, invoke specifying target environment: -PenvironmentName=mistral
+ *
+ * To make release and increase version, set stage final:
+ *
+ * gradle release -Prelease.scope=patch -Prelease.stage=final
+ * gradle release -Prelease.scope=minor -Prelease.stage=final
+ * gradle release -Prelease.scope=major -Prelease.stage=final
+ *
+ * The change scope can be either MAJOR, MINOR, or PATCH
+ * The stage of the change corresponds to the development stage (such as dev, milestone, rc, final)
+ */
+
+// https://github.com/ajoberstar/gradle-git
+// https://github.com/stevesaliman/gradle-properties-plugin
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.ajoberstar:gradle-git:1.3.2'
+        classpath 'net.saliman:gradle-properties-plugin:1.4.4'
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'application'
+apply plugin: 'org.ajoberstar.release-opinion'
+apply plugin: 'net.saliman.properties'
+
+import org.ajoberstar.grgit.*
+import org.ajoberstar.gradle.git.release.opinion.Strategies
+import org.apache.tools.ant.filters.ReplaceTokens
 
 
 // TODO subst to properties. Generate current date.
-version = 417    // also set in resources/settings.properties
+//version = 417    // also set in resources/settings.properties
 // TODO configure j2se in jnlp-template.xml
 sourceCompatibility = 1.8    // see also jdk in gradle.properties, and j2se in jnlp-template.xml
 targetCompatibility = 1.8
 mainClassName = 'org.sergeys.cookbook.ui.CookBook'
+
+ext.repo = Grgit.open(project.file('.'))
 
 ext.buildWebstartDir = 'build/webstart'
 //ext.webstartUrl = 'http://svs.bugz.org.ua/cookbook3'
@@ -21,10 +55,17 @@ repositories {
 }
 
 dependencies {
-    compile 'com.h2database:h2:1.4.181'
-    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.4'
-    compile 'org.apache.logging.log4j:log4j-core:2.4'
+    compile 'com.h2database:h2:1.4.190'
+    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.4.1'
+    compile 'org.apache.logging.log4j:log4j-core:2.4.1'
 }
+
+release {
+    grgit = Grgit.open(project.file('.'))
+}
+
+tasks.release.dependsOn 'build'
+
 
 // https://github.com/gmateo/gradle-webstart-example/blob/master/build.gradle
 
