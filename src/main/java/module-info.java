@@ -13,6 +13,7 @@ module cookbook {
 
     requires slf4j.api;
     requires org.apache.logging.log4j;
+	requires javafx.base;
 
     opens org.sergeys.cookbook.ui to javafx.fxml;
     exports org.sergeys.cookbook.ui;

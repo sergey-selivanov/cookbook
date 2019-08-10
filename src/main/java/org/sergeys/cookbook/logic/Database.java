@@ -99,6 +99,7 @@ public final class Database {
         }
     }
 
+    // TODO use flyway?
     private void upgradeOrCreateIfNeeded() throws Exception {
 
         File dir = new File(Settings.getSettingsDirPath());

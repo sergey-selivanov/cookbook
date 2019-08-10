@@ -148,6 +148,7 @@ public class Settings {
 
     }
 
+    // TODO why static logger here and no individual loggers in classes??
     public static Logger getLogger(){
         return log;
     }

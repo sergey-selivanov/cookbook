@@ -29,9 +29,10 @@ public class CookBook extends Application
         URL location = getClass().getResource("/fxml/MainScene.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader(location);
 
+        //Pane root = (Pane)fxmlLoader.load();
+        Object o = fxmlLoader.load();
+        Pane root = (Pane)o;
 
-
-        Pane root = (Pane)fxmlLoader.load();
 
         final MainController controller = (MainController)fxmlLoader.getController();
         Scene scene = new Scene(root);
