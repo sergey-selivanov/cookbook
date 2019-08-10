@@ -28,7 +28,11 @@ dependencies {
     compile 'org.apache.logging.log4j:log4j-core:2.12.1'
 
     // TODO deprecated methods in HtmlImporter, refactor
-    compile group: 'xerces', name: 'xercesImpl', version: '2.12.0'
+//    compile(group: 'xerces', name: 'xercesImpl', version: '2.12.0')
+//    {
+//        exclude module: 'xml-apis'
+//    }
+    compile fileTree(dir: 'lib', include: ['*.jar'])
 }
 
 

@@ -8,7 +8,8 @@ module cookbook {
     requires javafx.web;	// TODO transitive?
     requires transitive javafx.graphics;
 
-    requires xercesImpl;
+    //requires xercesImpl;
+    requires xerces.impl;	// my repack
 
     requires slf4j.api;
     requires org.apache.logging.log4j;
