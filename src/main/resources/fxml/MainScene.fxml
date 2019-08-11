@@ -23,7 +23,8 @@
   <menus>
     <Menu mnemonicParsing="false" text="File">
       <items>
-                  <MenuItem fx:id="menuItemImport" mnemonicParsing="false" onAction="#onMenuItemImport" text="Import ..." />
+                  <MenuItem mnemonicParsing="false" onAction="#onMenuImport" text="Import ..." />
+                  <MenuItem mnemonicParsing="false" onAction="#onMenuMassImport" text="Mass Import ..." />
                   <MenuItem fx:id="menuItemExit" mnemonicParsing="false" onAction="#onMenuItemExit" text="Exit" />
       </items>
     </Menu>
@@ -55,7 +56,7 @@
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
-<children><Label styleClass="about-label" text="Title" GridPane.halignment="RIGHT" /><Label styleClass="about-label" text="Tags" GridPane.halignment="RIGHT" GridPane.rowIndex="1" /><TextField GridPane.columnIndex="1" /><TextArea prefHeight="300.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" /><HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+<children><Label styleClass="about-label" text="Title" GridPane.halignment="RIGHT" /><Label styleClass="about-label" text="Tags" GridPane.halignment="RIGHT" GridPane.rowIndex="1" /><TextField fx:id="title" GridPane.columnIndex="1" /><TextArea fx:id="tags" prefHeight="300.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" /><HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
 <children><Button mnemonicParsing="false" styleClass="buttonSave" text="Save" /><Button mnemonicParsing="false" styleClass="buttonCancel" text="Cancel" />
 </children>
                            <GridPane.margin>

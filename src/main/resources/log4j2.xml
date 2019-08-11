@@ -55,5 +55,6 @@ http://logging.apache.org/log4j/2.x/manual/configuration.html
             <AppenderRef ref="Console" />
             <AppenderRef ref="Rolling" />
         </Root>
+        <Logger name="h2database" level="warn"/>
     </Loggers>
 </Configuration>

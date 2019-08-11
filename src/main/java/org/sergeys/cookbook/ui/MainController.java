@@ -8,7 +8,10 @@ import java.util.List;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
@@ -21,14 +24,20 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import org.sergeys.cookbook.logic.Database;
+import org.sergeys.cookbook.logic.HtmlImporter;
+import org.sergeys.cookbook.logic.MassImportTask;
 import org.sergeys.cookbook.logic.Recipe;
 import org.sergeys.cookbook.logic.RecipeLibrary;
 import org.sergeys.cookbook.logic.Settings;
 import org.sergeys.cookbook.logic.Tag;
+import org.sergeys.cookbook.logic.HtmlImporter.Status;
 import org.sergeys.cookbook.ui.RecipeTreeValue.Type;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,12 +53,16 @@ public class MainController {
     @FXML private MenuItem menuItemViewLog;
     @FXML private MenuItem menuItemAbout;
 
-    //@FXML private TextField title;
-    //@FXML private TextArea tags;
+    @FXML private TextField title;
+    @FXML private TextArea tags;
 
     @FXML private TreeView<RecipeTreeValue> tree;
     @FXML private WebView webview;
 
+    private Stage stage;
+    private FileChooser fc;
+
+    // called by convention
     public void initialize(){
         //System.out.println("init");
         log.debug("init");
@@ -72,6 +85,13 @@ public class MainController {
         buildTree();
 
     }
+
+    public void myInit(Stage stage){
+        log.debug("myinit");
+
+        this.stage = stage;
+    }
+
 
     private ChangeListener<TreeItem<RecipeTreeValue>> treeListener = new ChangeListener<TreeItem<RecipeTreeValue>>(){
 
@@ -121,9 +141,15 @@ public class MainController {
         Platform.exit();
     }
 
-    public void onMenuItemImport(ActionEvent e){
 
+    public void onMenuImport(ActionEvent e){
+        doImport();
     }
+
+    public void onMenuMassImport(ActionEvent e){
+        doMassImport();
+    }
+
     public void onMenuItemViewLog(ActionEvent e){
     }
 
@@ -236,7 +262,7 @@ public class MainController {
     }
 
     private void setTitle(Recipe recipe){
-//        title.setText(recipe.getTitle());
+        title.setText(recipe.getTitle());
 
         try {
             List<String> t = Database.getInstance().getRecipeTags(recipe.getHash());
@@ -247,11 +273,104 @@ public class MainController {
                 }
                 sb.append(s);
             }
-//            tags.setText(sb.toString());
+            tags.setText(sb.toString());
         } catch (Exception e) {
             log.error("", e);
         }
 
     }
+
+    private HtmlImporter importer;
+
+    private ChangeListener<HtmlImporter.Status> importListener = new ChangeListener<HtmlImporter.Status>() {
+
+        @Override
+        public void changed(
+                ObservableValue<? extends Status> observable,
+                Status oldValue, Status newValue) {
+
+            if(newValue == Status.Complete){
+//                System.out.println("completed import of " + importer.getHash());
+
+                RecipeLibrary.getInstance().validate();
+
+                buildTree();
+            }
+            else{
+//                System.out.println("importer status " + newValue);
+            }
+        }
+    };
+
+
+    private void doImport(){
+
+        if(fc == null){
+            fc = new FileChooser();
+        }
+
+        File prev = new File(Settings.getInstance().getLastFilechooserLocation());
+        if(prev.exists()){
+            fc.setInitialDirectory(prev);
+        }
+
+        final File file = fc.showOpenDialog(stage);
+        if(file != null){
+            Settings.getInstance().setLastFilechooserLocation(file.getParent());
+
+            if(importer == null){
+                importer = new HtmlImporter(importListener);
+            }
+
+            importer.importFile(file);
+        }
+    }
+
+    private ChangeListener<Number> taskListener = new ChangeListener<Number>() {
+
+        @Override
+        public void changed(ObservableValue<? extends Number> observable,
+                Number oldValue, Number newValue) {
+            log.info("task progress " + newValue);
+//            System.out.println("- progress " + newValue);
+        }
+    };
+
+    private EventHandler<WorkerStateEvent> taskHandler = new EventHandler<WorkerStateEvent>() {
+
+        @Override
+        public void handle(WorkerStateEvent event) {
+            log.info("task complete");
+            RecipeLibrary.getInstance().validate();
+            buildTree();
+        }};
+
+
+    private HtmlImporter massImporter;
+
+  private void doMassImport(){
+
+      DirectoryChooser dc = new DirectoryChooser();
+      final File dir = dc.showDialog(stage);
+      if(dir == null){
+          return;
+      }
+
+      massImporter = new HtmlImporter();
+
+      log.debug("mass import");
+      Task<Void> task = new MassImportTask(dir, massImporter);
+
+      task.progressProperty().addListener(taskListener);
+      task.setOnSucceeded(taskHandler);
+
+//      if(executor == null){
+//      	//executor = Executors.newSingleThreadExecutor();
+//      	executor = Executors.newCachedThreadPool();
+//      }
+//
+//      executor.execute(task);
+      Settings.getSingleExecutor().execute(task);
+  }
 
 }

@@ -34,9 +34,12 @@ public class CookBook extends Application
         Pane root = (Pane)o;
 
 
+
         final MainController controller = (MainController)fxmlLoader.getController();
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
+
+        controller.myInit(primaryStage);
 
         // http://stackoverflow.com/questions/15041332/javafx-splitpane-divider-position-inconsistent-behaviour
 

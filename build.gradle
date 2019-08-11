@@ -24,8 +24,13 @@ repositories {
 
 dependencies {
     compile 'com.h2database:h2:1.4.199'
-    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.12.1'
-    compile 'org.apache.logging.log4j:log4j-core:2.12.1'
+    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.12.1' // forcemerge
+    //compile 'org.apache.logging.log4j:log4j-core:2.12.1'
+
+    // As of version 2.10.0 the Log4j API is a Java module
+    // errors in jlink
+    //compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.9.1'
+
 
     // TODO deprecated methods in HtmlImporter, refactor
 //    compile(group: 'xerces', name: 'xercesImpl', version: '2.12.0')
@@ -65,9 +70,23 @@ eclipse {
     }
 }
 
+
+// https://github.com/beryx/badass-jlink-plugin/issues/72
+// Execute: ./gradlew suggestMergedModuleInfo
+// Remove the lines contaning provides clauses and put the resulting mergedModule configuration in your jlink block.
+
 jlink {
-    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages'] // --bind-services ?
     launcher {
-        name = 'hellofx'
+        name = 'cookbook'
+    }
+    forceMerge('log4j-api') // https://github.com/beryx/badass-jlink-plugin/issues/14
+
+    mergedModule {
+        additive = true
+        //requires 'java.desktop'
+        //requires transitive 'java.sql'
+        //uses 'java.sql.Driver'
+        //provides 'java.sql.Driver' with 'org.hsqldb.jdbc.JDBCDriver'
     }
 }
