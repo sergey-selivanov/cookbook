@@ -38,6 +38,19 @@ dependencies {
 //        exclude module: 'xml-apis'
 //    }
     compile fileTree(dir: 'lib', include: ['*.jar'])
+
+
+    compile group: 'org.jsoup', name: 'jsoup', version: '1.13.1'
+
+    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.12.Final'
+    compile group: 'org.flywaydb', name: 'flyway-core', version: '6.3.1'
+
+    //testCompile 'junit:junit:4.13' // TODO junit jupiter
+    //testImplementation('org.junit.jupiter:junit-jupiter:5.6.0') // as junit doc says
+
+    // as gradle doc says
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
 }
 
 
@@ -59,6 +72,8 @@ javafx {
 
 mainClassName = "$moduleName/org.sergeys.cookbook.ui.CookBook"
 
+// from openjfx samples
+/*
 eclipse {
     classpath {
         file {
@@ -70,7 +85,37 @@ eclipse {
         }
     }
 }
+*/
 
+// https://discuss.gradle.org/t/how-to-set-the-module-path-project-jigsaw-for-eclipse-projects-via-gradle/26801/3
+eclipse {
+    classpath {
+        file {
+            whenMerged {
+                entries.findAll { isModule(it) }.each {
+                    it.entryAttributes['module'] = 'true'
+                }
+
+                entries.findAll { isSource(it) && isTestScope(it) }.each {
+                    it.entryAttributes['test'] = 'true'
+                }
+
+                entries.findAll { isLibrary(it) && isTestScope(it) }.each {
+                    it.entryAttributes['test'] = 'true'
+                }
+            }
+        }
+
+//        defaultOutputDir = file('build')
+//        downloadSources = true
+//        downloadJavadoc = true
+    }
+}
+
+boolean isLibrary(entry) { return entry.properties.kind.equals('lib') }
+boolean isTestScope(entry) { return entry.entryAttributes.get('gradle_used_by_scope').equals('test'); }
+boolean isModule(entry) { isLibrary(entry) && !isTestScope(entry); }
+boolean isSource(entry) { return entry.properties.kind.equals('src'); }
 
 // https://github.com/beryx/badass-jlink-plugin/issues/72
 // Execute: ./gradlew suggestMergedModuleInfo
@@ -102,4 +147,11 @@ dependencyUpdates {
     rejectVersionIf {
         isNonStable(it.candidate.version)
     }
+}
+
+test {
+    useJUnitPlatform()
+//    testLogging {
+//        events "passed", "skipped", "failed"
+//    }
 }
