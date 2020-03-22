@@ -11,11 +11,11 @@ plugins {
     id 'application'
     id 'eclipse'
     id 'org.openjfx.javafxplugin' version '0.0.8'
-    id 'org.beryx.jlink' version '2.14.0'
+    id 'org.beryx.jlink' version '2.17.3'
 
 //    id 'net.saliman.properties' version '1.5.1'
-    id 'com.github.ben-manes.versions' version '0.22.0'
-    id 'org.ajoberstar.reckon' version '0.11.0'
+    id 'com.github.ben-manes.versions' version '0.28.0'
+    id 'org.ajoberstar.reckon' version '0.12.0'
 }
 
 repositories {
@@ -23,8 +23,8 @@ repositories {
 }
 
 dependencies {
-    compile 'com.h2database:h2:1.4.199'
-    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.12.1' // forcemerge
+    compile 'com.h2database:h2:1.4.200'
+    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.13.1' // forcemerge
     //compile 'org.apache.logging.log4j:log4j-core:2.12.1'
 
     // As of version 2.10.0 the Log4j API is a Java module
@@ -52,7 +52,8 @@ reckon {
 
 
 javafx {
-    version = "12.0.2"
+    //version = '13.0.1'
+    version = '14'
     modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.web' ]
 }
 
@@ -88,5 +89,17 @@ jlink {
         //requires transitive 'java.sql'
         //uses 'java.sql.Driver'
         //provides 'java.sql.Driver' with 'org.hsqldb.jdbc.JDBCDriver'
+    }
+}
+
+def isNonStable = { String version ->
+    def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
+    def regex = /^[0-9,.v-]+(-r)?$/
+    return !stableKeyword && !(version ==~ regex)
+}
+
+dependencyUpdates {
+    rejectVersionIf {
+        isNonStable(it.candidate.version)
     }
 }

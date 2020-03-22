@@ -1,0 +1,35 @@
+TODO
+====
+
+- context menu for recipe, selection of recipes and branch
+- export recipe, export branch to dir
+- "like" or "heart" button to set favorite; button to unset favorite
+- delete recipes
+- show progress of mass import, support cancel
+- show message when warnings or errors on mass import
+- colorise log output
+- editor
+- copy-paste from browser as html, save external images locally
+- share recipes via xmpp
+- share recipes p2p if possible, lookup via my server
+- share recipes via google drive
+- mass import, by file mask
+- save and import currently viewed page as new recipe
+- mark recently added recipes in the tree, or collect say last 20 under special branch
+- quick text filter in tree
+- cancel background tasks on exit
+- show total # of recipes
+- add existing tag to a recipe using context menu, show only those not already set
+- try to keep tree state (what is expanded and selected) on buildtree, for example when tags changed on a recipe
+
+Links
+=====
+
+http://stackoverflow.com/questions/11242847/is-drag-and-drop-supported-by-treeitem
+autoresize issues: http://www.drdobbs.com/jvm/a-javafx-custom-container/232200699
+http://stackoverflow.com/questions/10152828/javafx-2-automatic-column-width
+http://saidandem.blogspot.de/2012/01/percent-width-for-tablecolumn-in-javafx.html
+
+http://www.zenjava.com/2012/11/24/from-zero-to-javafx-in-5-minutes/
+
+http://htmlcleaner.sourceforge.net/javause.php
