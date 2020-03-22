@@ -88,6 +88,9 @@ public class HtmlImporter {
 
     private void removeElements(Document document, String tag){
         NodeList nodes = document.getElementsByTagName(tag);
+
+        Settings.getLogger().debug("found " + nodes.getLength() + " node(s) of '" + tag + "' for removal");
+
         while(nodes.getLength() > 0){
             org.w3c.dom.Node n = nodes.item(0);
             n.getParentNode().removeChild(n);
@@ -202,6 +205,9 @@ public class HtmlImporter {
 
         // collect referenced files
         NodeList nodes = document.getElementsByTagName(tag);
+
+        Settings.getLogger().debug("found " + nodes.getLength() + " node(s) of '" + tag + "'");
+
         for(int i = 0; i < nodes.getLength(); i++){
             org.w3c.dom.Node attr = nodes.item(i).getAttributes().getNamedItem(attribute);
             if(attr != null){
@@ -237,6 +243,11 @@ public class HtmlImporter {
 
                         Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
                         attr.setTextContent(relativeSubdir + "/" + src.getFileName());
+
+                        Settings.getLogger().debug("fixed '" + srcName + "' to '" +
+                                relativeSubdir + "/" + src.getFileName() +
+                                "'");
+
                     } catch (IOException e) {
                         Settings.getLogger().error("failed to copy on '" + attr.getNodeValue() + "'", e);
                     }

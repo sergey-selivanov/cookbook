@@ -14,7 +14,9 @@ module cookbook {
     requires slf4j.api;
     requires org.apache.logging.log4j; // 2.12
     //requires log4j.api; // 2.9.1
-    requires javafx.base;
+    //requires javafx.base; ??
+
+    requires org.jsoup;
 
     opens org.sergeys.cookbook.ui to javafx.fxml;
     exports org.sergeys.cookbook.ui;

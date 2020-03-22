@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 public class Settings {
 
-    public static final String SETTINGS_PATH = ".CookBook3-devel";
+    public static final String SETTINGS_PATH = ".CookBook3-devel-tmp";
     public static final String SETTINGS_FILE = "settings.xml";
     public static final String LOG_FILE = "log.txt";
     public static final String RECIPES_SUBDIR = "recipes";

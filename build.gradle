@@ -42,10 +42,9 @@ dependencies {
 
     compile group: 'org.jsoup', name: 'jsoup', version: '1.13.1'
 
-    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.12.Final'
-    compile group: 'org.flywaydb', name: 'flyway-core', version: '6.3.1'
+//    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.12.Final'
+//    compile group: 'org.flywaydb', name: 'flyway-core', version: '6.3.1'
 
-    //testCompile 'junit:junit:4.13' // TODO junit jupiter
     //testImplementation('org.junit.jupiter:junit-jupiter:5.6.0') // as junit doc says
 
     // as gradle doc says
@@ -65,7 +64,6 @@ reckon {
 
 
 javafx {
-    //version = '13.0.1'
     version = '14'
     modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.web' ]
 }
@@ -95,17 +93,14 @@ eclipse {
                 entries.findAll { isModule(it) }.each {
                     it.entryAttributes['module'] = 'true'
                 }
-
                 entries.findAll { isSource(it) && isTestScope(it) }.each {
                     it.entryAttributes['test'] = 'true'
                 }
-
                 entries.findAll { isLibrary(it) && isTestScope(it) }.each {
                     it.entryAttributes['test'] = 'true'
                 }
             }
         }
-
 //        defaultOutputDir = file('build')
 //        downloadSources = true
 //        downloadJavadoc = true
