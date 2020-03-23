@@ -11,7 +11,10 @@
 <node CREATED="1584896374233" ID="ID_1407806878" MODIFIED="1584896399410" TEXT="remove or replace http:// links and images to placeholder"/>
 <node CREATED="1584897699030" ID="ID_1459105573" MODIFIED="1584897728224" TEXT="skip included files referenced in deleted e.g script tags"/>
 </node>
+<node CREATED="1584921979506" ID="ID_1403350064" MODIFIED="1584921981584" TEXT="UI">
 <node CREATED="1584896627766" ID="ID_821771700" MODIFIED="1584896654720" TEXT="put vertical divider to non zero position on 1st start"/>
+<node CREATED="1584921987568" ID="ID_1417423787" MODIFIED="1584922013760" TEXT="indicate wait and progress on import"/>
+</node>
 <node CREATED="1584842918172" ID="ID_1539987114" MODIFIED="1584842934537" TEXT="produce installer"/>
 <node CREATED="1584843045443" ID="ID_562658722" MODIFIED="1584843065501" TEXT="use hibernate"/>
 <node CREATED="1584843066257" ID="ID_45678986" MODIFIED="1584843071307" TEXT="use flywaydb"/>
