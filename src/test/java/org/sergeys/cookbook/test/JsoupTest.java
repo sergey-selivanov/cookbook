@@ -113,7 +113,8 @@ class JsoupTest {
         log.info("jsoup test");
 
         //File inFile = new File("d:/git/cookbook/samples/Буженина в фольге - Все проходит....html");
-        File inFile = new File("d:/git/cookbook/samples/паста милано.htm");
+        //File inFile = new File("d:/git/cookbook/samples/паста милано.htm");
+        File inFile = new File("/home/sergeys/tmp/Суд да дело  dok_zlo — ЖЖ.html");
         try {
             Document doc = Jsoup.parse(inFile, null);
 
