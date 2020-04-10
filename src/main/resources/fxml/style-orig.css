@@ -16,7 +16,7 @@
 }
 
 .about-label{
-/*    -fx-font: bold 16 serif;*/
+    -fx-font: bold 16 serif;
     -fx-text-fill: white;
 }
 

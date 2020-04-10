@@ -18,6 +18,7 @@ module cookbook {
     //requires javafx.base; ??
 
     requires org.jsoup;
+	requires org.kordamp.bootstrapfx.core;
 
     opens org.sergeys.cookbook.ui to javafx.fxml;
     exports org.sergeys.cookbook.ui;

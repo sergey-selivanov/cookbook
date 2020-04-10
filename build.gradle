@@ -39,6 +39,8 @@ dependencies {
 //    }
     compile fileTree(dir: 'lib', include: ['*.jar'])
 
+    compile 'org.kordamp.bootstrapfx:bootstrapfx-core:0.2.4'
+
 
     compile group: 'org.jsoup', name: 'jsoup', version: '1.13.1'
 

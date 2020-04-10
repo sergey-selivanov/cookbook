@@ -2,6 +2,7 @@ package org.sergeys.cookbook.ui;
 
 import java.net.URL;
 
+import org.kordamp.bootstrapfx.scene.layout.Panel;
 import org.sergeys.cookbook.logic.Settings;
 
 import javafx.application.Application;
@@ -34,11 +35,16 @@ public class CookBook extends Application
         Pane root = (Pane)o;
 
 
+//        Panel panel = new Panel("bootstrap panel");
+//        panel.getStyleClass().add("panel-primary");
+//        panel.setBody(root);
 
         final MainController controller = (MainController)fxmlLoader.getController();
         Scene scene = new Scene(root);
+        //Scene scene = new Scene(panel);
+        scene.getStylesheets().add("org/kordamp/bootstrapfx/bootstrapfx.css"); // https://github.com/kordamp/bootstrapfx
         primaryStage.setScene(scene);
-
+        //primaryStage.sizeToScene();
         controller.myInit(primaryStage);
 
         // http://stackoverflow.com/questions/15041332/javafx-splitpane-divider-position-inconsistent-behaviour
