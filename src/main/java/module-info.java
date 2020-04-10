@@ -2,6 +2,7 @@ module cookbook {
     requires java.sql;
     requires java.desktop;
     requires java.xml;
+    requires java.net.http;
 
     requires javafx.controls;
     requires javafx.fxml;
