@@ -16,8 +16,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -91,21 +91,25 @@ public class ImportTask extends Task<ImportTask.Status>
                         || filename.endsWith(".png")
                         || filename.endsWith(".ico")
                     ) {
-                        log.debug("download " + ref);
-                        HttpClient client = HttpClient.newBuilder()
-                                .build();
-                        HttpRequest req = HttpRequest.newBuilder()
-                                .GET()
-                                .uri(URI.create(ref))
-                                .build();
+
+                        Path dest = FileSystems.getDefault().getPath(targetDirname, filename);
+
                         try {
-                            HttpResponse<byte[]> resp = client.send(req, BodyHandlers.ofByteArray());
-                            log.debug("got " + resp.body().length + " bytes");
-
-                            // save file
-                            Path dest = FileSystems.getDefault().getPath(targetDirname, filename);
-
                             if(!dest.toFile().exists()) {
+
+                                log.debug("download " + ref);
+                                HttpClient client = HttpClient.newBuilder()
+                                        .build();
+                                HttpRequest req = HttpRequest.newBuilder()
+                                        .GET()
+                                        .uri(URI.create(ref))
+                                        .build();
+
+                                HttpResponse<byte[]> resp = client.send(req, BodyHandlers.ofByteArray());
+                                //log.debug("got " + resp.body().length + " bytes");
+
+                                // save file
+
                                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(dest.toFile()));
                                 bos.write(resp.body());
                                 bos.close();
@@ -115,7 +119,7 @@ public class ImportTask extends Task<ImportTask.Status>
                                 return;
                             }
                             else {
-                                log.warn("already exists: " + dest);
+                                log.warn("don't download, already exists: " + dest);
                             }
 
                         } catch (IOException | InterruptedException e1) {
@@ -152,18 +156,29 @@ public class ImportTask extends Task<ImportTask.Status>
                     log.error("File " + src + " does not exist");
                     return;
                 }
+
                 Path dest = FileSystems.getDefault().getPath(targetDirname, src.toFile().getName());
 
-                if(!dest.toFile().exists()) {
-                    // still filealreadyexists exception? + used by another process?
-                    // TODO try through channels
+                if(Files.notExists(dest, LinkOption.NOFOLLOW_LINKS)) { // still filealreadyexists exception
+
+                //if(!dest.toFile().exists()) { // still filealreadyexists exception? + used by another process? see /cookbook/samples/TyqYxuUgdA3E9b.html
+                //if(!dest.toFile().isFile()) { // no exception?
+
+                    // TODO try through channels? looks like older method
                     // https://stackoverflow.com/questions/20471374/copying-files-with-file-locks-in-java
                     // https://www.journaldev.com/861/java-copy-file
-                    Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
+
+                    // https://stackoverflow.com/questions/1605332/java-nio-filechannel-versus-fileoutputstream-performance-usefulness
+
+                    // https://bugs.openjdk.java.net/browse/JDK-8114830
+                    // "Files.copy clearly specifies that it is not an atomic operation. So yes, it is possible to get interference from other entities that are creating/deleting/moving files at the same time."
+
+                    //Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(src, dest);
                 }
-//                else {
-//                    //log.debug(dest + " already exists");
-//                }
+                else {
+                    log.debug(dest.getFileName() + " already exists, skipped");
+                }
 
                 // update reference
 
@@ -190,6 +205,7 @@ public class ImportTask extends Task<ImportTask.Status>
         log.debug("hash: " + hash);
         if(db.isRecipeExists(hash)) {
             db.close();
+            log.debug("already exist");
             return Status.AlreadyExist;
         }
 
@@ -229,9 +245,8 @@ public class ImportTask extends Task<ImportTask.Status>
 
         String plainText = doc.body().text();
 
-        // TODO: see vk file, saves as not utf-8, convert to utf8
-        BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetTxtFile), doc.charset()));
-        //BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetTxtFile))); // utf8
+        //BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetTxtFile), doc.charset()));
+        BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetTxtFile), StandardCharsets.UTF_8));
         wr.write(plainText);
         wr.close();
 
@@ -242,9 +257,9 @@ public class ImportTask extends Task<ImportTask.Status>
 
 
         String title = "<missing title>";
-        Elements elts = doc.getElementsByTag("title");
-        if(elts.size() > 0) {
-            title = elts.get(0).text();
+        Elements elements = doc.getElementsByTag("title");
+        if(elements.size() > 0) {
+            title = elements.get(0).text();
             //log.debug("title: [" + title + "]");
             if(title.isBlank()) {
                 title = "<empty title>";

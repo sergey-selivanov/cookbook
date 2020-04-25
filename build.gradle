@@ -40,7 +40,7 @@ dependencies {
 //    {
 //        exclude module: 'xml-apis'
 //    }
-    compile fileTree(dir: 'lib', include: ['*.jar'])
+//    compile fileTree(dir: 'lib', include: ['*.jar'])
 
     compile 'org.kordamp.bootstrapfx:bootstrapfx-core:0.2.4'
 

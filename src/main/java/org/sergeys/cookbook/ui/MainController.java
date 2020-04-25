@@ -8,11 +8,21 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.sergeys.cookbook.logic.BuildTreeTask;
+import org.sergeys.cookbook.logic.Database;
+import org.sergeys.cookbook.logic.ImportTask;
+import org.sergeys.cookbook.logic.MassImportTask;
+import org.sergeys.cookbook.logic.Recipe;
+import org.sergeys.cookbook.logic.RecipeLibrary;
+import org.sergeys.cookbook.logic.Settings;
+import org.sergeys.cookbook.ui.RecipeTreeValue.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -29,20 +39,6 @@ import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
-import org.sergeys.cookbook.logic.BuildTreeTask;
-import org.sergeys.cookbook.logic.Database;
-
-import org.sergeys.cookbook.logic.MassImportTask;
-import org.sergeys.cookbook.logic.Recipe;
-import org.sergeys.cookbook.logic.RecipeLibrary;
-import org.sergeys.cookbook.logic.Settings;
-
-import org.sergeys.cookbook.logic.ImportTask;
-import org.sergeys.cookbook.ui.RecipeTreeValue.Type;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MainController {
 
@@ -62,8 +58,7 @@ public class MainController {
     @FXML private TreeView<RecipeTreeValue> tree;
     @FXML private WebView webview;
 
-//    private Stage stage;
-    private FileChooser fc;
+    private final FileChooser fc = new FileChooser();
 
     private final ExecutorService singleExecutor = Executors.newSingleThreadExecutor();
 
@@ -176,7 +171,7 @@ public class MainController {
             // shutdown executors
             this.singleExecutor.shutdown();
             this.singleExecutor.awaitTermination(3, TimeUnit.SECONDS);
-            RecipeLibrary.getInstance().shutdown();
+            //RecipeLibrary.getInstance().shutdown();
 
         } catch (FileNotFoundException | InterruptedException ex) {
             log.error("error on exit", ex);
@@ -203,18 +198,19 @@ public class MainController {
 
 
 
-    private Recipe currentRecipe;
+    //private Recipe currentRecipe;
 
     private void setRecipe(Recipe recipe){
         log.debug("setrecipe");
 
-        currentRecipe = recipe;
+        //currentRecipe = recipe;
 
 //        String filename = Settings.getSettingsDirPath() + File.separator + Settings.RECIPES_SUBDIR +
 //                File.separator + recipe.getHash() + ".html";
 //        webview.getEngine().load(new File(filename).toURI().toString());
 
-        webview.getEngine().load(new File(currentRecipe.getUnpackedFilename()).toURI().toString());
+        //webview.getEngine().load(new File(currentRecipe.getUnpackedFilename()).toURI().toString());
+        webview.getEngine().load(new File(recipe.getUnpackedFilename()).toURI().toString());
 
         setTitle(recipe);
     }
@@ -239,41 +235,14 @@ public class MainController {
 
     }
 
-//    private HtmlImporter importer;
-
-//    private ChangeListener<HtmlImporter.Status> importListener = new ChangeListener<HtmlImporter.Status>() {
-//
-//        @Override
-//        public void changed(
-//                ObservableValue<? extends Status> observable,
-//                Status oldValue, Status newValue) {
-//
-//            if(newValue == Status.Complete){
-////                System.out.println("completed import of " + importer.getHash());
-//
-//                RecipeLibrary.getInstance().validate();
-//
-//                rebuildTree();
-//            }
-//            else{
-////                System.out.println("importer status " + newValue);
-//            }
-//        }
-//    };
-
 
     private void doImport(){
-
-        if(fc == null){
-            fc = new FileChooser();
-        }
 
         File prev = new File(Settings.getInstance().getLastFilechooserLocation());
         if(prev.exists()){
             fc.setInitialDirectory(prev);
         }
 
-        //final File file = fc.showOpenDialog(stage);
         final File file = fc.showOpenDialog(mainBorderPane.getScene().getWindow());
         if(file != null){
             Settings.getInstance().setLastFilechooserLocation(file.getParent());
@@ -312,48 +281,84 @@ public class MainController {
         }
     }
 
-    private ChangeListener<Number> taskListener = new ChangeListener<Number>() {
+//    private ChangeListener<Number> taskListener = new ChangeListener<Number>() {
+//
+//        @Override
+//        public void changed(ObservableValue<? extends Number> observable,
+//                Number oldValue, Number newValue) {
+//            log.info("task progress " + newValue);
+////            System.out.println("- progress " + newValue);
+//        }
+//    };
+//
+//    private EventHandler<WorkerStateEvent> taskHandler = new EventHandler<WorkerStateEvent>() {
+//
+//        @Override
+//        public void handle(WorkerStateEvent event) {
+//            log.info("task complete");
+//            RecipeLibrary.getInstance().validate();
+//            rebuildTree();
+//        }};
 
-        @Override
-        public void changed(ObservableValue<? extends Number> observable,
-                Number oldValue, Number newValue) {
-            log.info("task progress " + newValue);
-//            System.out.println("- progress " + newValue);
-        }
-    };
-
-    private EventHandler<WorkerStateEvent> taskHandler = new EventHandler<WorkerStateEvent>() {
-
-        @Override
-        public void handle(WorkerStateEvent event) {
-            log.info("task complete");
-            RecipeLibrary.getInstance().validate();
-            rebuildTree();
-        }};
-
-
-//    private HtmlImporter massImporter;
 
   private void doMassImport(){
 
       DirectoryChooser dc = new DirectoryChooser();
-      //final File dir = dc.showDialog(stage);
+
+      File prev = new File(Settings.getInstance().getLastFilechooserLocation());
+      if(prev.exists()){
+          dc.setInitialDirectory(prev.getParentFile());
+      }
+
       final File dir = dc.showDialog(mainBorderPane.getScene().getWindow());
 
       if(dir == null){
           return;
       }
 
-//      massImporter = new HtmlImporter();
-//
-//      log.debug("mass import");
-//      Task<Void> task = new MassImportTask(dir, massImporter);
-//
-//      task.progressProperty().addListener(taskListener);
-//      task.setOnSucceeded(taskHandler);
+      Settings.getInstance().setLastFilechooserLocation(dir.toString());
 
+      MassImportTask massImportTask = new MassImportTask(dir);
+      massImportTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 
-      //Settings.getSingleExecutor().execute(task);
+            @Override
+            public void handle(WorkerStateEvent event) {
+                try {
+                    ImportTask.Status status = massImportTask.get();
+                    log.debug("status: " + status);
+                    if(status != ImportTask.Status.Complete){
+                        log.debug("failed: " + status);
+                    }
+                    else{
+                        RecipeLibrary.getInstance().validate();
+                        rebuildTree();
+                    }
+
+                } catch (InterruptedException | ExecutionException ex) {
+                    log.error("", ex);
+                }
+
+            }
+      });
+
+      massImportTask.setOnFailed(new EventHandler<WorkerStateEvent>() {
+
+        @Override
+        public void handle(WorkerStateEvent event) {
+            log.error("failed: " + event.getSource().getException());
+
+        }
+    });
+
+      massImportTask.progressProperty().addListener(new ChangeListener<>() {
+
+        @Override
+        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+            log.debug("import progress: " + newValue);
+        }
+      });
+
+      singleExecutor.execute(massImportTask);
   }
 
 }

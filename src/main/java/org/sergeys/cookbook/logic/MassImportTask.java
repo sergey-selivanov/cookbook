@@ -1,125 +1,105 @@
 package org.sergeys.cookbook.logic;
 
 import java.io.File;
-import java.io.FilenameFilter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
-import org.sergeys.cookbook.logic.HtmlImporter.Status;
+import org.sergeys.cookbook.logic.ImportTask.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 
-public class MassImportTask extends Task<Void> implements ChangeListener<HtmlImporter.Status>
+public class MassImportTask extends Task<ImportTask.Status>
 {
+    private static final String HTML_FILES_GLOB = "glob:*.{html,htm}"; // case insensitive
     private final Logger log = LoggerFactory.getLogger(MassImportTask.class);
 
-    private File directory;
-    private HtmlImporter importer;
-    private boolean canContinue;
+    private final ExecutorService executor = Executors.newCachedThreadPool();
+    private final Path directory;
 
-    private Object sync = new Object();
-
-    public MassImportTask(File directory, HtmlImporter importer){
-        this.directory = directory;
-        this.importer = importer;
+    public MassImportTask(File directory){
+        this.directory = directory.toPath();
     }
 
     @Override
-    protected Void call()  {
-//throws Exception
-        importer.statusProperty().addListener(this);
+    protected ImportTask.Status call() throws Exception {
 
-        String[] files = directory.list(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String filename) {
-                File f = new File(dir.getAbsolutePath() + File.separator + filename);
-                return f.isFile() && (filename.toLowerCase().endsWith(".html") || filename.toLowerCase().endsWith(".htm"));
+//        try(DirectoryStream<Path> stream = Files.newDirectoryStream(directory, HTML_FILES_GLOB)){ // case insensitive(?)
+//
+//        	PathMatcher matcher = directory.getFileSystem().getPathMatcher(HTML_FILES_GLOB);
+//
+//            long count = Files.list(directory)
+//            		.filter(p -> matcher.matches(p))
+//            		.count();
+//            log.debug("count: " + count);
+//
+//            stream.forEach(path -> {
+//                log.debug("= " + path.getFileName());
+//            });
+//        }
+
+        try {
+            PathMatcher matcher = directory.getFileSystem().getPathMatcher(HTML_FILES_GLOB);
+            try(Stream<Path> stream = Files.list(directory)){
+
+                // TODO count files??
+
+                //long count = stream.count();
+                //log.debug("count: " + count);
+
+                stream
+                    .filter(p -> matcher.matches(p.getFileName()))
+                    .forEach(p -> {
+                        log.debug("= " + p.getFileName());
+
+                        ImportTask importTask = new ImportTask(p.toFile());
+                        importTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+
+                            @Override
+                            public void handle(WorkerStateEvent event) {
+                                log.debug("=== done");
+                            }
+                        });
+
+                        executor.execute(importTask);
+                    });
+
             }
-        });
 
-        int count = 0;
-        for(final String file: files){
+        }
+        catch(Exception ex) {
+            log.error("", ex);
 
-            if (isCancelled()) {
-                updateMessage("Cancelled");
-                break;
-            }
-
-            updateProgress(count++, files.length);
-
-            synchronized (sync) {
-                canContinue = false;
-            }
-
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-
-                    try{
-                        importer.importFile(new File(directory.getAbsolutePath() + File.separator + file));
-                    }
-                    catch(Exception ex){
-                        log.error("", ex);
-                        synchronized (sync) {
-                            canContinue = true;
-                        }
-                    }
-                }
-            });
-            //importer.Import(new File(directory.getAbsolutePath() + File.separator + file));
-
-            boolean cont = false;
-            int waitcount = 0;
-            while(!cont){
-                synchronized (sync) {
-                    cont = canContinue;
-                }
-
-                if(!cont){
-
-                    try{
-                        Thread.sleep(500);
-                    }
-                    catch (InterruptedException interrupted) {
-                        if (isCancelled()) {
-                            updateMessage("Cancelled");
-                            break;
-                        }
-                    }
-                }
-
-                waitcount++;
-
-                if(waitcount > 30){
-                    break;
-                }
-            }
         }
 
-        return null;
+        log.debug("======================== shutdown mass import ========================");
+        executor.shutdown();
+        executor.awaitTermination(5, TimeUnit.MINUTES);
+        log.debug("======================== done mass import ========================");
+
+        return Status.Complete;
     }
 
-    @Override
-    public void changed(ObservableValue<? extends Status> observable,
-            Status oldValue, Status newValue) {
+//    @Override
+//    protected void done() {
+//
+//        try {
+//            executor.shutdown();
+//            executor.awaitTermination(3, TimeUnit.SECONDS);
+//            log.debug("shutdown");
+//        } catch (InterruptedException ex) {
+//            log.error("", ex);
+//        }
+//        super.done();
+//    }
 
-        //System.out.println("> status in task " + newValue);
-        synchronized (sync) {
-            if(newValue == Status.Complete ||
-               newValue == Status.AlreadyExist ||
-               newValue == Status.Failed){
-
-                canContinue = true;
-                //System.out.println("> can continue");
-            }
-            else{
-                canContinue = false;
-            }
-        }
-
-    }
 
 }

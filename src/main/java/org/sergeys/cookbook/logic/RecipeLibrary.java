@@ -23,8 +23,6 @@ public final class RecipeLibrary {
 
     private final Logger log = LoggerFactory.getLogger(RecipeLibrary.class);
 
-    private final ExecutorService singleExecutor = Executors.newSingleThreadExecutor();
-
     private static Object instanceLock = new Object();
     private static RecipeLibrary instance;
 
@@ -75,9 +73,12 @@ public final class RecipeLibrary {
     public void validate(){
         try {
             Database db = new Database();
-
             //ArrayList<Recipe> recipes = Database.getInstance().getAllRecipes();
             ArrayList<Recipe> recipes = db.getAllRecipes();
+            db.close();
+
+            ExecutorService executor = Executors.newCachedThreadPool();
+
             for(final Recipe r: recipes){
 
                 //final File f = new File(Settings.getRecipeLibraryPath() + File.separator + r.getHash() + ".html");
@@ -105,11 +106,17 @@ public final class RecipeLibrary {
                         }
                     };
 
-                    singleExecutor.execute(task);
+                    //singleExecutor.execute(task);
+                    executor.execute(task);
                 }
             }
 
-            db.close();
+            log.debug("======================== shutdown validate ========================");
+            executor.shutdown();
+            executor.awaitTermination(5, TimeUnit.MINUTES);
+            log.debug("======================== done validate ========================");
+
+
         } catch (Exception e) {
             log.error("", e);
         }
@@ -137,8 +144,8 @@ public final class RecipeLibrary {
         return Collections.list(tags.keys());
     }
 
-    public boolean shutdown() throws InterruptedException {
-        singleExecutor.shutdown();
-        return singleExecutor.awaitTermination(3, TimeUnit.SECONDS);
-    }
+//    public boolean shutdown() throws InterruptedException {
+//        singleExecutor.shutdown();
+//        return singleExecutor.awaitTermination(3, TimeUnit.SECONDS);
+//    }
 }
