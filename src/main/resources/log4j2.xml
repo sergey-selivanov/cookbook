@@ -31,9 +31,11 @@ http://logging.apache.org/log4j/2.x/manual/configuration.html
             <!--
             filePattern="${sys:java.io.tmpdir} puts to relative dir, drops disk letter on windows
             filePattern="$${sys:java.io.tmpdir} works ok
-             -->
 
             <PatternLayout pattern="%d %p %c: %m%n"/>
+             -->
+
+            <PatternLayout pattern="%d %5p [%t] (%F:%L) - %m%n" />
             <Policies>
                 <OnStartupTriggeringPolicy />
 

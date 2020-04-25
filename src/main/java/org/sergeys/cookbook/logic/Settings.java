@@ -40,8 +40,8 @@ public class Settings {
     private Date savedVersion = new Date(0);
 
     private static Settings instance = new Settings();
-    private static ExecutorService executor = Executors.newCachedThreadPool();
-    private static ExecutorService singleExecutor = Executors.newSingleThreadExecutor();
+    //private static ExecutorService executor = Executors.newCachedThreadPool();
+    //private static ExecutorService singleExecutor = Executors.newSingleThreadExecutor();
 
     private static Logger log;
 
@@ -118,7 +118,7 @@ public class Settings {
             try {
                 is = new FileInputStream(settingsFilePath);
             } catch (FileNotFoundException e) {
-                Settings.getLogger().error("", e);
+                log.error("", e);
             }
 
             XMLDecoder decoder = new XMLDecoder(is);
@@ -133,7 +133,7 @@ public class Settings {
         try {
             instance.resources.load(is);
         } catch (Exception e) {
-            Settings.getLogger().error("failed to load properties, exit", e);
+            log.error("failed to load properties, exit", e);
             Platform.exit();
         }
         finally{
@@ -142,29 +142,29 @@ public class Settings {
                     is.close();
                 }
             } catch (IOException e) {
-                Settings.getLogger().error("", e);
+                log.error("", e);
             }
         }
 
     }
 
     // TODO why static logger here and no individual loggers in classes??
-    public static Logger getLogger(){
-        return log;
-    }
+//    public static Logger getLogger(){
+//        return log;
+//    }
 
-    public static ExecutorService getExecutor(){
-        return executor;
-    }
-
-    public static ExecutorService getSingleExecutor(){
-        return singleExecutor;
-    }
-
-    public static void shutdown(){
-        singleExecutor.shutdown();
-        executor.shutdown();
-    }
+//    public static ExecutorService getExecutor(){
+//        return executor;
+//    }
+//
+//    public static ExecutorService getSingleExecutor(){
+//        return singleExecutor;
+//    }
+//
+//    public static void shutdown(){
+//        singleExecutor.shutdown();
+//        executor.shutdown();
+//    }
 
     /**
      * Extracts file to the settings directory

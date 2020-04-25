@@ -30,10 +30,11 @@ import javafx.scene.web.WebEngine;
 
 import org.apache.xml.serialize.HTMLSerializer;
 import org.apache.xml.serialize.OutputFormat;
+import org.slf4j.Logger;
 //import org.w3c.dom.DOMException;
 //import org.w3c.dom.Document;
 //import org.w3c.dom.NodeList;
-
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -47,6 +48,9 @@ import org.w3c.dom.NodeList;
  */
 @SuppressWarnings("deprecation")
 public class HtmlImporter {
+
+    private final Logger log = LoggerFactory.getLogger(HtmlImporter.class);
+
     private File originalFile;
     private Document doc;
     private String destinationDir;
@@ -89,7 +93,7 @@ public class HtmlImporter {
     private void removeElements(Document document, String tag){
         NodeList nodes = document.getElementsByTagName(tag);
 
-        Settings.getLogger().debug("found " + nodes.getLength() + " node(s) of '" + tag + "' for removal");
+        //Settings.getLogger().debug("found " + nodes.getLength() + " node(s) of '" + tag + "' for removal");
 
         while(nodes.getLength() > 0){
             org.w3c.dom.Node n = nodes.item(0);
@@ -130,15 +134,15 @@ public class HtmlImporter {
                     try {
                         setDocument(doc);
                     } catch (IOException e) {
-                        Settings.getLogger().error("", e);
+                        //Settings.getLogger().error("", e);
                     }
                 }
                 else{
-                    Settings.getLogger().debug("worker succeeded but document is null");
+                    //Settings.getLogger().debug("worker succeeded but document is null");
                 }
             }
             else if (newState == State.CANCELLED){
-                Settings.getLogger().debug("document load CANCELLED: " + importEngine.getLocation());
+                //Settings.getLogger().debug("document load CANCELLED: " + importEngine.getLocation());
             }
 //            else{
 ////                System.out.println("document load: " + newState);
@@ -152,7 +156,7 @@ public class HtmlImporter {
         public void changed(
                 ObservableValue<? extends Throwable> observable,
                 Throwable oldValue, Throwable newValue) {
-            Settings.getLogger().error("import engine load worker got exception", newValue);
+            //Settings.getLogger().error("import engine load worker got exception", newValue);
         }
     };
 
@@ -165,19 +169,19 @@ public class HtmlImporter {
         try {
             hash = getFileHash(originalFile);
         } catch (NoSuchAlgorithmException | IOException e2) {
-            Settings.getLogger().error("", e2);
+            //Settings.getLogger().error("", e2);
             status.set(Status.Failed);
             return;
         }
 
         try {
             if(Database.getInstance().isRecipeExists(hash)){
-                Settings.getLogger().info("recipe with this hash already exist in database");
+                //Settings.getLogger().info("recipe with this hash already exist in database");
                 status.set(Status.AlreadyExist);
                 return;
             }
         } catch (Exception e2) {
-            Settings.getLogger().error("", e2);
+            //Settings.getLogger().error("", e2);
             status.set(Status.Failed);
             return;
         }
@@ -206,7 +210,7 @@ public class HtmlImporter {
         // collect referenced files
         NodeList nodes = document.getElementsByTagName(tag);
 
-        Settings.getLogger().debug("found " + nodes.getLength() + " node(s) of '" + tag + "'");
+        //Settings.getLogger().debug("found " + nodes.getLength() + " node(s) of '" + tag + "'");
 
         for(int i = 0; i < nodes.getLength(); i++){
             org.w3c.dom.Node attr = nodes.item(i).getAttributes().getNamedItem(attribute);
@@ -218,7 +222,7 @@ public class HtmlImporter {
                     attr.getNodeValue().isEmpty()){
                     // TODO: fetch remote files
 //                    System.out.println(tag + ": skip url '" + attr.getNodeValue() + "'");
-                    Settings.getLogger().debug(tag + ": skip url '" + attr.getNodeValue() + "'");
+                    //Settings.getLogger().debug(tag + ": skip url '" + attr.getNodeValue() + "'");
                     continue;
                 }
 
@@ -226,7 +230,7 @@ public class HtmlImporter {
                 try {
                     srcName = URLDecoder.decode(attr.getNodeValue(), "UTF-8");
                 } catch (UnsupportedEncodingException | DOMException e1) {
-                    Settings.getLogger().error("", e1);
+                    //Settings.getLogger().error("", e1);
                     continue;
                 }
 
@@ -244,17 +248,17 @@ public class HtmlImporter {
                         Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
                         attr.setTextContent(relativeSubdir + "/" + src.getFileName());
 
-                        Settings.getLogger().debug("fixed '" + srcName + "' to '" +
-                                relativeSubdir + "/" + src.getFileName() +
-                                "'");
+//                        Settings.getLogger().debug("fixed '" + srcName + "' to '" +
+//                                relativeSubdir + "/" + src.getFileName() +
+//                                "'");
 
                     } catch (IOException e) {
-                        Settings.getLogger().error("failed to copy on '" + attr.getNodeValue() + "'", e);
+                        //Settings.getLogger().error("failed to copy on '" + attr.getNodeValue() + "'", e);
                     }
                     //attr.setTextContent(hash);
                 }
                 else{
-                    Settings.getLogger().debug("nonexistent path " + src);
+                    //Settings.getLogger().debug("nonexistent path " + src);
                 }
             }
         }
@@ -334,7 +338,7 @@ public class HtmlImporter {
             subfiles.close();
             target.close();
         } catch (IOException e) {
-            Settings.getLogger().error("", e);
+            //Settings.getLogger().error("", e);
         }
     }
 
@@ -343,7 +347,7 @@ public class HtmlImporter {
         doc = document;
 
         String encoding = doc.getInputEncoding();
-        Settings.getLogger().debug("doc encoding " + encoding);
+        //Settings.getLogger().debug("doc encoding " + encoding);
 
         // remove garbage
         removeElements(doc, "script");
@@ -360,7 +364,7 @@ public class HtmlImporter {
         // extract plaintext for db fulltext search
         NodeList nodes = doc.getElementsByTagName("body");
         if(nodes.getLength() < 1){
-            Settings.getLogger().debug("body not found");
+            //Settings.getLogger().debug("body not found");
             status.set(Status.Failed);
             return;
         }
@@ -374,7 +378,7 @@ public class HtmlImporter {
             wr.write(bodytext);
             wr.close();
         } catch (IOException e) {
-            Settings.getLogger().error("", e);
+            //Settings.getLogger().error("", e);
             status.set(Status.Failed);
         }
 
@@ -382,7 +386,7 @@ public class HtmlImporter {
         // TODO broken encoding for 1251 file
         // http://weblogs.java.net/blog/fabriziogiudici/archive/2012/02/12/xslt-xhtml-jdk6-jdk7-madness
         OutputFormat of = new OutputFormat(doc);
-        Settings.getLogger().debug("orig outputformat encoding " + of.getEncoding());
+        //Settings.getLogger().debug("orig outputformat encoding " + of.getEncoding());
         of.setEncoding(encoding);
         HTMLSerializer sr = new HTMLSerializer(of);
         try {
@@ -393,7 +397,7 @@ public class HtmlImporter {
             fos.close();
 //            System.out.println("file written");
         } catch (IOException e1) {
-            Settings.getLogger().error("", e1);
+            //Settings.getLogger().error("", e1);
             status.set(Status.Failed);
         }
 
@@ -414,7 +418,7 @@ public class HtmlImporter {
             List<String> suggestedTags = RecipeLibrary.getInstance().suggestTags(title);
             Database.getInstance().updateRecipeTags(hash, suggestedTags);
         } catch (Exception e) {
-            Settings.getLogger().error("", e);
+            //Settings.getLogger().error("", e);
             status.set(Status.Failed);
         }
 

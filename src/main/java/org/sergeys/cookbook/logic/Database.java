@@ -18,28 +18,41 @@ import java.util.Date;
 import java.util.List;
 
 import org.h2.tools.RunScript;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class Database {
     private static final String FILENAME = "cookbook";
 
-    private static Object instanceLock = new Object();
-    private static Database instance;
+    //private static Object instanceLock = new Object();
+    //private static Database instance;
 
-    // singleton
-    private Database() throws Exception
+    private final Logger log = LoggerFactory.getLogger(Database.class);
+
+    public Database()
     {
-        upgradeOrCreateIfNeeded();
+        //upgradeOrCreateIfNeeded();
     }
 
-    public static Database getInstance() throws Exception
-    {
-        synchronized (instanceLock) {
-            if(instance == null){
-                instance = new Database();
-            }
-        }
+//    public static Database getInstance() throws Exception
+//    {
+//        synchronized (instanceLock) {
+//            if(instance == null){
+//                instance = new Database();
+//            }
+//        }
+//
+//        return instance;
+//    }
 
-        return instance;
+    public void close() throws SQLException {
+        if(connection != null) {
+            connection.close();
+        }
+    }
+
+    public static Database getInstance() throws SQLException {
+        throw new SQLException("not supported");
     }
 
     private Connection connection;
@@ -77,14 +90,14 @@ public final class Database {
             while(in != null){
                 RunScript.execute(getConnection(), new InputStreamReader(in, Charset.defaultCharset()));
                 in.close();
-                Settings.getLogger().info("Upgraded database from version " + ver);
+                log.info("Upgraded database from version " + ver);
                 ver++;
                 in = getClass().getResourceAsStream("/upgrade" + ver + ".sql");
             }
 
             //st.close();
         } catch (SQLException | IOException e) {
-            Settings.getLogger().error("failed to upgrade db", e);
+            log.error("failed to upgrade db", e);
         }
         finally{
             if(in != null){
@@ -100,7 +113,10 @@ public final class Database {
     }
 
     // TODO use flyway?
-    private void upgradeOrCreateIfNeeded() throws Exception {
+    //private void upgradeOrCreateIfNeeded() throws Exception {
+    public void upgradeOrCreateIfNeeded() throws Exception {
+
+        log.debug("upgradeOrCreateIfNeeded");
 
         File dir = new File(Settings.getSettingsDirPath());
         if(!dir.exists()){
@@ -141,7 +157,7 @@ public final class Database {
                 return true;
             }
         } catch (SQLException e) {
-            Settings.getLogger().error("", e);
+            log.error("", e);
         }
 
         return false;
@@ -181,7 +197,7 @@ public final class Database {
 
             pst.close();
         } catch (SQLException | IOException e) {
-            Settings.getLogger().error("failed to add recipe", e);
+            log.error("failed to add recipe", e);
         }
 //        finally{
 //            try {
@@ -211,7 +227,7 @@ public final class Database {
 
             st.close();
         } catch (SQLException e) {
-            Settings.getLogger().error("", e);
+            log.error("", e);
         }
 
         return recipes;
@@ -255,7 +271,7 @@ public final class Database {
 //				is.close();
             }
         } catch (SQLException | IOException e) {
-            Settings.getLogger().error("", e);
+            log.error("", e);
         }
     }
 
@@ -280,7 +296,7 @@ public final class Database {
 
             st.close();
         } catch (SQLException e) {
-            Settings.getLogger().error("", e);
+            log.error("", e);
         }
 
         return tags;
@@ -309,7 +325,7 @@ public final class Database {
 
             pst.close();
         } catch (SQLException e) {
-            Settings.getLogger().error("", e);
+            log.error("", e);
         }
 
         return tags;
@@ -335,7 +351,7 @@ public final class Database {
 
             st.close();
         } catch (SQLException e) {
-            Settings.getLogger().error("", e);
+            log.error("", e);
         }
 
 
@@ -362,7 +378,7 @@ public final class Database {
 
             pst.close();
         } catch (SQLException e) {
-            Settings.getLogger().error("", e);
+            log.error("", e);
         }
 
         return recipes;
@@ -398,7 +414,7 @@ public final class Database {
             getConnection().setAutoCommit(true);
 
         } catch (SQLException e) {
-            Settings.getLogger().error("", e);
+            log.error("", e);
         }
     }
 
@@ -429,7 +445,7 @@ public final class Database {
 
             pst.close();
         } catch (SQLException e) {
-            Settings.getLogger().error("", e);
+            log.error("", e);
         }
     }
 
@@ -451,7 +467,7 @@ public final class Database {
 
             pst.close();
         } catch (SQLException e) {
-            Settings.getLogger().error("", e);
+            log.error("", e);
         }
 
         return tags;
@@ -466,7 +482,7 @@ public final class Database {
             pst.executeUpdate();
             pst.close();
         } catch (SQLException e) {
-            Settings.getLogger().error("", e);
+            log.error("", e);
         }
     }
 }

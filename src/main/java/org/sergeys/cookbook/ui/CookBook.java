@@ -2,8 +2,9 @@ package org.sergeys.cookbook.ui;
 
 import java.net.URL;
 
-import org.kordamp.bootstrapfx.scene.layout.Panel;
 import org.sergeys.cookbook.logic.Settings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -14,16 +15,24 @@ import javafx.stage.Stage;
 
 public class CookBook extends Application
 {
+    //private static final Logger log = LoggerFactory.getLogger(CookBook.class); // not initialized yet
+    private static Logger log;
+
     private Stage primaryStage;
 
+    static {
+        Settings.getSettingsDirPath(); // this initializes System.setProperty("log4j.log.file"
+    }
+
     public static void main(String[] args) {
-        Settings.getLogger().debug("main");
+        log = LoggerFactory.getLogger(CookBook.class);
+        log.debug("main");
         launch(args);
     }
 
     @Override
     public void start(Stage stage) throws Exception {
-        System.out.println("start");
+        log.debug("start");
 
         this.primaryStage = stage;
 
@@ -45,7 +54,7 @@ public class CookBook extends Application
         scene.getStylesheets().add("org/kordamp/bootstrapfx/bootstrapfx.css"); // https://github.com/kordamp/bootstrapfx
         primaryStage.setScene(scene);
         //primaryStage.sizeToScene();
-        controller.myInit(primaryStage);
+//        controller.myInit(primaryStage);
 
         // http://stackoverflow.com/questions/15041332/javafx-splitpane-divider-position-inconsistent-behaviour
 
@@ -61,5 +70,18 @@ public class CookBook extends Application
             public void run() {
                 controller.setDivider();
             }});
+    }
+
+    @Override
+    public void init() throws Exception {
+
+        super.init();
+        log.debug("init");
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        log.debug("stop");
     }
 }

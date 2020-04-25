@@ -11,7 +11,10 @@ plugins {
     id 'application'
     id 'eclipse'
     id 'org.openjfx.javafxplugin' version '0.0.8'
-    id 'org.beryx.jlink' version '2.17.5'
+    id 'org.beryx.jlink' version '2.17.7'
+
+    //id 'com.github.spotbugs' version '4.0.5'
+    //id 'ru.vyarus.quality' version '4.1.0'
 
 //    id 'net.saliman.properties' version '1.5.1'
     id 'com.github.ben-manes.versions' version '0.28.0'
@@ -52,7 +55,17 @@ dependencies {
     // as gradle doc says
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.1'
+
+//    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.10.1'
+//    spotbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.4.7'
 }
+
+
+// tests has cyrillic and saved as unicode
+// see also Eclipse: Set UTF8 encoding if specified in build.gradle https://github.com/gradle/gradle/issues/898
+// https://gist.github.com/rponte/d660919434d094bbd35a1aabf7ef1bf0
+//compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
 
 
 if(!project.hasProperty('reckon.scope')){
@@ -151,4 +164,40 @@ test {
 //    testLogging {
 //        events "passed", "skipped", "failed"
 //    }
+    // do not perform unit tests
+    exclude 'org/sergeys/cookbook/**'
 }
+
+/*
+spotbugs {
+    ignoreFailures = true
+
+     //'org.sergeys.cookbook.*',
+    onlyAnalyze = [ 'org.sergeys.cookbook.logic.*', 'org.sergeys.cookbook.ui.*']
+//    excludeFilter = file("$projectDir/config/findbugs/excludeFilter.xml")
+}
+*/
+
+/*
+spotbugsMain {
+    reports {
+        html {
+            enabled = true
+//            destination = file("$buildDir/reports/spotbugs/main/spotbugs.html")
+ //           stylesheet = 'fancy-hist.xsl'
+        }
+    }
+}
+*/
+
+/*
+//quality.sourceSets = [sourceSets.main]
+quality {
+    //sourceSets = [sourceSets.main, sourceSets.test]
+//    sourceSets = [sourceSets.main]
+//    findbugs = false
+    strict = false
+    checkstyle = false
+    spotbugsMaxHeapSize = '1g'
+}
+*/

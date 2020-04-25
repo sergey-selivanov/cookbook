@@ -9,11 +9,21 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javafx.concurrent.Task;
 
 
 public final class RecipeLibrary {
+
+    private final Logger log = LoggerFactory.getLogger(RecipeLibrary.class);
+
+    private final ExecutorService singleExecutor = Executors.newSingleThreadExecutor();
 
     private static Object instanceLock = new Object();
     private static RecipeLibrary instance;
@@ -46,7 +56,7 @@ public final class RecipeLibrary {
                 }
             }
         } catch (Exception e) {
-            Settings.getLogger().error("failed to parse tag suggestions", e);
+            log.error("failed to parse tag suggestions", e);
         }
     }
 
@@ -64,7 +74,10 @@ public final class RecipeLibrary {
 
     public void validate(){
         try {
-            ArrayList<Recipe> recipes = Database.getInstance().getAllRecipes();
+            Database db = new Database();
+
+            //ArrayList<Recipe> recipes = Database.getInstance().getAllRecipes();
+            ArrayList<Recipe> recipes = db.getAllRecipes();
             for(final Recipe r: recipes){
 
                 //final File f = new File(Settings.getRecipeLibraryPath() + File.separator + r.getHash() + ".html");
@@ -75,12 +88,15 @@ public final class RecipeLibrary {
                     Task<Void> task = new Task<Void>() {
                         @Override
                         protected Void call() throws Exception {
-                            Settings.getLogger().debug("unpacking " + f.getAbsolutePath());
+                            log.debug("unpacking " + f.getAbsolutePath());
 
                             File temp = File.createTempFile("cookbook", ".jar");
                             temp.deleteOnExit();
 
-                            Database.getInstance().extractRecipeFile(r.getHash(), temp);
+                            Database db = new Database();
+
+                            db.extractRecipeFile(r.getHash(), temp);
+                            db.close();
 
                             Util.unpackJar(temp, r.getUnpackedDir());
 
@@ -89,16 +105,13 @@ public final class RecipeLibrary {
                         }
                     };
 
-//                    if(executor == null){
-//                    	executor = Executors.newSingleThreadExecutor();
-//                    }
-//
-//                    executor.execute(task);
-                    Settings.getExecutor().execute(task);
+                    singleExecutor.execute(task);
                 }
             }
+
+            db.close();
         } catch (Exception e) {
-            Settings.getLogger().error("", e);
+            log.error("", e);
         }
     }
 
@@ -122,5 +135,10 @@ public final class RecipeLibrary {
         }
 
         return Collections.list(tags.keys());
+    }
+
+    public boolean shutdown() throws InterruptedException {
+        singleExecutor.shutdown();
+        return singleExecutor.awaitTermination(3, TimeUnit.SECONDS);
     }
 }

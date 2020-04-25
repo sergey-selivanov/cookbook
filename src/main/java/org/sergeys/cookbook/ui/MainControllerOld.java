@@ -2,16 +2,12 @@ package org.sergeys.cookbook.ui;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
@@ -24,29 +20,30 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import org.sergeys.cookbook.logic.BuildTreeTask;
 import org.sergeys.cookbook.logic.Database;
-
+import org.sergeys.cookbook.logic.HtmlImporter;
 import org.sergeys.cookbook.logic.MassImportTask;
 import org.sergeys.cookbook.logic.Recipe;
 import org.sergeys.cookbook.logic.RecipeLibrary;
 import org.sergeys.cookbook.logic.Settings;
-
-import org.sergeys.cookbook.logic.ImportTask;
+import org.sergeys.cookbook.logic.Tag;
+import org.sergeys.cookbook.logic.HtmlImporter.Status;
 import org.sergeys.cookbook.ui.RecipeTreeValue.Type;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MainController {
+public class MainControllerOld {
 
-    private final Logger log = LoggerFactory.getLogger(MainController.class);
+    Logger log = LoggerFactory.getLogger(MainController.class);
 
     @FXML private BorderPane mainBorderPane;
     @FXML private SplitPane splitPane;
@@ -62,29 +59,20 @@ public class MainController {
     @FXML private TreeView<RecipeTreeValue> tree;
     @FXML private WebView webview;
 
-//    private Stage stage;
+    private Stage stage;
     private FileChooser fc;
-
-    private final ExecutorService singleExecutor = Executors.newSingleThreadExecutor();
-
-    private final Database db = new Database();
 
     // called by convention
     public void initialize(){
+        //System.out.println("init");
         log.debug("init");
 
-        // TODO call in background
-        try {
-            //Database db = new Database();
-            db.upgradeOrCreateIfNeeded();
-            //db.close();
-        } catch (Exception ex) {
-            log.error("", ex);
-        }
 
         // TODO call in background
         RecipeLibrary.getInstance().validate();
 
+//        buttonSave.setVisible(false);
+//        buttonRevert.setVisible(false);
 
         TreeItem<RecipeTreeValue> treeRoot = new TreeItem<RecipeTreeValue>();
         tree.setShowRoot(false);
@@ -94,42 +82,16 @@ public class MainController {
         tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         tree.getSelectionModel().selectedItemProperty().addListener(treeListener);
 
-        rebuildTree();
+        buildTree();
+
     }
 
+    public void myInit(Stage stage){
+        log.debug("myinit");
 
-    private void rebuildTree(){
-        BuildTreeTask treeBuilder = new BuildTreeTask();
-        treeBuilder.progressProperty().addListener(new ChangeListener<>() {
-
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                // TODO Auto-generated method stub
-                log.debug("progress: " + newValue.doubleValue());
-            }
-        });
-
-        treeBuilder.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-
-            @Override
-            public void handle(WorkerStateEvent event) {
-
-                ObservableList<TreeItem<RecipeTreeValue>> children;
-                try {
-                    children = treeBuilder.get();
-                    tree.getRoot().getChildren().clear();
-                    tree.getRoot().getChildren().addAll(children);
-
-                    log.debug("tree built");
-                } catch (InterruptedException | ExecutionException ex) {
-                    log.error("failed", ex);
-                }
-
-            }
-        });
-
-        singleExecutor.execute(treeBuilder);
+        this.stage = stage;
     }
+
 
     private ChangeListener<TreeItem<RecipeTreeValue>> treeListener = new ChangeListener<TreeItem<RecipeTreeValue>>(){
 
@@ -172,14 +134,8 @@ public class MainController {
             Settings.getInstance().getWinSize().setSize(myStage.getWidth(), myStage.getHeight());
 
             Settings.save();
-
-            // shutdown executors
-            this.singleExecutor.shutdown();
-            this.singleExecutor.awaitTermination(3, TimeUnit.SECONDS);
-            RecipeLibrary.getInstance().shutdown();
-
-        } catch (FileNotFoundException | InterruptedException ex) {
-            log.error("error on exit", ex);
+        } catch (FileNotFoundException e1) {
+            log.info("cannot save settings", e1);
         }
 
         Platform.exit();
@@ -201,6 +157,92 @@ public class MainController {
     }
 
 
+    private Image tagIcon;
+//  private Image recipeIcon;
+  private Image favIcon;
+
+  private void buildTree(){
+
+      log.debug("buildtree");
+
+      tree.getRoot().getChildren().clear();
+
+      if(tagIcon == null){
+          try{
+          tagIcon = new Image(getClass().getResourceAsStream("/images/folder_yellow.png"));
+          //recipeIcon = new Image(getClass().getResourceAsStream("/images/free_icon.png"));
+          favIcon = new Image(getClass().getResourceAsStream("/images/metacontact_online.png"));
+          }
+          catch(Exception ex){
+              log.error("", ex);
+          }
+      }
+
+      try {
+          ArrayList<Tag> tags = Database.getInstance().getRootTags();
+          for(Tag t: tags){
+
+              TreeItem<RecipeTreeValue> item;
+              if(t.getVal().equals("favorites")){
+                  item = new TreeItem<RecipeTreeValue>(new RecipeTreeValue(t), new ImageView(favIcon));
+              }
+              else{
+                  item = new TreeItem<RecipeTreeValue>(new RecipeTreeValue(t), new ImageView(tagIcon));
+              }
+
+              if(t.getSpecialid() == Tag.SPECIAL_OTHER){
+                  List<Recipe> recipes = Database.getInstance().getRecipesWithoutTags();
+                  for(Recipe r: recipes){
+                      //TreeItem<RecipeTreeValue> ritem = new TreeItem<RecipeTreeValue>(new RecipeTreeValue(r), new ImageView(recipeIcon));
+                      TreeItem<RecipeTreeValue> ritem = new TreeItem<RecipeTreeValue>(new RecipeTreeValue(r));
+                      item.getChildren().add(ritem);
+                  }
+                  tree.getRoot().getChildren().add(item);
+              }
+              else{
+                  if(buildSubtree(item, t)){
+                      tree.getRoot().getChildren().add(item);
+                  }
+              }
+          }
+
+      } catch (Exception e) {
+          log.error("boom", e);
+      }
+  }
+
+  private boolean buildSubtree(TreeItem<RecipeTreeValue> item, Tag tag){
+      //Settings.getLogger().debug("buildsubtree");
+
+      boolean hasChildren = false;
+
+      try {
+
+          List<Tag> tags = Database.getInstance().getChildrenTags(tag.getVal());
+          for(Tag t: tags){
+              TreeItem<RecipeTreeValue> titem = new TreeItem<RecipeTreeValue>();
+              titem.setValue(new RecipeTreeValue(t));
+              item.getChildren().add(titem);
+              buildSubtree(titem, t);
+
+              hasChildren = true;
+          }
+
+          List<Recipe> recipes = Database.getInstance().getRecipesByTag(tag.getVal());
+          for(Recipe r: recipes){
+              //TreeItem<RecipeTreeValue> ritem = new TreeItem<RecipeTreeValue>(new RecipeTreeValue(r), new ImageView(recipeIcon));
+              TreeItem<RecipeTreeValue> ritem = new TreeItem<RecipeTreeValue>(new RecipeTreeValue(r));
+              item.getChildren().add(ritem);
+
+              hasChildren = true;
+          }
+
+      } catch (Exception e) {
+          log.error("", e);
+      }
+
+      return hasChildren;
+  }
 
 
     private Recipe currentRecipe;
@@ -223,8 +265,7 @@ public class MainController {
         title.setText(recipe.getTitle());
 
         try {
-            //List<String> t = Database.getInstance().getRecipeTags(recipe.getHash());
-            List<String> t = db.getRecipeTags(recipe.getHash());
+            List<String> t = Database.getInstance().getRecipeTags(recipe.getHash());
             StringBuilder sb = new StringBuilder();
             for(String s: t){
                 if(sb.length() > 0){
@@ -239,27 +280,27 @@ public class MainController {
 
     }
 
-//    private HtmlImporter importer;
+    private HtmlImporter importer;
 
-//    private ChangeListener<HtmlImporter.Status> importListener = new ChangeListener<HtmlImporter.Status>() {
-//
-//        @Override
-//        public void changed(
-//                ObservableValue<? extends Status> observable,
-//                Status oldValue, Status newValue) {
-//
-//            if(newValue == Status.Complete){
-////                System.out.println("completed import of " + importer.getHash());
-//
-//                RecipeLibrary.getInstance().validate();
-//
-//                rebuildTree();
-//            }
-//            else{
-////                System.out.println("importer status " + newValue);
-//            }
-//        }
-//    };
+    private ChangeListener<HtmlImporter.Status> importListener = new ChangeListener<HtmlImporter.Status>() {
+
+        @Override
+        public void changed(
+                ObservableValue<? extends Status> observable,
+                Status oldValue, Status newValue) {
+
+            if(newValue == Status.Complete){
+//                System.out.println("completed import of " + importer.getHash());
+
+                RecipeLibrary.getInstance().validate();
+
+                buildTree();
+            }
+            else{
+//                System.out.println("importer status " + newValue);
+            }
+        }
+    };
 
 
     private void doImport(){
@@ -273,42 +314,15 @@ public class MainController {
             fc.setInitialDirectory(prev);
         }
 
-        //final File file = fc.showOpenDialog(stage);
-        final File file = fc.showOpenDialog(mainBorderPane.getScene().getWindow());
+        final File file = fc.showOpenDialog(stage);
         if(file != null){
             Settings.getInstance().setLastFilechooserLocation(file.getParent());
 
-            ImportTask importTask = new ImportTask(file);
+            if(importer == null){
+                importer = new HtmlImporter(importListener);
+            }
 
-            importTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-
-                @Override
-                public void handle(WorkerStateEvent event) {
-                    try {
-                        ImportTask.Status status = importTask.get();
-                        log.debug("status: " + status);
-                        if(status == ImportTask.Status.AlreadyExist){
-                            log.debug("already exist");
-                        }
-                        else{
-                            RecipeLibrary.getInstance().validate();
-                            rebuildTree();
-                        }
-
-                    } catch (InterruptedException | ExecutionException ex) {
-                        log.error("", ex);
-                    }
-                }
-            });
-            importTask.progressProperty().addListener(new ChangeListener<>() {
-
-                @Override
-                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                    log.debug("import progress: " + newValue);
-                }
-            });
-
-            singleExecutor.execute(importTask);
+            importer.importFile(file);
         }
     }
 
@@ -328,30 +342,27 @@ public class MainController {
         public void handle(WorkerStateEvent event) {
             log.info("task complete");
             RecipeLibrary.getInstance().validate();
-            rebuildTree();
+            buildTree();
         }};
 
 
-//    private HtmlImporter massImporter;
+    private HtmlImporter massImporter;
 
   private void doMassImport(){
 
       DirectoryChooser dc = new DirectoryChooser();
-      //final File dir = dc.showDialog(stage);
-      final File dir = dc.showDialog(mainBorderPane.getScene().getWindow());
-
+      final File dir = dc.showDialog(stage);
       if(dir == null){
           return;
       }
 
-//      massImporter = new HtmlImporter();
-//
-//      log.debug("mass import");
-//      Task<Void> task = new MassImportTask(dir, massImporter);
-//
-//      task.progressProperty().addListener(taskListener);
-//      task.setOnSucceeded(taskHandler);
+      massImporter = new HtmlImporter();
 
+      log.debug("mass import");
+      Task<Void> task = new MassImportTask(dir, massImporter);
+
+      task.progressProperty().addListener(taskListener);
+      task.setOnSucceeded(taskHandler);
 
       //Settings.getSingleExecutor().execute(task);
   }

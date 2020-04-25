@@ -1,6 +1,4 @@
-package org.sergeys.cookbook.test;
-
-import static org.junit.jupiter.api.Assertions.*;
+package org.sergeys.cookbook.logic;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -20,73 +18,27 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.regex.Matcher;
+import java.util.List;
 import java.util.regex.Pattern;
-
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.sergeys.cookbook.logic.Settings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-class JsoupTest {
+import javafx.concurrent.Task;
 
-    static {
-        // load settings and setup logger
-        //Settings.getLogger().info("jsoup test setup");
+public class ImportTask extends Task<ImportTask.Status>
+{
+    public enum Status { Unknown, InProgress, Complete, AlreadyExist, Failed };
+
+    private final Logger log = LoggerFactory.getLogger(ImportTask.class);
+    private final File htmlFile;
+
+    public ImportTask(final File htmlFile) {
+        this.htmlFile = htmlFile;
     }
-
-    static final Logger log = LoggerFactory.getLogger(JsoupTest.class);
-
-    @BeforeAll
-    static void setUpBeforeClass() throws Exception {
-
-    }
-
-    @AfterAll
-    static void tearDownAfterClass() throws Exception {
-    }
-
-    @BeforeEach
-    void setUp() throws Exception {
-    }
-
-    @AfterEach
-    void tearDown() throws Exception {
-    }
-
-
-    @Test
-    void testPatterns() {
-        String patternStr = "((http:|https:)[^\\?]*/)|(\\?.*)";
-        //String patternStr = "images";
-        String url = "http://vk.com/images/faviconnew.ico?blabla=123/123";
-
-        Pattern pattern = Pattern.compile(patternStr);
-
-        Matcher matcher = pattern.matcher(url);
-        while(matcher.find()) {
-            log.debug("== " + matcher.group());
-        }
-
-        // When there is a positive-width match at the beginning of the input sequence then an empty leading substring is included
-        // Trailing empty strings will be discarded
-        pattern.splitAsStream(url).forEachOrdered(str -> {
-            log.debug("-- " + str);
-        });
-
-        String[] tokens = pattern.split(url);
-        log.debug(tokens[1]);
-    }
-
-
 
     private void removeElements(Document doc, String tag) {
         Elements elts = doc.getElementsByTag(tag);
@@ -225,69 +177,99 @@ class JsoupTest {
         });
     }
 
-    @Test
-    void testJsoup() {
-        log.info("jsoup test");
 
-        String newName = "sample-output3";
+    @Override
+    protected Status call() throws Exception {
+        log.debug("import " + htmlFile);
 
-        //File inFile = new File("d:/git/cookbook/samples/Буженина в фольге - Все проходит....html");
-        //File inFile = new File("d:/git/cookbook/samples/паста милано.htm");
-        //File inFile = new File("d:/git/cookbook/samples/Суд да дело  dok_zlo — ЖЖ.html");
-        File inFile = new File("d:/git/cookbook/samples/TyqYxuUgdA3E9b.html");
-        //File inFile = new File("/home/sergeys/tmp/Суд да дело  dok_zlo — ЖЖ.html");
-        //File inFile = new File("/home/sergeys/tmp/TyqYxuUgdA3E9b.html");
+        Database db = new Database();
 
+        // calculate and verify hash
 
-        try {
-            Document doc = Jsoup.parse(inFile, null);
-
-            log.debug("charset: " + doc.charset());
-
-            // remove junk
-
-            // looks broken if leave scripts:
-            // https://ru-kitchen.ru/TyqYxuUgdA3E9b
-            removeElements(doc, "script");
-            removeElements(doc, "noscript");
-            removeElements(doc, "noindex");
-
-
-            // adjust relative references and copy referenced files
-
-            //String newName = "sample-output1";
-            String baseOutputDir = Settings.getSettingsDirPath();
-
-            //String targetSubdirName = baseOutputDir + File.separator + newName;
-            String targetMainFile = baseOutputDir + File.separator + newName + ".html";
-            String targetTxtFile = baseOutputDir + File.separator + newName + ".txt";
-
-            copyReferencedFiles(doc, "img", "src",
-                    inFile.getParentFile().getAbsolutePath(), baseOutputDir, newName);
-            copyReferencedFiles(doc, "link", "href",
-                    inFile.getParentFile().getAbsolutePath(), baseOutputDir, newName);
-
-
-            // extract and save plaintext (e.g. for db fulltext search)
-
-            String plainText = doc.body().text();
-            //BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetTxtFile), doc.charset()));
-            BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetTxtFile))); // utf8
-            wr.write(plainText);
-            wr.close();
-
-
-            // write modified main file
-
-            //OutputStreamWriter wr = new OutputStreamWriter(new FileOutputStream(targetMainFile), Charset.defaultCharset());
-            //OutputStreamWriter wr = new OutputStreamWriter(new FileOutputStream(targetMainFile), doc.charset());
-            wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetMainFile), doc.charset()));
-            wr.write(doc.toString());
-            wr.close();
-
-        } catch (IOException e) {
-            log.error("failed", e);
+        String hash = Util.getFileHash(htmlFile);
+        log.debug("hash: " + hash);
+        if(db.isRecipeExists(hash)) {
+            db.close();
+            return Status.AlreadyExist;
         }
+
+        // parse document
+
+        Document doc = Jsoup.parse(htmlFile, null);
+        log.debug("charset: " + doc.charset());
+
+        // looks broken if leave scripts:
+        // https://ru-kitchen.ru/TyqYxuUgdA3E9b
+        removeElements(doc, "script");
+        removeElements(doc, "noscript");
+        removeElements(doc, "noindex");
+
+        // adjust relative references and copy referenced files
+
+        String newName = hash;
+
+        Path tempDir;
+
+        tempDir = Files.createTempDirectory("cookbook");
+        tempDir.toFile().deleteOnExit();
+
+        log.debug("temp dir: " + tempDir);
+
+        String baseOutputDir = tempDir.toString();
+
+        String targetMainFile = baseOutputDir + File.separator + newName + ".html";
+        String targetTxtFile = baseOutputDir + File.separator + newName + ".txt";
+
+        copyReferencedFiles(doc, "img", "src",
+                htmlFile.getParentFile().getAbsolutePath(), baseOutputDir, newName);
+        copyReferencedFiles(doc, "link", "href",
+                htmlFile.getParentFile().getAbsolutePath(), baseOutputDir, newName);
+
+        // extract and save plaintext (e.g. for db fulltext search)
+
+        String plainText = doc.body().text();
+
+        // TODO: see vk file, saves as not utf-8, convert to utf8
+        BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetTxtFile), doc.charset()));
+        //BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetTxtFile))); // utf8
+        wr.write(plainText);
+        wr.close();
+
+        // save html
+        wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetMainFile), doc.charset()));
+        wr.write(doc.toString());
+        wr.close();
+
+
+        String title = "<missing title>";
+        Elements elts = doc.getElementsByTag("title");
+        if(elts.size() > 0) {
+            title = elts.get(0).text();
+            //log.debug("title: [" + title + "]");
+            if(title.isBlank()) {
+                title = "<empty title>";
+            }
+        }
+
+        // pack all to a single file
+        // http://stackoverflow.com/questions/1281229/how-to-use-jaroutputstream-to-create-a-jar-file
+        Util.packJar(baseOutputDir, newName);
+
+        // put to database
+        File jarfile = new File(baseOutputDir + File.separator + newName + ".jar");
+        try {
+            db.addRecipe(hash, jarfile, title, htmlFile.getAbsolutePath());
+            List<String> suggestedTags = RecipeLibrary.getInstance().suggestTags(title);
+            db.updateRecipeTags(hash, suggestedTags);
+            db.close();
+        } catch (Exception ex) {
+            log.error("", ex);
+            return Status.Failed;
+        }
+
+        Util.deleteRecursively(tempDir.toFile());
+
+        return Status.Complete;
     }
 
 }

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 import org.sergeys.cookbook.logic.HtmlImporter.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -12,6 +14,8 @@ import javafx.concurrent.Task;
 
 public class MassImportTask extends Task<Void> implements ChangeListener<HtmlImporter.Status>
 {
+    private final Logger log = LoggerFactory.getLogger(MassImportTask.class);
+
     private File directory;
     private HtmlImporter importer;
     private boolean canContinue;
@@ -58,7 +62,7 @@ public class MassImportTask extends Task<Void> implements ChangeListener<HtmlImp
                         importer.importFile(new File(directory.getAbsolutePath() + File.separator + file));
                     }
                     catch(Exception ex){
-                        Settings.getLogger().error("", ex);
+                        log.error("", ex);
                         synchronized (sync) {
                             canContinue = true;
                         }
@@ -75,7 +79,7 @@ public class MassImportTask extends Task<Void> implements ChangeListener<HtmlImp
                 }
 
                 if(!cont){
-                    
+
                     try{
                         Thread.sleep(500);
                     }
