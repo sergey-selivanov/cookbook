@@ -10,6 +10,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -55,6 +56,9 @@ public class CookBook extends Application
         primaryStage.setScene(scene);
         //primaryStage.sizeToScene();
 //        controller.myInit(primaryStage);
+
+        primaryStage.setTitle("CookBook");
+        primaryStage.getIcons().add(new Image(CookBook.class.getResourceAsStream("/images/amor.png")));
 
         // http://stackoverflow.com/questions/15041332/javafx-splitpane-divider-position-inconsistent-behaviour
 

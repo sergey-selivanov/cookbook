@@ -144,9 +144,13 @@ public class MainController {
 
     public void setDivider(){
         double pos = Settings.getInstance().getWinDividerPosition();
-        System.out.println(">" + pos);
-        splitPane.setDividerPositions(pos);
 
+        if(pos == 0) {	// first launch
+            pos = 0.2;
+        }
+
+//        System.out.println(">" + pos);
+        splitPane.setDividerPositions(pos);
     }
 
     public void onMenuItemExit(ActionEvent e){
@@ -155,11 +159,11 @@ public class MainController {
         try {
 
             double pos = splitPane.getDividerPositions()[0];
-            System.out.println("<" + pos);
+//            System.out.println("<" + pos);
 
             Settings.getInstance().setWinDividerPosition(pos);
 
-            System.out.println(Settings.getInstance().getWinDividerPosition());
+//            System.out.println(Settings.getInstance().getWinDividerPosition());
 
             Stage myStage = (Stage) mainBorderPane.getScene().getWindow();
 
