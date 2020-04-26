@@ -30,33 +30,16 @@ dependencies {
     compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.13.2' // forcemerge
     //compile 'org.apache.logging.log4j:log4j-core:2.12.1'
 
-
 //    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'    // fix jlink
 //compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
 
-
-    // As of version 2.10.0 the Log4j API is a Java module
-    // errors in jlink
-    //compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.9.1'
-
-
-    // TODO deprecated methods in HtmlImporter, refactor
-//    compile(group: 'xerces', name: 'xercesImpl', version: '2.12.0')
-//    {
-//        exclude module: 'xml-apis'
-//    }
-//    compile fileTree(dir: 'lib', include: ['*.jar'])
-
     compile 'org.kordamp.bootstrapfx:bootstrapfx-core:0.2.4'
-
-
     compile group: 'org.jsoup', name: 'jsoup', version: '1.13.1'
 
 //    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.12.Final'
 //    compile group: 'org.flywaydb', name: 'flyway-core', version: '6.3.1'
 
     //testImplementation('org.junit.jupiter:junit-jupiter:5.6.0') // as junit doc says
-
     // as gradle doc says
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.1'
@@ -82,24 +65,27 @@ reckon {
     stageFromProp('dev', 'final')
 }
 
-
 javafx {
-    //version = '14.0.1'
+    version = '14.0.1'
     //version = '13.0.2'
-    version = '15-ea+4'
+    //version = '15-ea+4'
     modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.web' ]
+    configuration = 'compile'
 }
 
 mainClassName = "$moduleName/org.sergeys.cookbook.ui.CookBook"
 
 // http://andresalmiray.com/customize-jar-manifest-entries-with-maven-gradle/
+// https://stackoverflow.com/questions/22659463/add-classpath-in-manifest-using-gradle
 jar {
     manifest {
         attributes(
-            'Main-Class'    : 'org.sergeys.cookbook.ui.CookBook',
+            'Main-Class'    : 'org.sergeys.cookbook.ui.CookBookLauncher',
+            'Class-Path'    : configurations.compile.collect { it.getName() }.join(' '),
             'Built-By'       : System.properties['user.name'],
             'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
             //'Build-Revision' : versioning.info.commit,
+            'Build-Revision' : project.version.toString(),
             'Created-By'     : "Gradle ${gradle.gradleVersion}",
             'Build-Jdk'      : "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
             'Build-OS'       : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
@@ -209,17 +195,5 @@ spotbugsMain {
  //           stylesheet = 'fancy-hist.xsl'
         }
     }
-}
-*/
-
-/*
-//quality.sourceSets = [sourceSets.main]
-quality {
-    //sourceSets = [sourceSets.main, sourceSets.test]
-//    sourceSets = [sourceSets.main]
-//    findbugs = false
-    strict = false
-    checkstyle = false
-    spotbugsMaxHeapSize = '1g'
 }
 */

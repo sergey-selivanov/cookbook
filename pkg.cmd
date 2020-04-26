@@ -2,12 +2,13 @@
 
 call gradlew.bat clean installdist
 
-: delete empty jars to fix jlink issue
+: delete empty jars to fix jlink issue when modular
 
-set FXVERSION=15-ea+4
+: set FXVERSION=15-ea+4
+set FXVERSION=14.0.1
 
 pushd build\install\cookbook\lib
-del ^
+: del ^
  javafx-base-%FXVERSION%.jar ^
  javafx-controls-%FXVERSION%.jar ^
  javafx-graphics-%FXVERSION%.jar ^
@@ -26,21 +27,22 @@ set PATH=%PATH%;c:\bin\wix311-binaries
 
 : nonmodular
 
+: --main-class org.sergeys.cookbook.ui.CookBookLauncher
+
 jpackage ^
 --input build/install/cookbook/lib ^
---main-class org.sergeys.cookbook.ui.CookBook ^
 --main-jar %MAINJAR% ^
  ^
 --verbose ^
 --dest build/install ^
 --name "CookBook" ^
---app-version "0.0.3" ^
+--app-version "0.0.4" ^
 --icon src/main/resources/images/amor.ico ^
---vendor "Svs" ^
+--vendor "Sergey Selivanov" ^
 --win-shortcut ^
 --win-dir-chooser ^
 --win-menu ^
---win-menu-group "Svs"
+--win-menu-group "CookBook"
 
 
 goto end
