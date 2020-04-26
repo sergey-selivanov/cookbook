@@ -7,6 +7,7 @@ import java.nio.file.PathMatcher;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 import org.sergeys.cookbook.logic.ImportTask.Status;
@@ -48,6 +49,17 @@ public class MassImportTask extends Task<ImportTask.Status>
 
         try {
             PathMatcher matcher = directory.getFileSystem().getPathMatcher(HTML_FILES_GLOB);
+
+            final long total;
+
+            try(Stream<Path> stream = Files.list(directory)){
+                total = stream
+                    .filter(p -> matcher.matches(p.getFileName()))
+                    .count();
+            }
+
+            AtomicLong processed = new AtomicLong();
+
             try(Stream<Path> stream = Files.list(directory)){
 
                 // TODO count files??
@@ -66,6 +78,8 @@ public class MassImportTask extends Task<ImportTask.Status>
                             @Override
                             public void handle(WorkerStateEvent event) {
                                 log.debug("=== done");
+                                //processed.incrementAndGet();
+                                updateProgress(processed.incrementAndGet(), total);
                             }
                         });
 

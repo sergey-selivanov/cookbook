@@ -41,8 +41,6 @@ public class ProgressController {
             paneProgress.setVisible(false);
         });
         ft.play();
-
-
     }
 }
 

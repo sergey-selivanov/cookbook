@@ -1,6 +1,6 @@
 module cookbook {
     requires java.sql;
-    requires java.desktop;	// awt Domension
+    requires java.desktop;	// awt Dimension
     requires java.xml;
     requires java.net.http;
 

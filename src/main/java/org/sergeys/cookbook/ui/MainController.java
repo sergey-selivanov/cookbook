@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -30,7 +32,9 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
@@ -154,14 +158,13 @@ public class MainController {
             pos = 0.2;
         }
 
-//        System.out.println(">" + pos);
         splitPane.setDividerPositions(pos);
     }
 
     public void onMenuItemExit(ActionEvent e){
         log.info("application exit");
 
-        try {
+        try {	// TODO do in different correct place
 
             double pos = splitPane.getDividerPositions()[0];
 //            System.out.println("<" + pos);
@@ -201,8 +204,8 @@ public class MainController {
     public void onMenuItemViewLog(ActionEvent e){
     }
 
-    public void onMenuItemAbout(ActionEvent e){
-        log.debug("about");
+
+    private void showProgress() {
 
         mainBorderPane.setEffect(new BoxBlur());
 
@@ -216,10 +219,31 @@ public class MainController {
 
         progress.setVisible(true);
         ft.play();
+
     }
 
+    private void hideProgress() {
 
+        mainBorderPane.setEffect(null);
 
+        Parent p = mainBorderPane.getParent();
+        Node progress = p.lookup("#paneProgress");
+        Node glass = p.lookup("#paneGlass");
+
+        FadeTransition ft = new FadeTransition(Duration.millis(500), glass);
+        ft.setFromValue(0.5);
+        ft.setToValue(0);
+
+        ft.setOnFinished(ev -> {
+            progress.setVisible(false);
+        });
+        ft.play();
+    }
+
+    public void onMenuItemAbout(ActionEvent e){
+        log.debug("about");
+        showProgress();
+    }
 
     //private Recipe currentRecipe;
 
@@ -304,25 +328,19 @@ public class MainController {
         }
     }
 
-//    private ChangeListener<Number> taskListener = new ChangeListener<Number>() {
-//
-//        @Override
-//        public void changed(ObservableValue<? extends Number> observable,
-//                Number oldValue, Number newValue) {
-//            log.info("task progress " + newValue);
-////            System.out.println("- progress " + newValue);
-//        }
-//    };
-//
-//    private EventHandler<WorkerStateEvent> taskHandler = new EventHandler<WorkerStateEvent>() {
-//
-//        @Override
-//        public void handle(WorkerStateEvent event) {
-//            log.info("task complete");
-//            RecipeLibrary.getInstance().validate();
-//            rebuildTree();
-//        }};
+    private final DoubleProperty progress = new SimpleDoubleProperty();
 
+    public DoubleProperty progressProperty() {
+        return progress;
+    }
+
+    public double getProgress() {
+        return progress.get();
+    }
+
+    public void setProgress(double val) {
+        progress.set(val);
+    }
 
   private void doMassImport(){
 
@@ -353,6 +371,7 @@ public class MainController {
                         log.debug("failed: " + status);
                     }
                     else{
+                        // TODO reset progress
                         RecipeLibrary.getInstance().validate();
                         rebuildTree();
                     }
@@ -361,17 +380,18 @@ public class MainController {
                     log.error("", ex);
                 }
 
+                hideProgress();
+
             }
       });
 
       massImportTask.setOnFailed(new EventHandler<WorkerStateEvent>() {
-
-        @Override
-        public void handle(WorkerStateEvent event) {
-            log.error("failed: " + event.getSource().getException());
-
-        }
-    });
+          @Override
+          public void handle(WorkerStateEvent event) {
+              log.error("failed: " + event.getSource().getException());
+              hideProgress();
+          }
+      });
 
       massImportTask.progressProperty().addListener(new ChangeListener<>() {
 
@@ -381,6 +401,15 @@ public class MainController {
         }
       });
 
+
+      Parent p = mainBorderPane.getParent();
+      ProgressBar progressBar = (ProgressBar)p.lookup("#progressBar");
+      progressBar.progressProperty().bind(massImportTask.progressProperty()); // TODO allowed? or bind via our member field?
+
+      Label message = (Label)p.lookup("#lblMessage");
+      message.setText("Import files from " + dir);
+
+      showProgress();
       singleExecutor.execute(massImportTask);
   }
 
