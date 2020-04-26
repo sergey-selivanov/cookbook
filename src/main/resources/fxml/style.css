@@ -6,6 +6,9 @@
     -fx-background-image: url('../images/bluShadow.jpg');
 }
 
+.wood-texture{
+    -fx-background-image: url('../images/seamless-maple-wood-texture-25926258.jpg');
+}
 
 .red-bg{
     -fx-background-image: url('../images/06.gif');
@@ -25,5 +28,5 @@
 }
 
 .buttonCancel{
-    -fx-graphic: url('../images/undo.png');
+    -fx-graphic: url('../images/button_cancel.png');
 }

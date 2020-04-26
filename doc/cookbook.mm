@@ -30,6 +30,10 @@
 <linktarget COLOR="#b0b0b0" DESTINATION="ID_1077488781" ENDARROW="Default" ENDINCLINATION="135;0;" ID="Arrow_ID_1689615997" SOURCE="ID_1676780731" STARTARROW="None" STARTINCLINATION="135;0;"/>
 </node>
 <node CREATED="1584842918172" ID="ID_1539987114" MODIFIED="1587789324142" TEXT="generate installers">
+<node CREATED="1587914076985" ID="ID_1319999710" MODIFIED="1587914096006" TEXT="non-modular packaging because of h2">
+<node CREATED="1587914151598" ID="ID_1265877550" LINK="https://badass-jlink-plugin.beryx.org/releases/latest/" MODIFIED="1587914169579" TEXT="jlink plugin"/>
+<node CREATED="1587914179377" ID="ID_1016000389" LINK="https://badass-runtime-plugin.beryx.org/releases/latest/" MODIFIED="1587914188890" TEXT="runtime plugin"/>
+</node>
 <node CREATED="1587890060365" ID="ID_1345057078" MODIFIED="1587890066869" TEXT="jenkins build"/>
 </node>
 <node CREATED="1584843045443" ID="ID_562658722" MODIFIED="1587789324142" TEXT="use hibernate"/>
@@ -37,6 +41,10 @@
 <node CREATED="1587890600355" ID="ID_1173560764" MODIFIED="1587890644808" TEXT="use spotbugs and checkstyle, pmd"/>
 <node CREATED="1584896707850" ID="ID_1676780731" MODIFIED="1587789437251" TEXT="migrate h2 db to newest format if old detected">
 <arrowlink DESTINATION="ID_1077488781" ENDARROW="Default" ENDINCLINATION="135;0;" ID="Arrow_ID_1689615997" STARTARROW="None" STARTINCLINATION="135;0;"/>
+</node>
+<node CREATED="1587912869757" ID="ID_1707158386" MODIFIED="1587912892099" TEXT="splash screen, preloader, background unpack">
+<node CREATED="1587912914420" ID="ID_802295243" LINK="https://www.genuinecoder.com/javafx-splash-screen-loading-screen/" MODIFIED="1587912931867" TEXT=""/>
+<node CREATED="1587912954761" ID="ID_387067235" LINK="https://stackoverflow.com/questions/14972199/how-to-create-splash-screen-with-transparent-background-in-javafx" MODIFIED="1587912970100" TEXT=""/>
 </node>
 </node>
 <node CREATED="1584842230232" ID="ID_1666087264" MODIFIED="1584842233213" POSITION="left" TEXT="Links">

@@ -19,6 +19,7 @@ import org.sergeys.cookbook.ui.RecipeTreeValue.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -36,13 +37,13 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.effect.BlurType;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class MainController {
 
@@ -206,8 +207,15 @@ public class MainController {
         mainBorderPane.setEffect(new BoxBlur());
 
         Parent p = mainBorderPane.getParent();
-        Node n = p.lookup("#progressPane");
-        n.setVisible(true);
+        Node progress = p.lookup("#paneProgress");
+        Node glass = p.lookup("#paneGlass");
+
+        FadeTransition ft = new FadeTransition(Duration.millis(500), glass);
+        ft.setFromValue(0);
+        ft.setToValue(0.5);
+
+        progress.setVisible(true);
+        ft.play();
     }
 
 

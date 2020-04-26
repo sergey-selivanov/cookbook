@@ -1,5 +1,3 @@
-
-
 call gradlew.bat clean installdist
 
 : delete empty jars to fix jlink issue when modular

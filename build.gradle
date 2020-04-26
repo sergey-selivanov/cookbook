@@ -5,18 +5,20 @@
         gradle -Preckon.stage=final -Preckon.scope=minor reckonTagPush
         gradle -Preckon.stage=final -Preckon.scope=major reckonTagPush
 
+    To properly substitute options, invoke specifying target environment: -PenvironmentName=env
+
 */
 
 plugins {
     id 'application'
     id 'eclipse'
     id 'org.openjfx.javafxplugin' version '0.0.8'
-    id 'org.beryx.jlink' version '2.17.7'
+    //id 'org.beryx.jlink' version '2.17.7'
+    id 'org.beryx.runtime' version '1.8.1'  // non modular
 
     //id 'com.github.spotbugs' version '4.0.5'
-    //id 'ru.vyarus.quality' version '4.1.0'
 
-//    id 'net.saliman.properties' version '1.5.1'
+    id 'net.saliman.properties' version '1.5.1'
     id 'com.github.ben-manes.versions' version '0.28.0'
     id 'org.ajoberstar.reckon' version '0.12.0'
 }
@@ -73,7 +75,8 @@ javafx {
     configuration = 'compile'
 }
 
-mainClassName = "$moduleName/org.sergeys.cookbook.ui.CookBook"
+//mainClassName = "$moduleName/org.sergeys.cookbook.ui.CookBook"    // module
+mainClassName = 'org.sergeys.cookbook.ui.CookBook'
 
 // http://andresalmiray.com/customize-jar-manifest-entries-with-maven-gradle/
 // https://stackoverflow.com/questions/22659463/add-classpath-in-manifest-using-gradle
@@ -108,6 +111,8 @@ eclipse {
 }
 */
 
+// non modular
+/*
 // https://discuss.gradle.org/t/how-to-set-the-module-path-project-jigsaw-for-eclipse-projects-via-gradle/26801/3
 eclipse {
     classpath {
@@ -129,7 +134,7 @@ eclipse {
 //        downloadJavadoc = true
     }
 }
-
+*/
 boolean isLibrary(entry) { return entry.properties.kind.equals('lib') }
 boolean isTestScope(entry) { return entry.entryAttributes.get('gradle_used_by_scope').equals('test'); }
 boolean isModule(entry) { isLibrary(entry) && !isTestScope(entry); }
@@ -139,6 +144,7 @@ boolean isSource(entry) { return entry.properties.kind.equals('src'); }
 // Execute: ./gradlew suggestMergedModuleInfo
 // Remove the lines contaning provides clauses and put the resulting mergedModule configuration in your jlink block.
 
+/*
 jlink {
     options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages'] // --bind-services ?
     launcher {
@@ -153,6 +159,45 @@ jlink {
         //uses 'java.sql.Driver'
         //provides 'java.sql.Driver' with 'org.hsqldb.jdbc.JDBCDriver'
 //    }
+}
+*/
+
+// generate windows version
+//def winversion = "0.0.0.0" // is not compatible with MSI rules [0.0.4.0]
+def winversion = '0.0.0'
+def versionComponents = version.toString().split('\\.', 3)
+def patchComponents = versionComponents[2].split('\\D', 2)
+/*if(patchComponents.length == 1){
+    winversion = versionComponents[0] + "." + versionComponents[1] + "." + patchComponents[0] + "." + bnn
+}
+else if(patchComponents.length == 2){
+    winversion = versionComponents[0] + "." + versionComponents[1] + "." + patchComponents[0] + ".0"
+}*/
+winversion = versionComponents[0] + "." + versionComponents[1] + "." + patchComponents[0]
+println "win version: " + winversion
+
+runtime {
+    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages',
+        '--strip-native-commands'   // undocumented?
+    ]
+//    modules = ['java.sql', 'java.desktop', 'java.xml', 'java.net.http'] // auto suggested by plugin
+
+    jpackage {
+        //appVersion = '0.0.4'
+        appVersion = winversion
+        mainClass = 'org.sergeys.cookbook.ui.CookBookLauncher'
+
+        imageName = 'CookBook'
+        imageOptions = ['--icon', 'src/main/resources/images/amor.ico']
+
+        installerName = 'CookBook'
+        installerType = 'exe' // no --icon
+        installerOptions = [
+            '--win-menu', '--win-shortcut', '--win-dir-chooser',
+            '--win-menu-group', '"CookBook"',
+            '--vendor', '"Sergey Selivanov"'
+            ]
+    }
 }
 
 def isNonStable = { String version ->

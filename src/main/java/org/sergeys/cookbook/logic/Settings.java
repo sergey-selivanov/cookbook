@@ -31,7 +31,7 @@ public class Settings {
     private static String recipeLibraryPath;
 
     private Properties resources = new Properties();
-    private Dimension winPosition = new Dimension();
+    private Dimension winPosition = new Dimension();	// TODO replace with something different from awt
     private Dimension winSize = new Dimension();
     private double winDividerPosition = 0;
     private String lastFilechooserLocation = "";
@@ -44,7 +44,8 @@ public class Settings {
     private static Logger log;
 
     static{
-        settingsDirPath = System.getProperty("user.home") + File.separator + SETTINGS_PATH;
+        //settingsDirPath = System.getProperty("user.home") + File.separator + SETTINGS_PATH;
+        settingsDirPath = "i:/tmp" + File.separator + SETTINGS_PATH;
         settingsFilePath = settingsDirPath + File.separator + SETTINGS_FILE;
         recipeLibraryPath = settingsDirPath + File.separator + RECIPES_SUBDIR;
 

@@ -41,11 +41,6 @@ public class CookBook extends Application
         Object o = fxmlLoader.load();
         Pane root = (Pane)o;
 
-
-//        Panel panel = new Panel("bootstrap panel");
-//        panel.getStyleClass().add("panel-primary");
-//        panel.setBody(root);
-
         final MainController controller = (MainController)fxmlLoader.getController();
         Scene scene = new Scene(root);
         //Scene scene = new Scene(panel);
@@ -80,18 +75,14 @@ public class CookBook extends Application
         URL location = getClass().getResource("/fxml/MainScene.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader(location);
 
-        Object o = fxmlLoader.load();
-        Pane mainPane = (Pane)o;
+        Pane mainPane = (Pane)fxmlLoader.load();
         final MainController mainController = (MainController)fxmlLoader.getController();
 
         //fxmlLoader.setLocation(getClass().getResource("/fxml/ProgressPane.fxml"));
         fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ProgressPane.fxml"));
-        o = fxmlLoader.load();
-        Pane progressPane = (Pane)o;
+        Pane progressPane = (Pane)fxmlLoader.load();
 
         root.getChildren().addAll(mainPane, progressPane);
-
-
         progressPane.setVisible(false);
 
         Scene scene = new Scene(root);
@@ -113,7 +104,6 @@ public class CookBook extends Application
             public void run() {
                 mainController.setDivider();
             }});
-
     }
 
     @Override
