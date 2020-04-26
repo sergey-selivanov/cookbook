@@ -1,5 +1,6 @@
 package org.sergeys.cookbook.ui;
 
+import java.io.IOException;
 import java.net.URL;
 
 import org.sergeys.cookbook.logic.Settings;
@@ -12,6 +13,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class CookBook extends Application
@@ -31,12 +33,7 @@ public class CookBook extends Application
         launch(args);
     }
 
-    @Override
-    public void start(Stage stage) throws Exception {
-        log.debug("start");
-
-        this.primaryStage = stage;
-
+    private void startOld() throws IOException {
         URL location = getClass().getResource("/fxml/MainScene.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader(location);
 
@@ -74,6 +71,59 @@ public class CookBook extends Application
             public void run() {
                 controller.setDivider();
             }});
+
+    }
+
+    private void startTransparent() throws IOException {
+        Pane root = new StackPane();
+
+        URL location = getClass().getResource("/fxml/MainScene.fxml");
+        FXMLLoader fxmlLoader = new FXMLLoader(location);
+
+        Object o = fxmlLoader.load();
+        Pane mainPane = (Pane)o;
+        final MainController mainController = (MainController)fxmlLoader.getController();
+
+        //fxmlLoader.setLocation(getClass().getResource("/fxml/ProgressPane.fxml"));
+        fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ProgressPane.fxml"));
+        o = fxmlLoader.load();
+        Pane progressPane = (Pane)o;
+
+        root.getChildren().addAll(mainPane, progressPane);
+
+
+        progressPane.setVisible(false);
+
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add("org/kordamp/bootstrapfx/bootstrapfx.css"); // https://github.com/kordamp/bootstrapfx
+        primaryStage.setScene(scene);
+
+        primaryStage.setTitle("CookBook");
+        primaryStage.getIcons().add(new Image(CookBook.class.getResourceAsStream("/images/amor.png")));
+
+        primaryStage.setX(Settings.getInstance().getWinPosition().getWidth());
+        primaryStage.setY(Settings.getInstance().getWinPosition().getHeight());
+        primaryStage.setWidth(Settings.getInstance().getWinSize().getWidth());
+        primaryStage.setHeight(Settings.getInstance().getWinSize().getHeight());
+
+        primaryStage.show();
+
+        Platform.runLater(new Runnable(){
+            @Override
+            public void run() {
+                mainController.setDivider();
+            }});
+
+    }
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        log.debug("start");
+
+        this.primaryStage = stage;
+
+        //startOld();
+        startTransparent();
     }
 
     @Override

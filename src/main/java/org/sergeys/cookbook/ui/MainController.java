@@ -27,6 +27,8 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
@@ -34,6 +36,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.effect.BlurType;
+import javafx.scene.effect.BoxBlur;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
@@ -197,6 +201,13 @@ public class MainController {
     }
 
     public void onMenuItemAbout(ActionEvent e){
+        log.debug("about");
+
+        mainBorderPane.setEffect(new BoxBlur());
+
+        Parent p = mainBorderPane.getParent();
+        Node n = p.lookup("#progressPane");
+        n.setVisible(true);
     }
 
 
