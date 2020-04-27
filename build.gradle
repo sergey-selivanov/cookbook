@@ -7,6 +7,10 @@
 
     To properly substitute options, invoke specifying target environment: -PenvironmentName=env
 
+    To make jpackage, specify -PinstallerType=type : exe rpm deb pkg
+        dmg only works on desktop
+        msi available?
+
 */
 
 plugins {
@@ -190,39 +194,38 @@ runtime {
         mainClass = 'org.sergeys.cookbook.ui.CookBookLauncher'
 
         imageName = 'CookBook'
+        installerName = 'CookBook'
+        installerOptions = [
+            '--vendor', 'Sergey Selivanov', // '"Sergey Selivanov"',
+            '--verbose'
+        ]
+        installerType = project.ext.installerType
+
         //imageOptions = ['--icon', 'src/main/resources/images/amor.ico']
         if (org.gradle.internal.os.OperatingSystem.current().windows) {
             appVersion = winversion
             imageOptions += ['--icon', 'src/main/resources/images/amor.ico']
-        }
-        if (org.gradle.internal.os.OperatingSystem.current().macOsX) {
-            imageOptions += ['--icon', 'src/main/resources/images/amor.icns']
-        }
-        if (org.gradle.internal.os.OperatingSystem.current().linux) {
-            imageOptions += ['--icon', 'src/main/resources/images/amor.png']
-        }
-
-        installerName = 'CookBook'
-        //installerType = 'exe' // no --icon
-        installerOptions = [
-            '--vendor', '"Sergey Selivanov"',
-            '--verbose'
-            ]
-
-        if (org.gradle.internal.os.OperatingSystem.current().windows) {
-            installerType = 'exe'
+            //installerType = 'exe'
             installerOptions += [
                 '--win-menu', '--win-shortcut', '--win-dir-chooser',
                 '--win-menu-group', '"CookBook"'
             ]
         }
-        if (org.gradle.internal.os.OperatingSystem.current().linux) {
-            //installerType = 'deb'
-            installerOptions += ['--linux-shortcut', '--linux-menu-group', 'Other']
-        }
         if (org.gradle.internal.os.OperatingSystem.current().macOsX) {
-            installerType = 'pkg'   // dmg fails in remote jenkins build
-            //installerOptions += ['--win-per-user-install', '--win-dir-chooser', '--win-menu']
+            imageOptions += ['--icon', 'src/main/resources/images/amor.icns']
+            //installerType = 'pkg'   // dmg fails in remote jenkins build
+        }
+        if (org.gradle.internal.os.OperatingSystem.current().linux) {
+            appVersion = winversion // rpm: illegal char - in version
+            //installerType = project.ext.installerType
+            imageOptions += ['--icon', 'src/main/resources/images/amor.png']
+            installerOptions += [
+                '--linux-shortcut', '--linux-menu-group', 'Other'
+            ]
+
+            //if(project.ext.installerType == 'rpm'){
+                //installerOptions += ['--icon', 'src/main/resources/images/amor.png'] // not allowed
+            //}
         }
     }
 }
