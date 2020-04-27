@@ -118,6 +118,13 @@
 <node CREATED="1584842323660" ID="ID_1566718536" LINK="https://jsoup.org/cookbook/introduction/parsing-a-document" MODIFIED="1584842373104" TEXT="https://jsoup.org/cookbook/introduction/parsing-a-document"/>
 <node CREATED="1584844571104" ID="ID_1065359523" LINK="https://www.favicon-generator.org/" MODIFIED="1584844584211" TEXT="https://www.favicon-generator.org/"/>
 <node CREATED="1587992481945" ID="ID_1867695618" LINK="https://openjfx.io/" MODIFIED="1587992481945" TEXT="https://openjfx.io/"/>
+<node CREATED="1588007246872" ID="ID_855997294" MODIFIED="1588007254817" TEXT="graphics generators">
+<node CREATED="1588003894134" ID="ID_1395078384" LINK="https://iconsflow.com/editor" MODIFIED="1588003894134" TEXT="https://iconsflow.com/editor"/>
+<node CREATED="1588007242907" ID="ID_386229137" LINK="https://logohub.io/" MODIFIED="1588007242907" TEXT="https://logohub.io/"/>
+<node CREATED="1588007389846" LINK="https://favicon.io/" MODIFIED="1588007389846" TEXT="https://favicon.io/"/>
+<node CREATED="1588007736445" ID="ID_94965805" LINK="https://ecard.enter-media.org/icon-generator/?PAGEN_1=18" MODIFIED="1588007736445" TEXT="https://ecard.enter-media.org/icon-generator/?PAGEN_1=18"/>
+<node CREATED="1588008948151" LINK="https://android-material-icon-generator.bitdroid.de/" MODIFIED="1588008948151" TEXT="https://android-material-icon-generator.bitdroid.de/"/>
+</node>
 </node>
 </node>
 </map>
