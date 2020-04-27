@@ -1,38 +1,61 @@
 pipeline{
-    agent any
+    agent none
     parameters {
-        string(name: 'TARGETS', defaultValue: 'exe', description: 'exe deb rpm dmg')
+        string(name: 'TARGETS', defaultValue: 'exe', description: 'exe deb rpm pkg')
     }
     options{
         buildDiscarder(logRotator(numToKeepStr: '10'))
     }
     stages{
-        stage('win'){
-            agent { label 'wix' }
-            when{ expression { "${params.TARGETS}".contains('exe') } }
-            steps{
-                checkout scm
 
-                script{
-                    //bat 'c:/bin/jdk-custom-env jdk && gradlew clean distZip jpackage'
-                    bat 'c:/bin/jdk-custom-env jdk && gradlew -PenvironmentName=some -PtargetPlatform=some distZip jpackage'
+        stage('parallel'){
+
+
+        parallel{
+
+
+            stage('win'){
+                when{
+                    beforeAgent true
+                    expression { "${params.TARGETS}".contains('exe') }
                 }
+                agent { label 'wix' }
 
-                archiveArtifacts '**/build/distributions/*.zip, **/build/jpackage/*.exe'
+                steps{
+                    checkout scm
+
+    // run witn builduser logged in, and run 'gradlew jpackage' manually first, or wix will fail
+                    script{
+                        //bat 'c:/bin/jdk-custom-env jdk && gradlew clean distZip jpackage'
+                        // -PenvironmentName=some
+                        bat 'c:/bin/jdk-custom-env jdk && c:/bin/jpackage-env && gradlew -PtargetPlatform=some clean distZip jpackage'
+                    }
+
+                    archiveArtifacts '**/build/distributions/*.zip, **/build/jpackage/*.exe'
+                }
             }
+
+            stage('mac'){
+                when{
+                    beforeAgent true
+                    expression { "${params.TARGETS}".contains('pkg') }
+                }
+                agent { label 'macos' }
+
+                steps{
+                    checkout scm
+
+    //-PenvironmentName=some
+                    script{
+                        sh 'sh gradlew -PtargetPlatform=some clean jpackage'
+                    }
+
+                    archiveArtifacts '**/build/jpackage/*.pkg'
+                }
+            }
+
         }
-        stage('dmg'){
-            agent { label 'macos' }
-            when{ expression { "${params.TARGETS}".contains('dmg') } }
-            steps{
-                checkout scm
 
-                script{
-                    sh 'gradlew -PenvironmentName=some -PtargetPlatform=some jpackage'
-                }
-
-                archiveArtifacts '**/build/jpackage/*.dmg'
-            }
         }
     }
 
