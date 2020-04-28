@@ -118,6 +118,14 @@
 <node CREATED="1584842323660" ID="ID_1566718536" LINK="https://jsoup.org/cookbook/introduction/parsing-a-document" MODIFIED="1584842373104" TEXT="https://jsoup.org/cookbook/introduction/parsing-a-document"/>
 <node CREATED="1584844571104" ID="ID_1065359523" LINK="https://www.favicon-generator.org/" MODIFIED="1584844584211" TEXT="https://www.favicon-generator.org/"/>
 <node CREATED="1587992481945" ID="ID_1867695618" LINK="https://openjfx.io/" MODIFIED="1587992481945" TEXT="https://openjfx.io/"/>
+<node CREATED="1588094835509" ID="ID_601883027" MODIFIED="1588094839599" TEXT="plugins">
+<node CREATED="1588094884096" ID="ID_536228597" LINK="https://badass-runtime-plugin.beryx.org/releases/latest/" MODIFIED="1588094884096" TEXT="https://badass-runtime-plugin.beryx.org/releases/latest/">
+<node CREATED="1588094908152" LINK="https://github.com/beryx/badass-runtime-plugin" MODIFIED="1588094908152" TEXT="https://github.com/beryx/badass-runtime-plugin"/>
+</node>
+<node CREATED="1588094995374" ID="ID_1323863827" LINK="https://spotbugs.readthedocs.io/en/stable/gradle.html" MODIFIED="1588094995374" TEXT="https://spotbugs.readthedocs.io/en/stable/gradle.html">
+<node CREATED="1588095008866" LINK="https://github.com/spotbugs/spotbugs-gradle-plugin" MODIFIED="1588095008866" TEXT="https://github.com/spotbugs/spotbugs-gradle-plugin"/>
+</node>
+</node>
 <node CREATED="1588007246872" ID="ID_855997294" MODIFIED="1588007254817" TEXT="graphics generators">
 <node CREATED="1588003894134" ID="ID_1395078384" LINK="https://iconsflow.com/editor" MODIFIED="1588003894134" TEXT="https://iconsflow.com/editor"/>
 <node CREATED="1588007242907" ID="ID_386229137" LINK="https://logohub.io/" MODIFIED="1588007242907" TEXT="https://logohub.io/"/>
