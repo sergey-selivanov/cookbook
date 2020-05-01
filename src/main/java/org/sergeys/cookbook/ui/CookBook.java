@@ -54,10 +54,15 @@ public class CookBook extends Application
 
         // http://stackoverflow.com/questions/15041332/javafx-splitpane-divider-position-inconsistent-behaviour
 
-        primaryStage.setX(Settings.getInstance().getWinPosition().getWidth());
-        primaryStage.setY(Settings.getInstance().getWinPosition().getHeight());
-        primaryStage.setWidth(Settings.getInstance().getWinSize().getWidth());
-        primaryStage.setHeight(Settings.getInstance().getWinSize().getHeight());
+//        primaryStage.setX(Settings.getInstance().getWinPosition().getWidth());
+//        primaryStage.setY(Settings.getInstance().getWinPosition().getHeight());
+//        primaryStage.setWidth(Settings.getInstance().getWinSize().getWidth());
+//        primaryStage.setHeight(Settings.getInstance().getWinSize().getHeight());
+
+        primaryStage.setX(Settings.getInstance().getWindowPosition().getX());
+        primaryStage.setY(Settings.getInstance().getWindowPosition().getY());
+        primaryStage.setWidth(Settings.getInstance().getWindowPosition().getWidth());
+        primaryStage.setHeight(Settings.getInstance().getWindowPosition().getHeight());
 
         primaryStage.show();
 
@@ -92,10 +97,10 @@ public class CookBook extends Application
         primaryStage.setTitle("CookBook");
         primaryStage.getIcons().add(new Image(CookBook.class.getResourceAsStream("/images/amor.png")));
 
-        primaryStage.setX(Settings.getInstance().getWinPosition().getWidth());
-        primaryStage.setY(Settings.getInstance().getWinPosition().getHeight());
-        primaryStage.setWidth(Settings.getInstance().getWinSize().getWidth());
-        primaryStage.setHeight(Settings.getInstance().getWinSize().getHeight());
+        primaryStage.setX(Settings.getInstance().getWindowPosition().getX());
+        primaryStage.setY(Settings.getInstance().getWindowPosition().getY());
+        primaryStage.setWidth(Settings.getInstance().getWindowPosition().getWidth());
+        primaryStage.setHeight(Settings.getInstance().getWindowPosition().getHeight());
 
         primaryStage.show();
 

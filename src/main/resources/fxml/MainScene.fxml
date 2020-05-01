@@ -15,6 +15,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.web.WebView?>
 
@@ -40,7 +41,18 @@
 <center><SplitPane fx:id="splitPane" dividerPositions="0.15481986368062317" focusTraversable="true" prefHeight="160.0" prefWidth="200.0" styleClass="wood-texture" BorderPane.alignment="CENTER">
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-<children><TreeView fx:id="tree" layoutX="-12.5" layoutY="86.5" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+<children>
+                  <VBox maxHeight="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <HBox>
+                           <children>
+                              <TextField maxWidth="1.7976931348623157E308" opacity="0.75" promptText="Filter.." HBox.hgrow="ALWAYS" />
+                              <Button mnemonicParsing="false" opacity="0.5" text="X" />
+                           </children>
+                        </HBox>
+                        <TreeView fx:id="tree" maxHeight="1.7976931348623157E308" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                     </children>
+                  </VBox>
 </children>
                <opaqueInsets>
                   <Insets />
@@ -55,10 +67,10 @@
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
-<children><TextField fx:id="title" promptText="Title..." GridPane.columnIndex="1">
+<children><TextField fx:id="title" opacity="0.75" promptText="Title..." GridPane.columnIndex="1">
                            <font>
                               <Font size="14.0" />
-                           </font></TextField><TextArea fx:id="tags" prefHeight="300.0" prefWidth="200.0" promptText="Tags, comma separated..." GridPane.columnIndex="1" GridPane.rowIndex="1" /><HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="2.0" GridPane.columnIndex="2">
+                           </font></TextField><TextArea fx:id="tags" opacity="0.75" prefHeight="300.0" prefWidth="200.0" promptText="Tags, comma separated..." GridPane.columnIndex="1" GridPane.rowIndex="1" /><HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="2.0" GridPane.columnIndex="2">
 <children><Button mnemonicParsing="false" styleClass="buttonSave" /><Button mnemonicParsing="false" styleClass="buttonCancel" />
 </children>
                            <GridPane.margin>

@@ -1,6 +1,6 @@
 package org.sergeys.cookbook.logic;
 
-import java.awt.Dimension;
+//import java.awt.Dimension;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.BufferedOutputStream;
@@ -21,6 +21,55 @@ import javafx.application.Platform;
 
 public class Settings {
 
+    public class WindowPosition{
+        private double x;
+        private double y;
+        private double width;
+        private double height;
+
+        public WindowPosition() {}
+
+        public void setValues(double x, double y, double width, double height) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+        }
+
+        public double getX() {
+            return x;
+        }
+
+        public void setX(double x) {
+            this.x = x;
+        }
+
+        public double getY() {
+            return y;
+        }
+
+        public void setY(double y) {
+            this.y = y;
+        }
+
+        public double getWidth() {
+            return width;
+        }
+
+        public void setWidth(double width) {
+            this.width = width;
+        }
+
+        public double getHeight() {
+            return height;
+        }
+
+        public void setHeight(double height) {
+            this.height = height;
+        }
+
+    }
+
     public static final String SETTINGS_PATH = ".CookBook3-devel-tmp";
     public static final String SETTINGS_FILE = "settings.xml";
     public static final String LOG_FILE = "log.txt";
@@ -31,8 +80,11 @@ public class Settings {
     private static String recipeLibraryPath;
 
     private Properties resources = new Properties();
-    private Dimension winPosition = new Dimension();	// TODO replace with something different from awt
-    private Dimension winSize = new Dimension();
+    //private Dimension winPosition = new Dimension();	// replace with something different from awt
+    //private Dimension winSize = new Dimension();
+
+    private WindowPosition windowPosition = new WindowPosition();
+
     private double winDividerPosition = 0;
     private String lastFilechooserLocation = "";
     private Date savedVersion = new Date(0);
@@ -203,10 +255,8 @@ public class Settings {
         }
     }
 
-
     private void setDefaults() {
-        winSize.setSize(800.0, 600.0);
-        winPosition.setSize(50.0, 50.0);
+        windowPosition.setValues(50.0, 50.0, 800.0, 600.0);
     }
 
     public Date getCurrentVersion(){
@@ -240,22 +290,6 @@ public class Settings {
         return resources;
     }
 
-    public Dimension getWinPosition() {
-        return winPosition;
-    }
-
-    public void setWinPosition(Dimension winPosition) {
-        this.winPosition = winPosition;
-    }
-
-    public Dimension getWinSize() {
-        return winSize;
-    }
-
-    public void setWinSize(Dimension winSize) {
-        this.winSize = winSize;
-    }
-
     public double getWinDividerPosition() {
         return winDividerPosition;
     }
@@ -270,5 +304,13 @@ public class Settings {
 
     public void setLastFilechooserLocation(String lastFilechooserLocation) {
         this.lastFilechooserLocation = lastFilechooserLocation;
+    }
+
+    public WindowPosition getWindowPosition() {
+        return windowPosition;
+    }
+
+    public void setWindowPosition(WindowPosition windowPosition) {
+        this.windowPosition = windowPosition;
     }
 }

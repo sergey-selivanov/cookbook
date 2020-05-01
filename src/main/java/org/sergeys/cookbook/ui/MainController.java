@@ -175,8 +175,11 @@ public class MainController {
 
             Stage myStage = (Stage) mainBorderPane.getScene().getWindow();
 
-            Settings.getInstance().getWinPosition().setSize(myStage.getX(), myStage.getY());
-            Settings.getInstance().getWinSize().setSize(myStage.getWidth(), myStage.getHeight());
+//            Settings.getInstance().getWinPosition().setSize(myStage.getX(), myStage.getY());
+//            Settings.getInstance().getWinSize().setSize(myStage.getWidth(), myStage.getHeight());
+
+            Settings.getInstance().getWindowPosition().setValues(myStage.getX(), myStage.getY(),
+                    myStage.getWidth(), myStage.getHeight());
 
             Settings.save();
 
