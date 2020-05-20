@@ -32,8 +32,23 @@
 </node>
 </node>
 </node>
+<node CREATED="1588673909860" ID="ID_1160705164" MODIFIED="1588673927092" TEXT="about box">
+<arrowlink DESTINATION="ID_1793013010" ENDARROW="Default" ENDINCLINATION="124;0;" ID="Arrow_ID_1798381807" STARTARROW="None" STARTINCLINATION="124;0;"/>
 </node>
-<node CREATED="1587889072372" ID="ID_1793013010" MODIFIED="1587889101373" TEXT="include version and build info properties"/>
+</node>
+<node CREATED="1587889072372" ID="ID_1793013010" MODIFIED="1588673927091" TEXT="include version and build info properties">
+<linktarget COLOR="#b0b0b0" DESTINATION="ID_1793013010" ENDARROW="Default" ENDINCLINATION="124;0;" ID="Arrow_ID_1798381807" SOURCE="ID_1160705164" STARTARROW="None" STARTINCLINATION="124;0;"/>
+</node>
+<node CREATED="1587912869757" ID="ID_1707158386" MODIFIED="1587912892099" TEXT="splash screen, preloader, background unpack">
+<node CREATED="1587912914420" ID="ID_802295243" LINK="https://www.genuinecoder.com/javafx-splash-screen-loading-screen/" MODIFIED="1587912931867" TEXT=""/>
+<node CREATED="1587912954761" ID="ID_387067235" LINK="https://stackoverflow.com/questions/14972199/how-to-create-splash-screen-with-transparent-background-in-javafx" MODIFIED="1587912970100" TEXT=""/>
+</node>
+<node CREATED="1588495795366" ID="ID_30108608" MODIFIED="1588495803525" TEXT="filter/search tree">
+<node CREATED="1588495958494" ID="ID_1193273347" LINK="http://www.kware.net/?p=204" MODIFIED="1588495958494" TEXT="kware.net &gt;  ? ..."/>
+<node CREATED="1588495987113" LINK="https://github.com/eclipse-efx/efxclipse-rt/blob/3.x/modules/ui/org.eclipse.fx.ui.controls/src/main/java/org/eclipse/fx/ui/controls/tree/FilterableTreeItem.java" MODIFIED="1588495987113" TEXT="https://github.com/eclipse-efx/efxclipse-rt/blob/3.x/modules/ui/org.eclipse.fx.ui.controls/src/main/java/org/eclipse/fx/ui/controls/tree/FilterableTreeItem.java"/>
+<node CREATED="1588496010546" ID="ID_1661471804" LINK="https://stackoverflow.com/questions/15897936/javafx-2-treeview-filtering" MODIFIED="1588496010546" TEXT="https://stackoverflow.com/questions/15897936/javafx-2-treeview-filtering"/>
+<node CREATED="1588496074996" ID="ID_1018405357" MODIFIED="1588496097265" TEXT="highlight search text in displayed entries"/>
+</node>
 <node CREATED="1587992651707" ID="ID_872089590" MODIFIED="1587993132906" TEXT="context menu on tree items">
 <node CREATED="1587992900425" ID="ID_651284208" MODIFIED="1587992914166" TEXT="mark/highlight selected"/>
 <node CREATED="1587992667882" ID="ID_1259101360" MODIFIED="1587992992425" TEXT="select/deselect item"/>
@@ -79,9 +94,17 @@
 <arrowlink DESTINATION="ID_1077488781" ENDARROW="Default" ENDINCLINATION="135;0;" ID="Arrow_ID_1689615997" STARTARROW="None" STARTINCLINATION="135;0;"/>
 <arrowlink DESTINATION="ID_1420041225" ENDARROW="Default" ENDINCLINATION="293;0;" ID="Arrow_ID_1426341861" STARTARROW="None" STARTINCLINATION="293;0;"/>
 </node>
-<node CREATED="1587912869757" ID="ID_1707158386" MODIFIED="1587912892099" TEXT="splash screen, preloader, background unpack">
-<node CREATED="1587912914420" ID="ID_802295243" LINK="https://www.genuinecoder.com/javafx-splash-screen-loading-screen/" MODIFIED="1587912931867" TEXT=""/>
-<node CREATED="1587912954761" ID="ID_387067235" LINK="https://stackoverflow.com/questions/14972199/how-to-create-splash-screen-with-transparent-background-in-javafx" MODIFIED="1587912970100" TEXT=""/>
+<node CREATED="1588683091824" ID="ID_440068730" MODIFIED="1588683094221" TEXT="future">
+<node CREATED="1588495804485" ID="ID_1929401398" MODIFIED="1588495816408" TEXT="search on displayed page">
+<node CREATED="1588496074996" ID="ID_1741644906" MODIFIED="1588496097265" TEXT="highlight search text in displayed entries"/>
+</node>
+<node CREATED="1588495829586" ID="ID_1529372462" MODIFIED="1588495834412" TEXT="txt recipes"/>
+<node CREATED="1588495838714" FOLDED="true" ID="ID_1913058961" MODIFIED="1588683129777" TEXT="rtf, odt libreoffice documents?">
+<node CREATED="1588669128563" ID="ID_1068202240" LINK="https://stackoverflow.com/questions/28573275/how-to-read-rtf-file-and-display-in-javafx" MODIFIED="1588669128563" TEXT="https://stackoverflow.com/questions/28573275/how-to-read-rtf-file-and-display-in-javafx"/>
+<node CREATED="1588668926158" ID="ID_571689194" LINK="https://github.com/FXMisc/RichTextFX" MODIFIED="1588668926158" TEXT="https://github.com/FXMisc/RichTextFX"/>
+<node CREATED="1588669094217" ID="ID_782777125" LINK="https://github.com/joniles/rtfparserkit" MODIFIED="1588669094217" TEXT="https://github.com/joniles/rtfparserkit"/>
+<node CREATED="1588669576314" LINK="https://wiki.openjdk.java.net/display/OpenJFX/Rich+Text+API+Samples" MODIFIED="1588669576314" TEXT="https://wiki.openjdk.java.net/display/OpenJFX/Rich+Text+API+Samples"/>
+</node>
 </node>
 <node CREATED="1587992085494" FOLDED="true" ID="ID_863144707" MODIFIED="1587993188022" TEXT="Old todo">
 <node CREATED="1587992110635" MODIFIED="1587992110635" TEXT="- context menu for recipe, selection of recipes and branch"/>
@@ -120,7 +143,7 @@
 <node CREATED="1587992481945" ID="ID_1867695618" LINK="https://openjfx.io/" MODIFIED="1587992481945" TEXT="https://openjfx.io/"/>
 <node CREATED="1588094835509" ID="ID_601883027" MODIFIED="1588094839599" TEXT="plugins">
 <node CREATED="1588094884096" ID="ID_536228597" LINK="https://badass-runtime-plugin.beryx.org/releases/latest/" MODIFIED="1588094884096" TEXT="https://badass-runtime-plugin.beryx.org/releases/latest/">
-<node CREATED="1588094908152" LINK="https://github.com/beryx/badass-runtime-plugin" MODIFIED="1588094908152" TEXT="https://github.com/beryx/badass-runtime-plugin"/>
+<node CREATED="1588094908152" ID="ID_136654783" LINK="https://github.com/beryx/badass-runtime-plugin" MODIFIED="1588094908152" TEXT="https://github.com/beryx/badass-runtime-plugin"/>
 </node>
 <node CREATED="1588094995374" ID="ID_1323863827" LINK="https://spotbugs.readthedocs.io/en/stable/gradle.html" MODIFIED="1588094995374" TEXT="https://spotbugs.readthedocs.io/en/stable/gradle.html">
 <node CREATED="1588095008866" LINK="https://github.com/spotbugs/spotbugs-gradle-plugin" MODIFIED="1588095008866" TEXT="https://github.com/spotbugs/spotbugs-gradle-plugin"/>
@@ -131,7 +154,15 @@
 <node CREATED="1588007242907" ID="ID_386229137" LINK="https://logohub.io/" MODIFIED="1588007242907" TEXT="https://logohub.io/"/>
 <node CREATED="1588007389846" LINK="https://favicon.io/" MODIFIED="1588007389846" TEXT="https://favicon.io/"/>
 <node CREATED="1588007736445" ID="ID_94965805" LINK="https://ecard.enter-media.org/icon-generator/?PAGEN_1=18" MODIFIED="1588007736445" TEXT="https://ecard.enter-media.org/icon-generator/?PAGEN_1=18"/>
-<node CREATED="1588008948151" LINK="https://android-material-icon-generator.bitdroid.de/" MODIFIED="1588008948151" TEXT="https://android-material-icon-generator.bitdroid.de/"/>
+<node CREATED="1588008948151" ID="ID_1124528059" LINK="https://android-material-icon-generator.bitdroid.de/" MODIFIED="1588008948151" TEXT="https://android-material-icon-generator.bitdroid.de/"/>
+<node CREATED="1588674441184" ID="ID_1076857472" MODIFIED="1588674446985" TEXT="brand/logo">
+<node CREATED="1588675208757" ID="ID_961574892" MODIFIED="1588675210652" TEXT="list">
+<node CREATED="1588674913795" ID="ID_1692767402" LINK="https://www.producthunt.com/e/create-logos" MODIFIED="1588674913795" TEXT="https://www.producthunt.com/e/create-logos"/>
+<node CREATED="1588675195872" ID="ID_179516461" LINK="https://www.oberlo.com/blog/online-logo-maker-free" MODIFIED="1588675195872" TEXT="https://www.oberlo.com/blog/online-logo-maker-free"/>
+</node>
+<node CREATED="1588674529524" ID="ID_1242451155" LINK="https://www.logopony.com/" MODIFIED="1588674529524" TEXT="https://www.logopony.com/"/>
+<node CREATED="1588674953581" ID="ID_1213765582" LINK="https://looka.com/" MODIFIED="1588674953581" TEXT="https://looka.com/"/>
+</node>
 </node>
 </node>
 </node>
