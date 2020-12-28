@@ -87,6 +87,7 @@
 <icon BUILTIN="button_ok"/>
 </node>
 </node>
+<node CREATED="1609194366274" ID="ID_1580511782" MODIFIED="1609194386438" TEXT="replace h2 to hsqldb for modular build"/>
 <node CREATED="1584843045443" ID="ID_562658722" MODIFIED="1587789324142" TEXT="use hibernate"/>
 <node CREATED="1584843066257" ID="ID_45678986" MODIFIED="1587789321086" TEXT="use flywaydb"/>
 <node CREATED="1587890600355" ID="ID_1173560764" MODIFIED="1587890644808" TEXT="use spotbugs and checkstyle, pmd"/>
