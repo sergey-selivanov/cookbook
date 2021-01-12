@@ -3,7 +3,7 @@ call gradlew.bat clean installdist
 : delete empty jars to fix jlink issue when modular
 
 : set FXVERSION=15-ea+4
-set FXVERSION=14.0.1
+set FXVERSION=15.0.1
 
 pushd build\install\cookbook\lib
 : del ^
@@ -23,7 +23,11 @@ echo ===%MAINJAR%===
 
 set PATH=%PATH%;c:\bin\wix311-binaries
 
-: nonmodular
+: goto modular
+goto nonmodular
+
+
+:nonmodular
 
 : --main-class org.sergeys.cookbook.ui.CookBookLauncher
 
@@ -46,6 +50,9 @@ jpackage ^
 goto end
 
 : modular, fails because of h2
+: log4j-slf4j-impl-2.14.0.jar, Error: automatic module cannot be used with jlink
+
+:modular
 
 jpackage ^
 --module-path build/install/cookbook/lib ^

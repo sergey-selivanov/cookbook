@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.h2.tools.RunScript;
+//import org.h2.tools.RunScript;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +72,7 @@ public final class Database {
         return connection;
     }
 
+/*
     private void upgrade() throws SQLException, IOException
     {
         Statement st = null;
@@ -111,7 +112,9 @@ public final class Database {
             }
         }
     }
+*/
 
+/*
     // TODO use flyway?
     //private void upgradeOrCreateIfNeeded() throws Exception {
     public void upgradeOrCreateIfNeeded() throws Exception {
@@ -147,6 +150,7 @@ public final class Database {
             conn.close();
         }
     }
+*/
 
     public boolean isRecipeExists(String hash){
         try {

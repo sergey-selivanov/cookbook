@@ -17,8 +17,8 @@ plugins {
     id 'application'
     id 'eclipse'
     id 'org.openjfx.javafxplugin' version '0.0.9'
-    //id 'org.beryx.jlink' version '2.17.7' // modular
-    id 'org.beryx.runtime' version '1.12.1'  // non modular
+    id 'org.beryx.jlink' version '2.23.1' // modular
+    //id 'org.beryx.runtime' version '1.12.1'  // non modular
 
     id 'com.github.spotbugs' version '4.6.0'
     id 'checkstyle'
@@ -35,11 +35,24 @@ repositories {
 }
 
 dependencies {
-    compile 'com.h2database:h2:1.4.200'
-    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.14.0'
+
+    // modular: https://github.com/h2database/h2database/issues/1415
+    //compile 'com.h2database:h2:1.4.200' // TODO runtime and then load via URLClassLoader
+    runtimeOnly 'com.h2database:h2:1.4.200'
+
+    //compile 'org.slf4j:slf4j-api:1.7.30'  // module not found?
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    runtimeOnly 'org.apache.logging.log4j:log4j-slf4j-impl:2.14.0'
+    runtimeOnly 'org.apache.logging.log4j:log4j-core:2.14.0'
+    compile 'org.apache.logging.log4j:log4j-api:2.14.0' // TODO ?
+
+
 
     compile 'org.kordamp.bootstrapfx:bootstrapfx-core:0.4.0'
-    compile group: 'org.jsoup', name: 'jsoup', version: '1.13.1'
+    // runtimeOnly?
+    //runtimeOnly 'org.kordamp.bootstrapfx:bootstrapfx-core:0.4.0'
+
+    compile 'org.jsoup:jsoup:1.13.1'
 
 //    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.12.Final'
 //    compile group: 'org.flywaydb', name: 'flyway-core', version: '6.3.1'
@@ -82,8 +95,10 @@ javafx {
     configuration = 'compile'
 }
 
-//mainClassName = "$moduleName/org.sergeys.cookbook.ui.CookBook"    // module
-mainClassName = 'org.sergeys.cookbook.ui.CookBook'
+modularity.disableEffectiveArgumentsAdjustment()
+
+mainClassName = "$moduleName/org.sergeys.cookbook.ui.CookBook"    // module
+//mainClassName = 'org.sergeys.cookbook.ui.CookBook'
 
 // http://andresalmiray.com/customize-jar-manifest-entries-with-maven-gradle/
 // https://stackoverflow.com/questions/22659463/add-classpath-in-manifest-using-gradle
@@ -119,7 +134,7 @@ eclipse {
 */
 
 // non modular
-/*
+
 // https://discuss.gradle.org/t/how-to-set-the-module-path-project-jigsaw-for-eclipse-projects-via-gradle/26801/3
 eclipse {
     classpath {
@@ -141,7 +156,7 @@ eclipse {
 //        downloadJavadoc = true
     }
 }
-*/
+
 boolean isLibrary(entry) { return entry.properties.kind.equals('lib') }
 boolean isTestScope(entry) { return entry.entryAttributes.get('gradle_used_by_scope').equals('test'); }
 boolean isModule(entry) { isLibrary(entry) && !isTestScope(entry); }
@@ -151,13 +166,13 @@ boolean isSource(entry) { return entry.properties.kind.equals('src'); }
 // Execute: ./gradlew suggestMergedModuleInfo
 // Remove the lines contaning provides clauses and put the resulting mergedModule configuration in your jlink block.
 
-/*
+
 jlink {
     options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages'] // --bind-services ?
     launcher {
         name = 'cookbook'
     }
-//    forceMerge('log4j-api') // https://github.com/beryx/badass-jlink-plugin/issues/14
+    forceMerge('log4j-api') // https://github.com/beryx/badass-jlink-plugin/issues/14
 
 //    mergedModule {
 //        additive = true
@@ -167,7 +182,7 @@ jlink {
         //provides 'java.sql.Driver' with 'org.hsqldb.jdbc.JDBCDriver'
 //    }
 }
-*/
+
 
 // generate windows version
 //def winversion = "0.0.0.0" // is not compatible with MSI rules [0.0.4.0]
@@ -185,6 +200,7 @@ println "win version: " + winversion
 
 //println "os: " + org.gradle.internal.os.OperatingSystem.current().getDisplayName()
 
+/*
 runtime {
     options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages',
         '--strip-native-commands'   // undocumented?
@@ -232,6 +248,7 @@ runtime {
         }
     }
 }
+*/
 
 def isNonStable = { String version ->
     def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }

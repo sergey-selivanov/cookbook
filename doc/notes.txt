@@ -1,0 +1,7 @@
+gradle 6.5.1 required:
+
+Run task fails with org.joor.ReflectException: java.lang.NoSuchFieldException: javaExecHandleBuilder
+https://github.com/java9-modularity/gradle-modules-plugin/issues/169
+
+https://github.com/java9-modularity/gradle-modules-plugin/issues/165
+"The workaround modularity.disableEffectiveArgumentsAdjustment() worked with gradle 6.7 and also the openjfx plugin"

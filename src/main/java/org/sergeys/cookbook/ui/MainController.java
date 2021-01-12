@@ -80,7 +80,9 @@ public class MainController {
         // TODO call in background
         try {
             //Database db = new Database();
-            db.upgradeOrCreateIfNeeded();
+// TODO do flyway
+log.error(">>> TODO upgradeOrCreateIfNeeded database here");
+//            db.upgradeOrCreateIfNeeded();
             //db.close();
         } catch (Exception ex) {
             log.error("", ex);
