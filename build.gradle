@@ -8,8 +8,9 @@
     To properly substitute options, invoke specifying target environment: -PenvironmentName=env
 
     To make jpackage, specify -PinstallerType=type : exe rpm deb pkg
-        dmg only works on desktop
-        msi available?
+        ? dmg only works on desktop
+        exe is default on win, wix required in the path for both exe and msi
+        gradlew jpackage -PinstallerType=msi -i
 
 */
 
@@ -104,6 +105,7 @@ mainClassName = 'org.sergeys.cookbook.ui.CookBook' // non modular and now also m
 
 // http://andresalmiray.com/customize-jar-manifest-entries-with-maven-gradle/
 // https://stackoverflow.com/questions/22659463/add-classpath-in-manifest-using-gradle
+// TODO needed?
 jar {
     manifest {
         attributes(
@@ -134,8 +136,6 @@ eclipse {
     }
 }
 */
-
-// non modular
 
 // https://discuss.gradle.org/t/how-to-set-the-module-path-project-jigsaw-for-eclipse-projects-via-gradle/26801/3
 eclipse {
@@ -168,10 +168,14 @@ boolean isSource(entry) { return entry.properties.kind.equals('src'); }
 // Execute: ./gradlew suggestMergedModuleInfo
 // Remove the lines contaning provides clauses and put the resulting mergedModule configuration in your jlink block.
 
+//def winver1 = version.toString().replaceAll('-dev.*', '.10113')
+def winver1 = version.toString().replaceAll('-dev.*', '') // jpackage allows up to 3 ver components
+println "win version: " + winver1
+// TODO for dev, make like Y.MM.DD
 
 jlink {
     //options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages'] // --bind-services ?
-    options = ['--compress', '2', '--no-header-files', '--no-man-pages']
+    options = ['--compress', '2', '--no-header-files', '--no-man-pages', '--strip-native-commands']
     launcher {
         name = 'cookbook'
     }
@@ -189,6 +193,37 @@ jlink {
     jpackage {
         installerType = project.ext.installerType
 
+        // different imageName and installerName give error, files not found
+
+        //imageName = 'CookBook-img' // '"CookBook img"' no spaces on win
+        //installerName = 'CookBook-inst' // no spaces on win
+
+        imageName = 'Cook Book' // '"CookBook img"' no spaces on win
+        installerName = 'Cook Book' // no spaces on win
+
+        installerOptions = [
+            //'--vendor', '"Sergey Selivanov"', // no spaces on win, "" does not help
+            //'--vendor', '\\"Sergey Selivanov\\"',
+            '--vendor', 'Sergey Selivanov',
+            '--verbose'
+        ]
+
+        if (org.gradle.internal.os.OperatingSystem.current().windows) {
+            appVersion = winver1
+
+            //imageOptions += ['--icon', 'src/main/resources/images/amor.ico']
+            icon = "${project.projectDir}/src/main/resources/images/amor.ico"
+
+            installerOptions += [
+                // saves generated wix files
+                // TODO customize wizard images?
+                '--temp',"${buildDir}/temp", // ? https://github.com/beryx/badass-runtime-plugin/issues/71
+
+                '--win-menu', '--win-shortcut', '--win-dir-chooser',
+                //'--win-menu-group', '"CookBook"'
+                '--win-menu-group', 'Cook Book'
+            ]
+        }
         if (org.gradle.internal.os.OperatingSystem.current().linux) {
             //appVersion = winversion // rpm: illegal char - in version
 
@@ -211,21 +246,6 @@ jlink {
     }
 }
 
-//println "icon: " + "${project.projectDir}/src/main/resources/images/amor.png"
-
-// generate windows version
-//def winversion = "0.0.0.0" // is not compatible with MSI rules [0.0.4.0]
-def winversion = '0.0.0'
-def versionComponents = version.toString().split('\\.', 3)
-def patchComponents = versionComponents[2].split('\\D', 2)
-/*if(patchComponents.length == 1){
-    winversion = versionComponents[0] + "." + versionComponents[1] + "." + patchComponents[0] + "." + bnn
-}
-else if(patchComponents.length == 2){
-    winversion = versionComponents[0] + "." + versionComponents[1] + "." + patchComponents[0] + ".0"
-}*/
-winversion = versionComponents[0] + "." + versionComponents[1] + "." + patchComponents[0]
-println "win version: " + winversion
 
 //println "os: " + org.gradle.internal.os.OperatingSystem.current().getDisplayName()
 

@@ -19,6 +19,7 @@
 <node CREATED="1587789554078" ID="ID_701394392" MODIFIED="1587889020278" TEXT="app icon and titile in the window">
 <icon BUILTIN="button_ok"/>
 </node>
+<node CREATED="1610538397437" ID="ID_1672359442" MODIFIED="1610538432597" TEXT="preloader, show something on slow app start"/>
 <node CREATED="1584921987568" ID="ID_1417423787" MODIFIED="1584922013760" TEXT="indicate wait and progress on import"/>
 <node CREATED="1587789185264" ID="ID_1449283039" MODIFIED="1587789196583" TEXT="modern ui, burger menu etc">
 <node CREATED="1587992571089" ID="ID_892413157" LINK="https://github.com/HanSolo/tilesfx" MODIFIED="1587992571089" TEXT="https://github.com/HanSolo/tilesfx">
@@ -69,23 +70,26 @@
 <node CREATED="1587992890660" ID="ID_1931263064" MODIFIED="1587992896266" TEXT="with ctrl+click"/>
 <node CREATED="1587992974310" ID="ID_366670796" MODIFIED="1587993132906" TEXT="via context menu"/>
 </node>
-<node CREATED="1587992218526" ID="ID_1095631101" MODIFIED="1587992248675" TEXT="open other db file, compare, import missing recipes"/>
+<node CREATED="1587992218526" ID="ID_1095631101" MODIFIED="1587992248675" TEXT="open other db file, compare, import missing recipes">
+<node CREATED="1610531640961" ID="ID_379453734" MODIFIED="1610531666442" TEXT="separate maintenance tool?">
+<node CREATED="1610531669897" ID="ID_643591498" MODIFIED="1610531738047" TEXT="timestamp bookmarks: remove recipes added after, for example"/>
+<node CREATED="1610531859362" ID="ID_1562788940" MODIFIED="1610531893512" TEXT="backup whole db file, just make a file copy, disconnected"/>
+</node>
+<node CREATED="1587992218526" ID="ID_421196255" MODIFIED="1610531835460" TEXT="show compared statistics"/>
+</node>
 <node CREATED="1587789209593" ID="ID_1077488781" MODIFIED="1587789437251" TEXT="copy recipes to other db file">
 <linktarget COLOR="#b0b0b0" DESTINATION="ID_1077488781" ENDARROW="Default" ENDINCLINATION="135;0;" ID="Arrow_ID_1689615997" SOURCE="ID_1676780731" STARTARROW="None" STARTINCLINATION="135;0;"/>
 </node>
-<node CREATED="1584842918172" FOLDED="true" ID="ID_1539987114" MODIFIED="1587992409765" TEXT="generate installers">
-<icon BUILTIN="button_ok"/>
-<node CREATED="1587914076985" ID="ID_1319999710" MODIFIED="1587919809913" TEXT="non-modular packaging because of h2">
-<icon BUILTIN="button_ok"/>
+<node CREATED="1584842918172" ID="ID_1539987114" MODIFIED="1610538447428" TEXT="generate installers">
+<node CREATED="1587914076985" ID="ID_1319999710" MODIFIED="1610538493212" TEXT="non-modular packaging because of h2">
+<icon BUILTIN="help"/>
 <node CREATED="1587914151598" ID="ID_1265877550" LINK="https://badass-jlink-plugin.beryx.org/releases/latest/" MODIFIED="1587914169579" TEXT="jlink plugin"/>
 <node CREATED="1587914179377" ID="ID_1016000389" LINK="https://badass-runtime-plugin.beryx.org/releases/latest/" MODIFIED="1587914188890" TEXT="runtime plugin"/>
 </node>
-<node CREATED="1587919788557" ID="ID_91779121" MODIFIED="1587992394129" TEXT="platform specifics">
-<icon BUILTIN="button_ok"/>
-</node>
-<node CREATED="1587890060365" ID="ID_1345057078" MODIFIED="1587992394128" TEXT="jenkins build">
-<icon BUILTIN="button_ok"/>
-</node>
+<node CREATED="1610538505625" ID="ID_1103569502" MODIFIED="1610538511906" TEXT="remove .bat file"/>
+<node CREATED="1610538463053" ID="ID_95238576" MODIFIED="1610538473003" TEXT="modular packaging"/>
+<node CREATED="1587919788557" ID="ID_91779121" MODIFIED="1610538457769" TEXT="platform specifics"/>
+<node CREATED="1587890060365" ID="ID_1345057078" MODIFIED="1610538453538" TEXT="jenkins build"/>
 </node>
 <node CREATED="1609194366274" ID="ID_1580511782" MODIFIED="1609194386438" TEXT="replace h2 to hsqldb for modular build"/>
 <node CREATED="1584843045443" ID="ID_562658722" MODIFIED="1587789324142" TEXT="use hibernate"/>
@@ -107,7 +111,7 @@
 <node CREATED="1588669576314" LINK="https://wiki.openjdk.java.net/display/OpenJFX/Rich+Text+API+Samples" MODIFIED="1588669576314" TEXT="https://wiki.openjdk.java.net/display/OpenJFX/Rich+Text+API+Samples"/>
 </node>
 </node>
-<node CREATED="1587992085494" FOLDED="true" ID="ID_863144707" MODIFIED="1587993188022" TEXT="Old todo">
+<node CREATED="1587992085494" FOLDED="true" ID="ID_863144707" MODIFIED="1610538482551" TEXT="Old todo">
 <node CREATED="1587992110635" MODIFIED="1587992110635" TEXT="- context menu for recipe, selection of recipes and branch"/>
 <node CREATED="1587992110637" MODIFIED="1587992110637" TEXT="- export recipe, export branch to dir"/>
 <node CREATED="1587992110637" MODIFIED="1587992110637" TEXT="- &quot;like&quot; or &quot;heart&quot; button to set favorite; button to unset favorite"/>

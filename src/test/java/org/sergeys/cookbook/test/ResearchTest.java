@@ -1,0 +1,20 @@
+package org.sergeys.cookbook.test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
+
+class ResearchTest {
+
+    @Test
+    void testWinVersion() {
+        String ver = "0.0.5-dev.0.11+20210113T101703Z";
+        String fix = ver.replaceAll("-dev.*", ".10113");
+        System.out.println(fix);
+
+        ver = "0.0.6";
+        fix = ver.replaceAll("-dev.*", ".10113");
+        System.out.println(fix);
+    }
+
+}
