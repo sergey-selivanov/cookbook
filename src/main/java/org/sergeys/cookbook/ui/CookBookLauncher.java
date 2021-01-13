@@ -1,5 +1,8 @@
 package org.sergeys.cookbook.ui;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  *
  *	Launcher to use in "executable jar"
@@ -16,7 +19,11 @@ package org.sergeys.cookbook.ui;
  */
 public class CookBookLauncher {
 
+    private static Logger log;
+
     public static void main(String[] args) {
+        log = LoggerFactory.getLogger(CookBookLauncher.class);
+        log.debug("main");
         CookBook.main(args);
     }
 

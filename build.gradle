@@ -11,6 +11,7 @@
         ? dmg only works on desktop
         exe is default on win, wix required in the path for both exe and msi
         gradlew jpackage -PinstallerType=msi -i
+        gradlew jpackage -PinstallerType=deb -i
 
 */
 
@@ -233,7 +234,8 @@ jlink {
 
 
             installerOptions += [
-                '--resource-dir', "build/jpackage/cookbook/lib", // required for icon: https://github.com/beryx/badass-jlink-plugin/issues/148
+                // TODO use imageName
+                '--resource-dir', "build/jpackage/Cook Book/lib", // required for icon: https://github.com/beryx/badass-jlink-plugin/issues/148
                 '--linux-shortcut', '--linux-menu-group', 'Other'
             ]
 
