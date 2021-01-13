@@ -3,6 +3,7 @@ package org.sergeys.cookbook.ui;
 import java.io.IOException;
 import java.net.URL;
 
+import org.kordamp.bootstrapfx.BootstrapFX;
 import org.sergeys.cookbook.logic.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,8 @@ public class CookBook extends Application
         final MainController controller = (MainController)fxmlLoader.getController();
         Scene scene = new Scene(root);
         //Scene scene = new Scene(panel);
-        scene.getStylesheets().add("org/kordamp/bootstrapfx/bootstrapfx.css"); // https://github.com/kordamp/bootstrapfx
+        //scene.getStylesheets().add("org/kordamp/bootstrapfx/bootstrapfx.css"); // https://github.com/kordamp/bootstrapfx
+        scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
         primaryStage.setScene(scene);
         //primaryStage.sizeToScene();
 //        controller.myInit(primaryStage);
@@ -91,7 +93,8 @@ public class CookBook extends Application
         progressPane.setVisible(false);
 
         Scene scene = new Scene(root);
-        scene.getStylesheets().add("org/kordamp/bootstrapfx/bootstrapfx.css"); // https://github.com/kordamp/bootstrapfx
+        //scene.getStylesheets().add("org/kordamp/bootstrapfx/bootstrapfx.css"); // https://github.com/kordamp/bootstrapfx
+        scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
         primaryStage.setScene(scene);
 
         primaryStage.setTitle("CookBook");

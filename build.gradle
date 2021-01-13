@@ -97,8 +97,10 @@ javafx {
 
 modularity.disableEffectiveArgumentsAdjustment()
 
-mainClassName = "$moduleName/org.sergeys.cookbook.ui.CookBook"    // module
-//mainClassName = 'org.sergeys.cookbook.ui.CookBook'
+//mainClassName = "$moduleName/org.sergeys.cookbook.ui.CookBook"    // module
+
+application.mainModule = 'cookbook'
+mainClassName = 'org.sergeys.cookbook.ui.CookBook' // non modular and now also modular
 
 // http://andresalmiray.com/customize-jar-manifest-entries-with-maven-gradle/
 // https://stackoverflow.com/questions/22659463/add-classpath-in-manifest-using-gradle
@@ -168,10 +170,12 @@ boolean isSource(entry) { return entry.properties.kind.equals('src'); }
 
 
 jlink {
-    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages'] // --bind-services ?
+    //options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages'] // --bind-services ?
+    options = ['--compress', '2', '--no-header-files', '--no-man-pages']
     launcher {
         name = 'cookbook'
     }
+
     forceMerge('log4j-api') // https://github.com/beryx/badass-jlink-plugin/issues/14
 
 //    mergedModule {
@@ -181,8 +185,33 @@ jlink {
         //uses 'java.sql.Driver'
         //provides 'java.sql.Driver' with 'org.hsqldb.jdbc.JDBCDriver'
 //    }
+
+    jpackage {
+        installerType = project.ext.installerType
+
+        if (org.gradle.internal.os.OperatingSystem.current().linux) {
+            //appVersion = winversion // rpm: illegal char - in version
+
+            //imageOptions += ['--icon', 'src/main/resources/images/amor.png']
+            icon = "${project.projectDir}/src/main/resources/images/amor.png"
+            //imageOptions = ['--icon', "${project.projectDir}/src/main/resources/images/amor.png"]
+
+
+            installerOptions += [
+                '--resource-dir', "build/jpackage/cookbook/lib", // required for icon: https://github.com/beryx/badass-jlink-plugin/issues/148
+                '--linux-shortcut', '--linux-menu-group', 'Other'
+            ]
+
+//            installerOptions += ['--icon', 'src/main/resources/images/amor.png'] // not valid for deb
+
+            //if(project.ext.installerType == 'rpm'){
+                //installerOptions += ['--icon', 'src/main/resources/images/amor.png'] // not allowed
+            //}
+        }
+    }
 }
 
+//println "icon: " + "${project.projectDir}/src/main/resources/images/amor.png"
 
 // generate windows version
 //def winversion = "0.0.0.0" // is not compatible with MSI rules [0.0.4.0]

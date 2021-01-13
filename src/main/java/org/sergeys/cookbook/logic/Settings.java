@@ -1,6 +1,5 @@
 package org.sergeys.cookbook.logic;
 
-//import java.awt.Dimension;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.BufferedOutputStream;
@@ -96,8 +95,8 @@ public class Settings {
     private static Logger log;
 
     static{
-        //settingsDirPath = System.getProperty("user.home") + File.separator + SETTINGS_PATH;
-        settingsDirPath = "i:/tmp" + File.separator + SETTINGS_PATH;
+        settingsDirPath = System.getProperty("user.home") + File.separator + SETTINGS_PATH;
+        //settingsDirPath = "i:/tmp" + File.separator + SETTINGS_PATH;
         settingsFilePath = settingsDirPath + File.separator + SETTINGS_FILE;
         recipeLibraryPath = settingsDirPath + File.separator + RECIPES_SUBDIR;
 
