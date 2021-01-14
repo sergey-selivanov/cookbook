@@ -256,7 +256,7 @@ class JsoupTest {
             // adjust relative references and copy referenced files
 
             //String newName = "sample-output1";
-            String baseOutputDir = Settings.getSettingsDirPath();
+            String baseOutputDir = Settings.getDataDirPath();
 
             //String targetSubdirName = baseOutputDir + File.separator + newName;
             String targetMainFile = baseOutputDir + File.separator + newName + ".html";

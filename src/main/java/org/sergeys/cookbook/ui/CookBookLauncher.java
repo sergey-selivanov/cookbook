@@ -1,5 +1,6 @@
 package org.sergeys.cookbook.ui;
 
+import org.sergeys.cookbook.logic.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,9 @@ import org.slf4j.LoggerFactory;
 public class CookBookLauncher {
 
     private static Logger log;
+    static {
+        Settings.getDataDirPath(); // this initializes System.setProperty("log4j.log.file"
+    }
 
     public static void main(String[] args) {
         log = LoggerFactory.getLogger(CookBookLauncher.class);

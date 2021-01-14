@@ -69,24 +69,22 @@ public class Settings {
 
     }
 
-    public static final String SETTINGS_PATH = ".CookBook3-devel-tmp";
+    public static final String SETTINGS_PATH = ".CookBook";
     public static final String SETTINGS_FILE = "settings.xml";
     public static final String LOG_FILE = "log.txt";
     public static final String RECIPES_SUBDIR = "recipes";
 
-    private static String settingsDirPath;
+    private static String dataDirPath;
     private static String settingsFilePath;
     private static String recipeLibraryPath;
 
-    private Properties resources = new Properties();
-    //private Dimension winPosition = new Dimension();	// replace with something different from awt
-    //private Dimension winSize = new Dimension();
+    private Properties options = new Properties();
+    private Properties version = new Properties();
 
     private WindowPosition windowPosition = new WindowPosition();
 
     private double winDividerPosition = 0;
     private String lastFilechooserLocation = "";
-    private Date savedVersion = new Date(0);
 
     private static Settings instance = new Settings();
     //private static ExecutorService executor = Executors.newCachedThreadPool();
@@ -95,12 +93,31 @@ public class Settings {
     private static Logger log;
 
     static{
-        settingsDirPath = System.getProperty("user.home") + File.separator + SETTINGS_PATH;
-        //settingsDirPath = "i:/tmp" + File.separator + SETTINGS_PATH;
-        settingsFilePath = settingsDirPath + File.separator + SETTINGS_FILE;
-        recipeLibraryPath = settingsDirPath + File.separator + RECIPES_SUBDIR;
 
-        File dir = new File(settingsDirPath);
+        try(InputStream is = Settings.class.getResourceAsStream("/options.properties")) {
+            instance.options.load(is);
+
+            instance.options.forEach((k, v) -> {
+                // "String replaceAll method removes backslashes in replacement string"
+                //instance.options.replace(k, v.toString().replaceFirst("\\{\\{HOME_DIR\\}\\}", System.getProperty("user.home")));
+                instance.options.replace(k, v.toString().replace("{{HOME_DIR}}", System.getProperty("user.home")));
+            });
+
+        }
+        catch(Exception e) {
+            //log.error("failed to load properties, exit", e);
+            System.err.println("failed to load properties, exit");
+            e.printStackTrace();
+            Platform.exit();
+        }
+
+        //settingsDirPath = System.getProperty("user.home") + File.separator + SETTINGS_PATH;
+        dataDirPath = instance.options.getProperty("data.directory.base") + File.separator + SETTINGS_PATH;
+
+        settingsFilePath = dataDirPath + File.separator + SETTINGS_FILE;
+        recipeLibraryPath = dataDirPath + File.separator + RECIPES_SUBDIR;
+
+        File dir = new File(dataDirPath);
         if(!dir.exists()){
             dir.mkdirs();
         }
@@ -113,10 +130,12 @@ public class Settings {
         // settings for log4j
         //extractResource("log4j.properties", false);
         //System.setProperty("log4j.configuration", new File(settingsDirPath + File.separator + "log4j.properties").toURI().toString());
-        System.setProperty("log4j.log.file", settingsDirPath + File.separator + LOG_FILE);
+        System.setProperty("log4j.log.file", dataDirPath + File.separator + LOG_FILE);
 
         // slf4j logging
         log = LoggerFactory.getLogger("cookbook");
+
+        log.debug("data dir: " + dataDirPath);
 
         load();
     }
@@ -130,12 +149,17 @@ public class Settings {
         return instance;
     }
 
-    public static String getSettingsDirPath() {
-        return settingsDirPath;
+
+    public static String getDataDirPath() {
+        return dataDirPath;
     }
 
-    public static void setSettingsDirPath(String settingsDirPath) {
-        Settings.settingsDirPath = settingsDirPath;
+    public Properties getOptions() {
+        return options;
+    }
+
+    public Properties getVersion() {
+        return version;
     }
 
     public static String getRecipeLibraryPath() {
@@ -143,9 +167,6 @@ public class Settings {
     }
 
     public static void save() throws FileNotFoundException{
-
-        instance.savedVersion = instance.getCurrentVersion();
-
         XMLEncoder e;
 
         synchronized (instance) {
@@ -175,25 +196,17 @@ public class Settings {
             instance = (Settings)decoder.readObject();
             decoder.close();
         }
-        else{
+        else {
             instance.setDefaults();
         }
 
-        InputStream is = Settings.class.getResourceAsStream("/settings.properties");
-        try {
-            instance.resources.load(is);
-        } catch (Exception e) {
+        //InputStream is = Settings.class.getResourceAsStream("/version.properties");
+        try(InputStream is = Settings.class.getResourceAsStream("/version.properties")) {
+            instance.version.load(is);
+        }
+        catch(Exception e) {
             log.error("failed to load properties, exit", e);
             Platform.exit();
-        }
-        finally{
-            try {
-                if(is != null){
-                    is.close();
-                }
-            } catch (IOException e) {
-                log.error("", e);
-            }
         }
 
     }
@@ -224,7 +237,7 @@ public class Settings {
      */
     private static void extractResource(String filename, boolean overwrite){
 
-        String targetfile = settingsDirPath + File.separator + filename;
+        String targetfile = dataDirPath + File.separator + filename;
 
         try{
 
@@ -258,36 +271,36 @@ public class Settings {
         windowPosition.setValues(50.0, 50.0, 800.0, 600.0);
     }
 
-    public Date getCurrentVersion(){
+//    public Date getCurrentVersion(){
+//
+//        String ver = resources.getProperty("version", "");
+//
+//        String[] tokens = ver.split("-");
+//
+//        Calendar cal = Calendar.getInstance();
+//        cal.setTimeInMillis(0);
+//        cal.set(Integer.valueOf(tokens[0]),
+//                Integer.valueOf(tokens[1]) - 1,    // month is 0 bazed
+//                Integer.valueOf(tokens[2]),
+//                Integer.valueOf(tokens[3]),
+//                Integer.valueOf(tokens[4]));
+//        Date date = cal.getTime();
+//
+//        return date;
+//    }
 
-        String ver = resources.getProperty("version", "");
+//    public Date getSavedVersion() {
+//        return savedVersion;
+//    }
 
-        String[] tokens = ver.split("-");
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(0);
-        cal.set(Integer.valueOf(tokens[0]),
-                Integer.valueOf(tokens[1]) - 1,    // month is 0 bazed
-                Integer.valueOf(tokens[2]),
-                Integer.valueOf(tokens[3]),
-                Integer.valueOf(tokens[4]));
-        Date date = cal.getTime();
-
-        return date;
-    }
-
-    public Date getSavedVersion() {
-        return savedVersion;
-    }
-
-    // required for xml serializer to work
-    public void setSavedVersion(Date savedVersion) {
-        this.savedVersion = savedVersion;
-    }
-
-    public Properties getResources(){
-        return resources;
-    }
+//    // required for xml serializer to work
+//    public void setSavedVersion(Date savedVersion) {
+//        this.savedVersion = savedVersion;
+//    }
+//
+//    public Properties getResources(){
+//        return resources;
+//    }
 
     public double getWinDividerPosition() {
         return winDividerPosition;

@@ -88,10 +88,18 @@
 </node>
 <node CREATED="1610538505625" ID="ID_1103569502" MODIFIED="1610538511906" TEXT="remove .bat file"/>
 <node CREATED="1610538463053" ID="ID_95238576" MODIFIED="1610538473003" TEXT="modular packaging"/>
-<node CREATED="1587919788557" ID="ID_91779121" MODIFIED="1610538457769" TEXT="platform specifics"/>
+<node CREATED="1587919788557" ID="ID_91779121" MODIFIED="1610538457769" TEXT="platform specifics">
+<node CREATED="1610565175343" ID="ID_1530564613" LINK="https://stackoverflow.com/questions/48713061/how-do-you-change-the-red-cd-icon-on-wix" MODIFIED="1610565203955" TEXT="customize wix wizard"/>
+<node CREATED="1610565911786" ID="ID_1714022827" LINK="https://wixtoolset.org//documentation/manual/v3/wixui/wixui_customizations.html" MODIFIED="1610565940855" TEXT="wix docs: custom bitmaps"/>
+</node>
 <node CREATED="1587890060365" ID="ID_1345057078" MODIFIED="1610538453538" TEXT="jenkins build"/>
 </node>
-<node CREATED="1609194366274" ID="ID_1580511782" MODIFIED="1609194386438" TEXT="replace h2 to hsqldb for modular build"/>
+<node CREATED="1609194366274" ID="ID_1580511782" MODIFIED="1610581295352" TEXT="replace h2 to hsqldb for modular build">
+<icon BUILTIN="button_cancel"/>
+</node>
+<node CREATED="1610581304228" ID="ID_277576879" MODIFIED="1610581316193" TEXT="use try with resources">
+<node CREATED="1610581316840" ID="ID_1621623329" MODIFIED="1610581323176" TEXT="at least for streams"/>
+</node>
 <node CREATED="1584843045443" ID="ID_562658722" MODIFIED="1587789324142" TEXT="use hibernate"/>
 <node CREATED="1584843066257" ID="ID_45678986" MODIFIED="1587789321086" TEXT="use flywaydb"/>
 <node CREATED="1587890600355" ID="ID_1173560764" MODIFIED="1587890644808" TEXT="use spotbugs and checkstyle, pmd"/>

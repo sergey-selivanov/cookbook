@@ -2,6 +2,7 @@ package org.sergeys.cookbook.ui;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Properties;
 
 import org.kordamp.bootstrapfx.BootstrapFX;
 import org.sergeys.cookbook.logic.Settings;
@@ -25,12 +26,23 @@ public class CookBook extends Application
     private Stage primaryStage;
 
     static {
-        Settings.getSettingsDirPath(); // this initializes System.setProperty("log4j.log.file"
+        Settings.getDataDirPath(); // this initializes System.setProperty("log4j.log.file"
     }
 
     public static void main(String[] args) {
         log = LoggerFactory.getLogger(CookBook.class);
-        log.debug("main");
+
+        Properties version = Settings.getInstance().getVersion();
+
+        log.info("=================================================================");
+        log.info("CookBook " + version.getProperty("version", "unknown version"));
+        log.info("rev      " + version.getProperty("git.commit", "unknown") + " " + version.getProperty("git.date", ""));
+        log.info("built    " + version.getProperty("build.date", " at unknown date"));
+        log.info("built by " + version.getProperty("build.host", "- host unknown"));
+        log.info("build number " + version.getProperty("hudson.build.number", "unknown"));
+        log.info(System.getProperty("java.vm.name") + " " + System.getProperty("java.runtime.version") + " " + System.getProperty("java.home"));
+        log.info("-----------------------------------------------------------------");
+
         launch(args);
     }
 
