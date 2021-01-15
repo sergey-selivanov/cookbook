@@ -5,8 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -15,19 +15,35 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.ErrorCode;
+import org.flywaydb.core.api.configuration.FluentConfiguration;
+import org.flywaydb.core.api.output.ValidateOutput;
+import org.flywaydb.core.api.output.ValidateResult;
 
 //import org.h2.tools.RunScript;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class Database {
     private static final String FILENAME = "cookbook";
+    private static final String LOGIN = "sa";
+    private static final String PASSWD = "sa";
 
     //private static Object instanceLock = new Object();
     //private static Database instance;
 
-    private final Logger log = LoggerFactory.getLogger(Database.class);
+    // TODO static vs nonstatic Logger?
+    private final static Logger log = LoggerFactory.getLogger(Database.class);
+
+    private Connection connection;
+
+    private static final String connectionUrl = String.format("jdbc:h2:%s/%s;TRACE_LEVEL_FILE=4", Settings.getDataDirPath(), Database.FILENAME).replace('\\', '/');
 
     public Database()
     {
@@ -45,17 +61,119 @@ public final class Database {
 //        return instance;
 //    }
 
+    /**
+     *	Validate and migrate with flywaydb, create if does not exist
+     * @throws CookbookException
+     */
+    public static void validate() throws CookbookException {
+
+        // check if db file exists
+        String baseFilename = Settings.getDataDirPath() + File.separator + FILENAME;
+        if(Files.exists(Path.of(baseFilename + ".mv.db"))
+                || Files.exists(Path.of(baseFilename + ".h2.db"))) {
+
+            // TODO use DataSource?
+            FluentConfiguration config = Flyway.configure()
+                    .dataSource(connectionUrl, LOGIN, PASSWD)
+                    .installedBy("cookbook");
+
+            Flyway flyway = config.load();
+
+            // check if old database needs baselining
+            ValidateResult validateResult = flyway.validateWithResult();
+            if(!validateResult.validationSuccessful) {
+                log.error(validateResult.errorDetails.errorMessage);
+
+                if(!validateResult.invalidMigrations.isEmpty()) {
+                    ValidateOutput validateOutput = validateResult.invalidMigrations.get(0);
+
+                    if(validateOutput.version.equals("1.0.0")
+                            && validateOutput.errorDetails.errorCode == ErrorCode.RESOLVED_VERSIONED_MIGRATION_NOT_APPLIED) {
+
+                        try {
+                            Connection connection = DriverManager.getConnection(connectionUrl, LOGIN, PASSWD);
+                            Statement st = connection.createStatement();
+                            ResultSet rs = st.executeQuery("show tables");
+
+                            Set<String> tables = new HashSet<>();
+
+                            while(rs.next()){
+                                log.debug(rs.getString("table_name"));
+                                tables.add(rs.getString("table_name"));
+                            }
+                            st.close();
+                            connection.close();
+
+                            if(tables.isEmpty()) {
+                                log.info("schema is empty, migrate");
+                                //MigrateResult result = flyway.migrate(); // will throw on error
+                                flywayMigrate();
+                                return;
+                            }
+                            else {
+                                //tables.containsAll()
+                                tables.removeAll(Set.of("PROPERTIES", "RECIPES", "RECIPETAGS", "TAGS"));
+
+                                if(tables.isEmpty()) {
+                                    log.info("existing db looks good, baseline");
+                                    flyway = config.baselineVersion("1.0.0").load();
+                                    flyway.baseline();
+                                    return;
+                                }
+                                else {
+                                    //log.error("found extra tables");
+                                    throw new CookbookException("existing database has extra tables");
+                                }
+                            }
+                        }
+                        catch(SQLException ex) {
+                            log.error(ex.getMessage(), ex);
+                            throw new CookbookException("failed", ex);
+                        }
+                    }
+                    else {
+                        // 1st invalid migration is not 1.0.0
+                        throw new CookbookException(validateResult.errorDetails.errorMessage);
+                    }
+
+                }
+                else {
+                    // no invalid migrations
+                    throw new CookbookException(validateResult.errorDetails.errorMessage);
+                }
+            }
+            else {
+                log.debug("db validation successful");
+            }
+        }
+        else {
+            // no database file yet, just create
+            flywayMigrate();
+        }
+
+    }
+
+    private static void flywayMigrate() {
+        // TODO use DataSource?
+        FluentConfiguration config = Flyway.configure()
+                .dataSource(connectionUrl, LOGIN, PASSWD)
+                .installedBy("cookbook");
+
+        Flyway flyway = config.load();
+        //MigrateResult result = flyway.migrate(); // will throw on error
+        flyway.migrate(); // will throw on error
+    }
+
     public void close() throws SQLException {
         if(connection != null) {
             connection.close();
         }
     }
 
-    public static Database getInstance() throws SQLException {
-        throw new SQLException("not supported");
-    }
+//    public static Database getInstance() throws SQLException {
+//        throw new SQLException("not supported");
+//    }
 
-    private Connection connection;
 
     //@edu.umd.cs.findbugs.annotations.SuppressWarnings(value="DMI_CONSTANT_DB_PASSWORD", justification="I know what I'm doing")
     protected Connection getConnection() throws SQLException
@@ -63,10 +181,10 @@ public final class Database {
         if(connection == null || connection.isClosed()){
             // http://www.h2database.com/html/features.html#other_logging
             // log to slf4j
-            String url = String.format("jdbc:h2:%s/%s;TRACE_LEVEL_FILE=4", Settings.getDataDirPath(), Database.FILENAME).replace('\\', '/');
+ //           String url = String.format("jdbc:h2:%s/%s;TRACE_LEVEL_FILE=4", Settings.getDataDirPath(), Database.FILENAME).replace('\\', '/');
             //String url = String.format("jdbc:h2:%s/%s", Settings.getSettingsDirPath(), Database.FILENAME).replace('\\', '/');
             //String url = String.format("jdbc:h2:%s/%s;JMX=TRUE", Settings.getSettingsDirPath(), Database.FILENAME).replace('\\', '/');
-            connection = DriverManager.getConnection(url, "sa", "sa");
+            connection = DriverManager.getConnection(connectionUrl, LOGIN, PASSWD);
         }
 
         return connection;

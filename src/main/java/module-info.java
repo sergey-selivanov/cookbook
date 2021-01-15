@@ -10,18 +10,19 @@ module cookbook {
     requires javafx.web;	// TODO transitive?
     requires transitive javafx.graphics;
 
+    requires org.jsoup;
+    requires org.flywaydb.core;
     requires org.kordamp.bootstrapfx.core;
+//    requires com.h2database;
 
     requires slf4j.api;
     requires org.apache.logging.log4j; // 2.12
     //requires log4j.api; // 2.9.1
 
-    requires org.jsoup;
-//    requires org.kordamp.bootstrapfx.core;
-//    requires com.h2database;
-
     opens org.sergeys.cookbook.ui to javafx.fxml;
     opens org.sergeys.cookbook.logic to javafx.fxml;
+
+    opens db.migration to org.flywaydb.core;
 
     exports org.sergeys.cookbook.ui;
     exports org.sergeys.cookbook.logic;

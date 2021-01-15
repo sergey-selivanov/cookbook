@@ -81,9 +81,13 @@ public class MainController {
         try {
             //Database db = new Database();
 // TODO do flyway
-log.error(">>> TODO upgradeOrCreateIfNeeded database here");
+//log.error(">>> TODO upgradeOrCreateIfNeeded database here");
 //            db.upgradeOrCreateIfNeeded();
             //db.close();
+
+            // TODO maybe in other place, while fx ui loads?
+            Database.validate();
+
         } catch (Exception ex) {
             log.error("", ex);
         }
