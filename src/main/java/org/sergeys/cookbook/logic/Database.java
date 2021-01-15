@@ -75,9 +75,17 @@ public final class Database {
             // TODO use DataSource?
             FluentConfiguration config = Flyway.configure()
                     .dataSource(connectionUrl, LOGIN, PASSWD)
+                    //.locations("classpath:org/sergeys/cookbook/logic")
                     .installedBy("cookbook");
 
+//            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+//            //ClassLoader classLoader1 = CookBook.class.getClassLoader();
+//
+//            ClassicConfiguration config1 = new ClassicConfiguration(classLoader);
+//            config1.setDataSource(connectionUrl, LOGIN, PASSWD);
+
             Flyway flyway = config.load();
+            //Flyway flyway = new Flyway(config);
 
             // check if old database needs baselining
             ValidateResult validateResult = flyway.validateWithResult();
@@ -160,6 +168,7 @@ public final class Database {
                 .installedBy("cookbook");
 
         Flyway flyway = config.load();
+
         //MigrateResult result = flyway.migrate(); // will throw on error
         flyway.migrate(); // will throw on error
     }

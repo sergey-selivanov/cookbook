@@ -103,6 +103,11 @@
 <node CREATED="1584843045443" ID="ID_562658722" MODIFIED="1587789324142" TEXT="use hibernate"/>
 <node CREATED="1584843066257" ID="ID_45678986" MODIFIED="1587789321086" TEXT="use flywaydb">
 <node CREATED="1610665451976" ID="ID_794295993" MODIFIED="1610665468982" TEXT="only validate and migrate if app version changed"/>
+<node CREATED="1610679469805" ID="ID_1704154375" MODIFIED="1610679910462" TEXT="flyway sees but can&apos;t read sql files from module">
+<icon BUILTIN="button_ok"/>
+<node CREATED="1610679511222" ID="ID_49557647" LINK="https://www.baeldung.com/java-9-modularity" MODIFIED="1610679532143" TEXT=""/>
+<node CREATED="1610679913324" ID="ID_1284243434" MODIFIED="1610679936627" TEXT="module-info: opens db.migration;"/>
+</node>
 </node>
 <node CREATED="1587890600355" ID="ID_1173560764" MODIFIED="1587890644808" TEXT="use spotbugs and checkstyle, pmd"/>
 <node CREATED="1584896707850" ID="ID_1676780731" MODIFIED="1587993105846" TEXT="migrate h2 db to newest format if old detected">

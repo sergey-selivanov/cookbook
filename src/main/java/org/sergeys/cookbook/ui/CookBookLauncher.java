@@ -1,5 +1,7 @@
 package org.sergeys.cookbook.ui;
 
+import org.sergeys.cookbook.logic.CookbookException;
+import org.sergeys.cookbook.logic.Database;
 import org.sergeys.cookbook.logic.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,7 @@ public class CookBookLauncher {
     public static void main(String[] args) {
         log = LoggerFactory.getLogger(CookBookLauncher.class);
         log.debug("main");
+
         CookBook.main(args);
     }
 

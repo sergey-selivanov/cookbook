@@ -70,7 +70,7 @@ class DbTest {
             FluentConfiguration config = Flyway.configure()
                     .dataSource(url, "sa", "sa")
                     .installedBy("junit test")
-                    .locations("filesystem:/D:/git/cookbook/src/main/resources/db/migration")
+                    //.locations("filesystem:/D:/git/cookbook/src/main/resources/db/migration")
                     //.locations("classpath:db/migration")
 
                     ;
@@ -107,7 +107,7 @@ class DbTest {
 
                         if(tables.isEmpty()) {
                             log.info("schema is empty, migrate");
-                            MigrateResult result = flyway.migrate(); // will throw on error                                                        
+                            MigrateResult result = flyway.migrate(); // will throw on error
                         }
                         else {
 
@@ -115,7 +115,7 @@ class DbTest {
                             tables.removeAll(Set.of("PROPERTIES", "RECIPES", "RECIPETAGS", "TAGS"));
 
                             if(tables.isEmpty()) {
-                            	log.info("looks good, baseline");
+                                log.info("looks good, baseline");
                                 flyway = config.baselineVersion("1.0.0").load();
                                 //flyway = config.baselineVersion("0.0.1").load();
                                 flyway.baseline();

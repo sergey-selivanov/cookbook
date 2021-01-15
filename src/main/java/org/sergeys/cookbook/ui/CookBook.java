@@ -5,6 +5,8 @@ import java.net.URL;
 import java.util.Properties;
 
 import org.kordamp.bootstrapfx.BootstrapFX;
+import org.sergeys.cookbook.logic.CookbookException;
+import org.sergeys.cookbook.logic.Database;
 import org.sergeys.cookbook.logic.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +44,13 @@ public class CookBook extends Application
         log.info("build number " + version.getProperty("hudson.build.number", "unknown"));
         log.info(System.getProperty("java.vm.name") + " " + System.getProperty("java.runtime.version") + " " + System.getProperty("java.home"));
         log.info("-----------------------------------------------------------------");
+
+        try {
+            Database.validate();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
         launch(args);
     }

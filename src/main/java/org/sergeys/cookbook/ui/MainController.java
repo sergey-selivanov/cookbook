@@ -86,7 +86,7 @@ public class MainController {
             //db.close();
 
             // TODO maybe in other place, while fx ui loads?
-            Database.validate();
+            //Database.validate();
 
         } catch (Exception ex) {
             log.error("", ex);
