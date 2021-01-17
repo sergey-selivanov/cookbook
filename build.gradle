@@ -243,13 +243,38 @@ def winver1 = version.toString().replaceAll('-dev.*', '') // jpackage allows up 
 println "win version: " + winver1
 // TODO for dev, make like x.x.YMMDD
 
+// https://stackoverflow.com/questions/59902719/flyway-is-not-able-to-find-migrations-in-classpath-only-if-i-run-application-aft
+tasks.jlink {
+    doLast {
+        copy {
+            from 'src/main/resources'
+            into "$imageDir/bin/data"
+
+            include 'db/migration/*.sql'
+        }
+    }
+}
+
 jlink {
     //options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages'] // --bind-services ?
     options = ['--compress', '2', '--no-header-files', '--no-man-pages', '--strip-native-commands']
+
+    // TODO no '--strip-native-commands' when enableCds() - it runs java from image
     //options = ['--compress', '2', '--no-header-files', '--no-man-pages']
+
     launcher {
         name = 'cookbook'
+
+// $APPDIR
+// https://bugs.openjdk.java.net/browse/JDK-8231910
+// https://docs.oracle.com/en/java/javase/14/jpackage/packaging-tool-user-guide.pdf
+
+        jvmArgs = ['-cp', '$APPDIR/../runtime/bin/data/'] // .bat will be broken, .exe will work
+        // TODO this also auto adds /mods arg
+        // TODO see windowsScriptTemplate, unixScriptTemplate
     }
+
+//    enableCds()
 
     forceMerge('log4j-api') // https://github.com/beryx/badass-jlink-plugin/issues/14
 
@@ -259,6 +284,7 @@ jlink {
         //requires transitive 'java.sql'
         //uses 'java.sql.Driver'
         //provides 'java.sql.Driver' with 'org.hsqldb.jdbc.JDBCDriver'
+//        requires 'cookbook'
 //    }
 
     jpackage {

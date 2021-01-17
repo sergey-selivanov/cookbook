@@ -49,7 +49,7 @@ public class CookBook extends Application
             Database.validate();
         } catch (Exception e) {
             e.printStackTrace();
-            System.exit(1);
+            System.exit(1); // TODO show something
         }
 
         launch(args);

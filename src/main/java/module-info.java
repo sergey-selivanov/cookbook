@@ -1,5 +1,6 @@
-//open module cookbook {	// this allows flyway to work  https://www.baeldung.com/java-9-modularity
 module cookbook {
+// open module allows flyway to work  https://www.baeldung.com/java-9-modularity
+//module cookbook {
     // TODO make separate open module for flyway sql files?
 
     requires java.sql;
@@ -25,7 +26,7 @@ module cookbook {
 //    opens org.sergeys.cookbook.ui to javafx.fxml, org.flywaydb.core;
 //    opens org.sergeys.cookbook.logic to javafx.fxml, org.flywaydb.core;
     opens org.sergeys.cookbook.ui to javafx.fxml;
-    opens org.sergeys.cookbook.logic to javafx.fxml;
+//    opens org.sergeys.cookbook.logic to javafx.fxml; ??
 
     //opens db.migration to org.flywaydb.core;	// fails
     opens db.migration;	// works

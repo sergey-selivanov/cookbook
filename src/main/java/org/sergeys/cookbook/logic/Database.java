@@ -87,6 +87,10 @@ public final class Database {
             Flyway flyway = config.load();
             //Flyway flyway = new Flyway(config);
 
+            if(flyway.info().all().length == 0) {
+                throw new CookbookException("no migration files found");
+            }
+
             // check if old database needs baselining
             ValidateResult validateResult = flyway.validateWithResult();
             if(!validateResult.validationSuccessful) {
@@ -151,23 +155,40 @@ public final class Database {
                 }
             }
             else {
+                // TODO gets here when no migration files found, must be error
+//            	if(validateResult.validateCount == 0) {
+//
+//            	}
                 log.debug("db validation successful");
             }
         }
         else {
             // no database file yet, just create
+            log.debug("no database file yet");
             flywayMigrate();
         }
 
     }
 
-    private static void flywayMigrate() {
+    private static void flywayMigrate() throws CookbookException {
+
+// migrations are not visible after jlink
+// https://stackoverflow.com/questions/59902719/flyway-is-not-able-to-find-migrations-in-classpath-only-if-i-run-application-aft
+
+        log.debug("migrate");
+
         // TODO use DataSource?
         FluentConfiguration config = Flyway.configure()
                 .dataSource(connectionUrl, LOGIN, PASSWD)
+//                .locations("classpath:db/migration",	// default
+//                        "classpath:cookbook/db/migration")	// after jlink?
                 .installedBy("cookbook");
 
         Flyway flyway = config.load();
+
+        if(flyway.info().all().length == 0) {
+            throw new CookbookException("no migration files found");
+        }
 
         //MigrateResult result = flyway.migrate(); // will throw on error
         flyway.migrate(); // will throw on error
