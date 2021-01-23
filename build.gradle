@@ -37,7 +37,7 @@ plugins {
     id 'application'
     id 'eclipse'
     id 'org.openjfx.javafxplugin' version '0.0.9'
-    id 'org.beryx.jlink' version '2.23.1' // modular
+    id 'org.beryx.jlink' version '2.23.2' // modular
     //id 'org.beryx.runtime' version '1.12.1'  // non modular
 
     id 'com.github.spotbugs' version '4.6.0'
@@ -71,7 +71,7 @@ dependencies {
 
     implementation 'org.jsoup:jsoup:1.13.1'
 
-    implementation 'org.flywaydb:flyway-core:7.5.0'
+    implementation 'org.flywaydb:flyway-core:7.5.1'
 
 //    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.12.Final'
 
@@ -84,6 +84,7 @@ dependencies {
     spotbugsPlugins 'com.mebigfatguy.sb-contrib:sb-contrib:7.4.7'
 }
 
+// TODO add link why is this
 modularity.disableEffectiveArgumentsAdjustment()
 
 //mainClassName = "$moduleName/org.sergeys.cookbook.ui.CookBook"    // module
@@ -239,42 +240,78 @@ boolean isSource(entry) { return entry.properties.kind.equals('src'); }
 // Remove the lines contaning provides clauses and put the resulting mergedModule configuration in your jlink block.
 
 //def winver1 = version.toString().replaceAll('-dev.*', '.10113')
-def winver1 = version.toString().replaceAll('-dev.*', '') // jpackage allows up to 3 ver components
-println "win version: " + winver1
+def winver = version.toString().replaceAll('-dev.*', '') // jpackage allows up to 3 ver components
+println "win version: " + winver
 // TODO for dev, make like x.x.YMMDD
 
+
+task makeClasspathResourcesJar(type: Jar) {
+    archiveName 'cp-resources.jar'
+    destinationDir file("${buildDir}/cp-resources")
+    from('src/main/resources')
+    include('db/**/*.sql')
+}
+
 // https://stackoverflow.com/questions/59902719/flyway-is-not-able-to-find-migrations-in-classpath-only-if-i-run-application-aft
+// TODO pack in jar, copy jar and reference in -cp
+
 tasks.jlink {
+    dependsOn makeClasspathResourcesJar
     doLast {
         copy {
-            from 'src/main/resources'
+            //from 'src/main/resources'
+            //into "$imageDir/bin/data"
+            //include 'db/migration/*.sql'
+            from "${buildDir}/cp-resources"
             into "$imageDir/bin/data"
+        }
 
-            include 'db/migration/*.sql'
+        delete("$imageDir/bin/cookbook", "$imageDir/bin/cookbook.bat")
+        //delete("$imageDir/bin/*.exe") // for enableCds() instead of --strip-native-commands
+        delete(
+            "$imageDir/bin/java.exe",
+            "$imageDir/bin/javaw.exe",
+            "$imageDir/bin/jrunscript.exe",
+            "$imageDir/bin/keytool.exe",
+            "$imageDir/bin/rmid.exe",
+            "$imageDir/bin/rmiregistry.exe")
+        // TODO delete linux executables
+
+    }
+}
+
+tasks.jpackageImage {
+    doLast {
+        // bug: installed package does not run on Windows 10
+        copy {
+            from "${buildDir}/jpackage/Cook Book/runtime/bin"
+            into "${buildDir}/jpackage/Cook Book"
+            include 'zip.dll'
         }
     }
 }
 
 jlink {
     //options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages'] // --bind-services ?
-    options = ['--compress', '2', '--no-header-files', '--no-man-pages', '--strip-native-commands']
+    //options = ['--compress', '2', '--no-header-files', '--no-man-pages', '--strip-native-commands']
 
     // TODO no '--strip-native-commands' when enableCds() - it runs java from image
-    //options = ['--compress', '2', '--no-header-files', '--no-man-pages']
+    options = ['--compress', '2', '--no-header-files', '--no-man-pages']
 
     launcher {
-        name = 'cookbook'
+        name = 'cookbook'   // TODO report issue with naming of 1st anf 2nd launchers in jpackage task
 
 // $APPDIR
 // https://bugs.openjdk.java.net/browse/JDK-8231910
 // https://docs.oracle.com/en/java/javase/14/jpackage/packaging-tool-user-guide.pdf
 
-        jvmArgs = ['-cp', '$APPDIR/../runtime/bin/data/'] // .bat will be broken, .exe will work
-        // TODO this also auto adds /mods arg
+        //jvmArgs = ['-cp', '$APPDIR/../runtime/bin/data/'] // .bat will be broken, .exe will work
+        jvmArgs = ['-cp', '$APPDIR/../runtime/bin/data/cp-resources.jar'] // .bat will be broken, .exe will work
+        // TODO this also auto adds /mods arg to cfg file, report issue
         // TODO see windowsScriptTemplate, unixScriptTemplate
     }
 
-//    enableCds()
+    enableCds()
 
     forceMerge('log4j-api') // https://github.com/beryx/badass-jlink-plugin/issues/14
 
@@ -290,13 +327,10 @@ jlink {
     jpackage {
         installerType = project.ext.installerType
 
-        // different imageName and installerName give error, files not found
+        // different imageName and installerName give error, files not found: jlink 2.23.1
 
-        //imageName = 'CookBook-img' // '"CookBook img"' no spaces on win
-        //installerName = 'CookBook-inst' // no spaces on win
-
-        imageName = 'Cook Book' // '"CookBook img"' no spaces on win
-        installerName = 'Cook Book' // no spaces on win
+        imageName = 'Cook Book'
+        installerName = 'Cook Book' // shown in wix wizard as app name
 
         installerOptions = [
             '--vendor', 'Sergey Selivanov',
@@ -304,18 +338,16 @@ jlink {
         ]
 
         if (org.gradle.internal.os.OperatingSystem.current().windows) {
-            appVersion = winver1
+            appVersion = winver
 
-            //imageOptions += ['--icon', 'src/main/resources/images/amor.ico']
             icon = "${project.projectDir}/src/main/resources/images/amor.ico"
 
             installerOptions += [
                 // saves generated wix files
                 // TODO customize wizard images?
-                '--temp',"${buildDir}/temp", // ? https://github.com/beryx/badass-runtime-plugin/issues/71
+                '--temp', "${buildDir}/temp", // ? https://github.com/beryx/badass-runtime-plugin/issues/71
 
                 '--win-menu', '--win-shortcut', '--win-dir-chooser',
-                //'--win-menu-group', '"CookBook"'
                 '--win-menu-group', 'Cook Book'
             ]
         }
@@ -325,7 +357,6 @@ jlink {
                 appVersion = version.toString().replaceAll('-', '.')
             }
 
-            //imageOptions += ['--icon', 'src/main/resources/images/amor.png']
             icon = "${project.projectDir}/src/main/resources/images/amor.png"
 
             installerOptions += [
