@@ -24,14 +24,20 @@ https://bugs.openjdk.java.net/browse/JDK-8254920
 
 */
 
+/*
 buildscript {
     repositories {
         jcenter()
     }
     dependencies {
-        classpath 'org.ajoberstar.grgit:grgit-core:4.1.0'
+        //classpath 'org.ajoberstar.grgit:grgit-core:4.1.0'
+        // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit
+        //classpath group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '5.10.0.202012080955-r'
+        //classpath group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '5.7.0.202003110725-r'
     }
 }
+*/
+
 
 plugins {
     id 'application'
@@ -48,6 +54,7 @@ plugins {
     id 'net.saliman.properties' version '1.5.1'
     id 'com.github.ben-manes.versions' version '0.36.0'
     id 'org.ajoberstar.reckon' version '0.13.0'
+    id 'org.ajoberstar.grgit' version '4.1.0'
 }
 
 repositories {
@@ -97,8 +104,8 @@ mainClassName = 'org.sergeys.cookbook.ui.CookBook' // non modular and now also m
 //compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
 
-import org.ajoberstar.grgit.Grgit
-ext.repo = Grgit.open(dir: project.file('.'))
+//import org.ajoberstar.grgit.Grgit
+//ext.repo = Grgit.open(dir: project.file('.'))
 
 import org.apache.tools.ant.filters.ReplaceTokens
 
@@ -158,9 +165,14 @@ task adjustEnvResources(type: Copy) {
     filter(ReplaceTokens, tokens: project.filterTokens)
     filter(ReplaceTokens,
         tokens:[
-            'git.commit': repo.head().abbreviatedId,
-            'git.date': repo.head().date.toString(),
-            'git.branch': repo.branch.current.name,
+//            'git.commit': repo.head().abbreviatedId,
+//            'git.date': repo.head().date.toString(),
+//            'git.branch': repo.branch.current.name,
+
+            'git.commit': grgit.head().abbreviatedId,
+            'git.date': grgit.head().date.toString(),
+            'git.branch': grgit.branch.current.name,
+
             'build.date': new java.util.Date().toString(),
             'build.host': builduser + '@' + buildhost,
             'version': project.version.toString(),
