@@ -30,10 +30,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        //classpath 'org.ajoberstar.grgit:grgit-core:4.1.0'
-        // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit
-        //classpath group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '5.10.0.202012080955-r'
-        //classpath group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '5.7.0.202003110725-r'
+        classpath 'org.ajoberstar.grgit:grgit-core:4.1.0'
     }
 }
 */
@@ -257,15 +254,14 @@ println "win version: " + winver
 // TODO for dev, make like x.x.YMMDD
 
 
+// https://stackoverflow.com/questions/59902719/flyway-is-not-able-to-find-migrations-in-classpath-only-if-i-run-application-aft
+
 task makeClasspathResourcesJar(type: Jar) {
     archiveName 'cp-resources.jar'
     destinationDir file("${buildDir}/cp-resources")
     from('src/main/resources')
     include('db/**/*.sql')
 }
-
-// https://stackoverflow.com/questions/59902719/flyway-is-not-able-to-find-migrations-in-classpath-only-if-i-run-application-aft
-// TODO pack in jar, copy jar and reference in -cp
 
 tasks.jlink {
     dependsOn makeClasspathResourcesJar
@@ -279,7 +275,7 @@ tasks.jlink {
         }
 
         delete("$imageDir/bin/cookbook", "$imageDir/bin/cookbook.bat")
-        //delete("$imageDir/bin/*.exe") // for enableCds() instead of --strip-native-commands
+        // for enableCds() instead of --strip-native-commands
         delete(
             "$imageDir/bin/java.exe",
             "$imageDir/bin/javaw.exe",
@@ -294,7 +290,7 @@ tasks.jlink {
 
 tasks.jpackageImage {
     doLast {
-        // bug: installed package does not run on Windows 10
+        // workaround for bug: installed package does not run on Windows 10
         copy {
             from "${buildDir}/jpackage/Cook Book/runtime/bin"
             into "${buildDir}/jpackage/Cook Book"
@@ -338,8 +334,6 @@ jlink {
 
     jpackage {
         installerType = project.ext.installerType
-
-        // different imageName and installerName give error, files not found: jlink 2.23.1
 
         imageName = 'Cook Book'
         installerName = 'Cook Book' // shown in wix wizard as app name
@@ -487,12 +481,14 @@ spotbugsMain {
 pmd {
     ignoreFailures = true
 //    consoleOutput = true
-    toolVersion = '6.23.0'
+    //toolVersion = '6.23.0'
+    toolVersion = '6.30.0'
 //    rulePriority = 5
 //    ruleSets = ["category/java/errorprone.xml", "category/java/bestpractices.xml"]
 }
 
 checkstyle {
     ignoreFailures = true
-    toolVersion = '8.32'
+    //toolVersion = '8.32'
+    toolVersion = '8.39'
 }

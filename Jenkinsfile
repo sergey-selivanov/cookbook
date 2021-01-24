@@ -11,9 +11,7 @@ pipeline{
 
         stage('parallel'){
 
-
         parallel{
-
 
             stage('win exe'){
                 when{
@@ -37,7 +35,8 @@ pipeline{
                         //bat 'c:/bin/jdk-custom-env jdk && gradlew clean distZip jpackage'
                         bat "c:/bin/jdk-custom-env jdk && c:/bin/wixenv && gradlew -PinstallerType=exe -PenvironmentName=${params.ENVIRONMENT} clean distZip jpackage"
                     }
-// TODO Reckoned version: 0.0.5-dev.0.51+20210124T013814Z on clean git gir in win8vm, report issue
+    // Reckoned version: 0.0.5-dev.0.51+20210124T013814Z on clean git (as cygwin says) gir in win8vm:
+    // gradlew should be 644, not 755
                     archiveArtifacts '**/build/distributions/*.zip, **/build/jpackage/*.exe'
                     //archiveArtifacts '**/build/jpackage/*.exe'
                 }

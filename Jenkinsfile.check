@@ -14,29 +14,19 @@ pipeline{
                         sh 'sh gradlew clean check'
                     }
                     else {
-                        bat 'c:\\bin\\jdk-custom-env jdk && gradlew.bat clean check'  // jdk 14 on host
+                        bat 'c:/bin/jdk-custom-env jdk && gradlew clean check'
                     }
-
-                    //def spotbugs = scanForIssues tool: spotBugs(pattern: 'build/reports/spotbugs/*.xml', useRankAsPriority: true)
-                    //publishIssues([spotbugs])
-
                 }
 
-                // https://wiki.jenkins.io/display/JENKINS/Static+Analysis+in+Pipelines
-                //def spotbugs = scanForIssues tool: spotBugs(pattern: 'build/reports/spotbugs/*.xml', useRankAsPriority: true)
-                //publishIssues([spotbugs])
-
+                // warnings ng plugin required
                 recordIssues aggregatingResults: false, tools: [
                     spotBugs(pattern: 'build/reports/spotbugs/*.xml', useRankAsPriority: true),
                     pmdParser(pattern: 'build/reports/pmd/*.xml'),
                     checkStyle(pattern: 'build/reports/checkstyle/*.xml'),
-                    taskScanner(includePattern: '**/*.java', normalTags: 'TODO')
+                    //taskScanner(includePattern: '**/*.java', normalTags: 'TODO')
+                    taskScanner(excludePattern: '**/*.mm, **/Jenkinsfile.check, **/unused', normalTags: 'TODO')
                     ]
-
             }
-
         }
-
-
     }
 }
