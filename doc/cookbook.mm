@@ -81,18 +81,24 @@
 <linktarget COLOR="#b0b0b0" DESTINATION="ID_1077488781" ENDARROW="Default" ENDINCLINATION="135;0;" ID="Arrow_ID_1689615997" SOURCE="ID_1676780731" STARTARROW="None" STARTINCLINATION="135;0;"/>
 </node>
 <node CREATED="1584842918172" ID="ID_1539987114" MODIFIED="1610538447428" TEXT="generate installers">
-<node CREATED="1587914076985" ID="ID_1319999710" MODIFIED="1610538493212" TEXT="non-modular packaging because of h2">
-<icon BUILTIN="help"/>
+<node CREATED="1587914076985" ID="ID_1319999710" MODIFIED="1611609215959" TEXT="non-modular packaging because of h2">
+<icon BUILTIN="button_cancel"/>
 <node CREATED="1587914151598" ID="ID_1265877550" LINK="https://badass-jlink-plugin.beryx.org/releases/latest/" MODIFIED="1587914169579" TEXT="jlink plugin"/>
 <node CREATED="1587914179377" ID="ID_1016000389" LINK="https://badass-runtime-plugin.beryx.org/releases/latest/" MODIFIED="1587914188890" TEXT="runtime plugin"/>
 </node>
-<node CREATED="1610538505625" ID="ID_1103569502" MODIFIED="1610538511906" TEXT="remove .bat file"/>
-<node CREATED="1610538463053" ID="ID_95238576" MODIFIED="1610538473003" TEXT="modular packaging"/>
+<node CREATED="1610538505625" ID="ID_1103569502" MODIFIED="1611609240536" TEXT="remove .bat file">
+<icon BUILTIN="button_ok"/>
+</node>
+<node CREATED="1610538463053" ID="ID_95238576" MODIFIED="1611609245167" TEXT="modular packaging">
+<icon BUILTIN="button_ok"/>
+</node>
 <node CREATED="1587919788557" ID="ID_91779121" MODIFIED="1610538457769" TEXT="platform specifics">
 <node CREATED="1610565175343" ID="ID_1530564613" LINK="https://stackoverflow.com/questions/48713061/how-do-you-change-the-red-cd-icon-on-wix" MODIFIED="1610565203955" TEXT="customize wix wizard"/>
 <node CREATED="1610565911786" ID="ID_1714022827" LINK="https://wixtoolset.org//documentation/manual/v3/wixui/wixui_customizations.html" MODIFIED="1610565940855" TEXT="wix docs: custom bitmaps"/>
 </node>
-<node CREATED="1587890060365" ID="ID_1345057078" MODIFIED="1610538453538" TEXT="jenkins build"/>
+<node CREATED="1587890060365" ID="ID_1345057078" MODIFIED="1611609237598" TEXT="jenkins build">
+<icon BUILTIN="button_ok"/>
+</node>
 </node>
 <node CREATED="1609194366274" ID="ID_1580511782" MODIFIED="1610581295352" TEXT="replace h2 to hsqldb for modular build">
 <icon BUILTIN="button_cancel"/>
@@ -100,7 +106,9 @@
 <node CREATED="1610581304228" ID="ID_277576879" MODIFIED="1610581316193" TEXT="use try with resources">
 <node CREATED="1610581316840" ID="ID_1621623329" MODIFIED="1610581323176" TEXT="at least for streams"/>
 </node>
-<node CREATED="1584843045443" ID="ID_562658722" MODIFIED="1587789324142" TEXT="use hibernate"/>
+<node CREATED="1584843045443" ID="ID_562658722" MODIFIED="1611609266688" TEXT="use hibernate">
+<icon BUILTIN="down"/>
+</node>
 <node CREATED="1584843066257" ID="ID_45678986" MODIFIED="1587789321086" TEXT="use flywaydb">
 <node CREATED="1610665451976" ID="ID_794295993" MODIFIED="1610665468982" TEXT="only validate and migrate if app version changed"/>
 <node CREATED="1610679469805" ID="ID_1704154375" MODIFIED="1610679910462" TEXT="flyway sees but can&apos;t read sql files from module">
@@ -119,14 +127,14 @@
 <node CREATED="1588496074996" ID="ID_1741644906" MODIFIED="1588496097265" TEXT="highlight search text in displayed entries"/>
 </node>
 <node CREATED="1588495829586" ID="ID_1529372462" MODIFIED="1588495834412" TEXT="txt recipes"/>
-<node CREATED="1588495838714" FOLDED="true" ID="ID_1913058961" MODIFIED="1588683129777" TEXT="rtf, odt libreoffice documents?">
+<node CREATED="1588495838714" FOLDED="true" ID="ID_1913058961" MODIFIED="1611609331206" TEXT="rtf, odt libreoffice documents?">
 <node CREATED="1588669128563" ID="ID_1068202240" LINK="https://stackoverflow.com/questions/28573275/how-to-read-rtf-file-and-display-in-javafx" MODIFIED="1588669128563" TEXT="https://stackoverflow.com/questions/28573275/how-to-read-rtf-file-and-display-in-javafx"/>
 <node CREATED="1588668926158" ID="ID_571689194" LINK="https://github.com/FXMisc/RichTextFX" MODIFIED="1588668926158" TEXT="https://github.com/FXMisc/RichTextFX"/>
 <node CREATED="1588669094217" ID="ID_782777125" LINK="https://github.com/joniles/rtfparserkit" MODIFIED="1588669094217" TEXT="https://github.com/joniles/rtfparserkit"/>
 <node CREATED="1588669576314" LINK="https://wiki.openjdk.java.net/display/OpenJFX/Rich+Text+API+Samples" MODIFIED="1588669576314" TEXT="https://wiki.openjdk.java.net/display/OpenJFX/Rich+Text+API+Samples"/>
 </node>
 </node>
-<node CREATED="1587992085494" FOLDED="true" ID="ID_863144707" MODIFIED="1610538482551" TEXT="Old todo">
+<node CREATED="1587992085494" FOLDED="true" ID="ID_863144707" MODIFIED="1611609352580" TEXT="Old todo">
 <node CREATED="1587992110635" MODIFIED="1587992110635" TEXT="- context menu for recipe, selection of recipes and branch"/>
 <node CREATED="1587992110637" MODIFIED="1587992110637" TEXT="- export recipe, export branch to dir"/>
 <node CREATED="1587992110637" MODIFIED="1587992110637" TEXT="- &quot;like&quot; or &quot;heart&quot; button to set favorite; button to unset favorite"/>
@@ -157,17 +165,15 @@
 </node>
 </node>
 </node>
-<node CREATED="1584842230232" ID="ID_1666087264" MODIFIED="1584842233213" POSITION="left" TEXT="Links">
+<node CREATED="1584842230232" ID="ID_1666087264" MODIFIED="1612047086730" POSITION="left" TEXT="Links">
 <node CREATED="1584842323660" ID="ID_1566718536" LINK="https://jsoup.org/cookbook/introduction/parsing-a-document" MODIFIED="1584842373104" TEXT="https://jsoup.org/cookbook/introduction/parsing-a-document"/>
 <node CREATED="1584844571104" ID="ID_1065359523" LINK="https://www.favicon-generator.org/" MODIFIED="1584844584211" TEXT="https://www.favicon-generator.org/"/>
-<node CREATED="1587992481945" ID="ID_1867695618" LINK="https://openjfx.io/" MODIFIED="1587992481945" TEXT="https://openjfx.io/"/>
-<node CREATED="1588094835509" ID="ID_601883027" MODIFIED="1588094839599" TEXT="plugins">
-<node CREATED="1588094884096" ID="ID_536228597" LINK="https://badass-runtime-plugin.beryx.org/releases/latest/" MODIFIED="1588094884096" TEXT="https://badass-runtime-plugin.beryx.org/releases/latest/">
-<node CREATED="1588094908152" ID="ID_136654783" LINK="https://github.com/beryx/badass-runtime-plugin" MODIFIED="1588094908152" TEXT="https://github.com/beryx/badass-runtime-plugin"/>
+<node CREATED="1612047092997" ID="ID_735435372" MODIFIED="1612047095080" TEXT="icons">
+<node CREATED="1612047095802" ID="ID_1552667035" LINK="https://www.flaticon.com/" MODIFIED="1612047100148" TEXT="https://www.flaticon.com/"/>
 </node>
-<node CREATED="1588094995374" ID="ID_1323863827" LINK="https://spotbugs.readthedocs.io/en/stable/gradle.html" MODIFIED="1588094995374" TEXT="https://spotbugs.readthedocs.io/en/stable/gradle.html">
-<node CREATED="1588095008866" LINK="https://github.com/spotbugs/spotbugs-gradle-plugin" MODIFIED="1588095008866" TEXT="https://github.com/spotbugs/spotbugs-gradle-plugin"/>
-</node>
+<node CREATED="1612047959364" ID="ID_643898811" MODIFIED="1612047961763" TEXT="photos">
+<node CREATED="1612047962618" ID="ID_1273549049" LINK="https://www.freepik.com/valeria-aksakova" MODIFIED="1612047967271" TEXT="https://www.freepik.com/valeria-aksakova"/>
+<node CREATED="1612048254669" ID="ID_1464388862" LINK="https://www.freepik.com/free-photo/flat-lay-local-food-meal-assortment-with-copy-space_12202439.htm#page=2&amp;query=cooking&amp;position=11" MODIFIED="1612048262523" TEXT="https://www.freepik.com/free-photo/flat-lay-local-food-meal-assortment-with-copy-space_12202439.htm#page=2&amp;query=cooking&amp;position=11"/>
 </node>
 <node CREATED="1588007246872" ID="ID_855997294" MODIFIED="1588007254817" TEXT="graphics generators">
 <node CREATED="1588003894134" ID="ID_1395078384" LINK="https://iconsflow.com/editor" MODIFIED="1588003894134" TEXT="https://iconsflow.com/editor"/>
@@ -183,6 +189,12 @@
 <node CREATED="1588674529524" ID="ID_1242451155" LINK="https://www.logopony.com/" MODIFIED="1588674529524" TEXT="https://www.logopony.com/"/>
 <node CREATED="1588674953581" ID="ID_1213765582" LINK="https://looka.com/" MODIFIED="1588674953581" TEXT="https://looka.com/"/>
 </node>
+</node>
+<node CREATED="1611717068097" ID="ID_635797911" MODIFIED="1611717072840" TEXT="splash/preloader">
+<node CREATED="1611717074066" ID="ID_1114145117" LINK="https://stackoverflow.com/questions/15126210/how-to-use-javafx-preloader-with-stand-alone-application-in-eclipse" MODIFIED="1611717088981" TEXT="https://stackoverflow.com/questions/15126210/how-to-use-javafx-preloader-with-stand-alone-application-in-eclipse"/>
+<node CREATED="1611717105037" ID="ID_1052884281" LINK="https://blog.codecentric.de/en/2015/09/javafx-how-to-easily-implement-application-preloader-2/" MODIFIED="1611717109073" TEXT="https://blog.codecentric.de/en/2015/09/javafx-how-to-easily-implement-application-preloader-2/"/>
+<node CREATED="1611717171910" ID="ID_886930241" LINK="https://gist.github.com/jewelsea/2305098" MODIFIED="1611717176274" TEXT="https://gist.github.com/jewelsea/2305098"/>
+<node CREATED="1611717122881" ID="ID_1355260795" LINK="https://docs.oracle.com/javafx/2/deployment/preloaders.htm" MODIFIED="1611717127249" TEXT="https://docs.oracle.com/javafx/2/deployment/preloaders.htm"/>
 </node>
 </node>
 </node>

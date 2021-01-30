@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE suppressions PUBLIC
+  "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+  "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<!--
+    https://checkstyle.org/config_filters.html#SuppressionFilter
+
+    Ignoring of Checkstyle warnings with annotation @SuppressWarnings
+    https://stackoverflow.com/questions/27688426/ignoring-of-checkstyle-warnings-with-annotation-suppresswarnings
+ -->
+<suppressions>
+<!--
+  <suppress checks="LineLengthCheck"
+    files="AbstractComplexityCheck.java"
+    lines="82,108-122"/>
+  <suppress checks="MagicNumberCheck"
+    files="JavadocStyleCheck.java"
+    lines="221"/>
+  <suppress message="Missing a Javadoc comment"/>
+ -->
+ <!--
+    <suppress checks=".*" files="fb2[\\/].+\.java"/>
+    <suppress checks=".*" files="fb2Generator[\\/].+\.java"/>
+    <suppress checks=".*" files="org[\\/]svs[\\/]fb2conv[\\/]test[\\/].+\.java"/>
+ -->
+    <suppress checks="LineLengthCheck"/>
+    <suppress checks="IndentationCheck"/>
+
+    <suppress checks="CustomImportOrderCheck"/>
+    <suppress checks="MissingJavadocTypeCheck"/>
+    <suppress checks="MissingJavadocMethodCheck"/>
+
+    <suppress checks="WhitespaceAroundCheck"/>
+    <suppress checks="WhitespaceAfterCheck"/>
+
+    <!--
+    <suppress checks="Check"/>
+     -->
+</suppressions>

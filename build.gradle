@@ -454,41 +454,21 @@ test {
     exclude 'org/sergeys/cookbook/**'
 }
 
-
 spotbugs {
     ignoreFailures = true
-
-     //'org.sergeys.cookbook.*',
     onlyAnalyze = [ 'org.sergeys.cookbook.logic.*', 'org.sergeys.cookbook.ui.*']
 //    excludeFilter = file("$projectDir/config/findbugs/excludeFilter.xml")
 }
 
-
-/*
-spotbugsMain {
-    reports {
-        html {
-            enabled = true
-//            destination = file("$buildDir/reports/spotbugs/main/spotbugs.html")
- //           stylesheet = 'fancy-hist.xsl'
-        }
-    }
-}
-
-*/
-
-
 pmd {
+    //sourceSets = [sourceSets.pmd]
+    ruleSets = []
+    ruleSetFiles 'config/pmd/cookbook.xml'
     ignoreFailures = true
-//    consoleOutput = true
-    //toolVersion = '6.23.0'
     toolVersion = '6.30.0'
-//    rulePriority = 5
-//    ruleSets = ["category/java/errorprone.xml", "category/java/bestpractices.xml"]
 }
 
 checkstyle {
     ignoreFailures = true
-    //toolVersion = '8.32'
     toolVersion = '8.39'
 }

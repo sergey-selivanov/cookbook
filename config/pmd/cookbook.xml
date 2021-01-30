@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!--
+    https://pmd.github.io/pmd-6.26.0/pmd_userdocs_making_rulesets.html
+ -->
+<ruleset name="Custom Rules"
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        My custom rules
+    </description>
+
+<!--
+    <exclude-pattern>.*/some/package/.*</exclude-pattern>
+    <exclude-pattern>.*/some/other/package/FunkyClassNamePrefix.*</exclude-pattern>
+    <include-pattern>.*/some/package/ButNotThisClass.*</include-pattern>
+ -->
+<!--
+    <exclude-pattern>.*/fb2/.*</exclude-pattern>
+    <exclude-pattern>.*/fb2Generator/.*</exclude-pattern>
+    <exclude-pattern>.*/org/svs/fb2conv/test/.*</exclude-pattern>
+ -->
+
+ <!--
+ rulesets.filenames=\
+    category/java/bestpractices.xml,\
+    category/java/codestyle.xml,\
+    category/java/design.xml,\
+    category/java/documentation.xml,\
+    category/java/errorprone.xml,\
+    category/java/multithreading.xml,\
+    category/java/performance.xml,\
+    category/java/security.xml
+
+  -->
+
+
+<!--
+    https://pmd.github.io/pmd-6.26.0/pmd_rules_java.html
+ -->
+    <rule ref="category/java/bestpractices.xml"/>
+    <rule ref="category/java/codestyle.xml">
+    <!-- log
+        <exclude name="FieldNamingConventions"/>
+         -->
+        <exclude name="ShortVariable"/>
+    </rule>
+    <rule ref="category/java/design.xml">
+    <!--
+        <exclude name="LawOfDemeter"/>
+         -->
+        <!-- chain calls e.g Options -->
+    </rule>
+    <rule ref="category/java/documentation.xml">
+        <exclude name="CommentRequired"/>
+        <exclude name="CommentSize"/>
+    </rule>
+    <rule ref="category/java/errorprone.xml"/>
+    <rule ref="category/java/multithreading.xml"/>
+    <rule ref="category/java/performance.xml"/>
+    <rule ref="category/java/security.xml"/>
+
+</ruleset>
