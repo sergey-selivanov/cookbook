@@ -40,9 +40,41 @@
 <node CREATED="1587889072372" ID="ID_1793013010" MODIFIED="1588673927091" TEXT="include version and build info properties">
 <linktarget COLOR="#b0b0b0" DESTINATION="ID_1793013010" ENDARROW="Default" ENDINCLINATION="124;0;" ID="Arrow_ID_1798381807" SOURCE="ID_1160705164" STARTARROW="None" STARTINCLINATION="124;0;"/>
 </node>
+<node CREATED="1612051781710" ID="ID_1479441051" MODIFIED="1612051818881" TEXT="show occupied space for db, unpacked pages, saved videos"/>
 <node CREATED="1587912869757" ID="ID_1707158386" MODIFIED="1587912892099" TEXT="splash screen, preloader, background unpack">
 <node CREATED="1587912914420" ID="ID_802295243" LINK="https://www.genuinecoder.com/javafx-splash-screen-loading-screen/" MODIFIED="1587912931867" TEXT=""/>
 <node CREATED="1587912954761" ID="ID_387067235" LINK="https://stackoverflow.com/questions/14972199/how-to-create-splash-screen-with-transparent-background-in-javafx" MODIFIED="1587912970100" TEXT=""/>
+</node>
+<node CREATED="1612050831729" ID="ID_462673375" MODIFIED="1612058847456" TEXT="hyperlink bookmarks to video pages, e.g to youtube">
+<node CREATED="1612051035630" ID="ID_1234758592" MODIFIED="1612051057455" TEXT="add url menu entry">
+<node CREATED="1612051074434" ID="ID_1481632190" MODIFIED="1612051097544" TEXT="auto paste from clipboard if looks like url"/>
+</node>
+<node CREATED="1612050889709" ID="ID_1700632910" MODIFIED="1612050898533" TEXT="fetch title from the page">
+<node CREATED="1612050993738" ID="ID_565396136" MODIFIED="1612050998548" TEXT="guess tags"/>
+</node>
+<node CREATED="1612050854147" ID="ID_1859321361" MODIFIED="1612050882707" TEXT="open right in the app"/>
+<node CREATED="1612050961614" ID="ID_1844023654" MODIFIED="1612050973081" TEXT="detect and report broken urls"/>
+<node CREATED="1612051183246" ID="ID_946849574" MODIFIED="1612051853054" TEXT="save video locally">
+<node CREATED="1612051204858" ID="ID_1513275271" MODIFIED="1612051211146" TEXT="with external program">
+<node CREATED="1612051757459" ID="ID_1170028325" LINK="https://github.com/ytdl-org/youtube-dl" MODIFIED="1612051762620" TEXT="https://github.com/ytdl-org/youtube-dl"/>
+<node CREATED="1612051538072" ID="ID_513122467" LINK="https://ytdl-org.github.io/youtube-dl/download.html" MODIFIED="1612051542245" TEXT="https://ytdl-org.github.io/youtube-dl/download.html"/>
+<node CREATED="1612051212800" ID="ID_70542201" MODIFIED="1612051220980" TEXT="free download manager"/>
+<node CREATED="1612051607578" ID="ID_1888455983" LINK="https://github.com/maythamfahmi/YouTuber" MODIFIED="1612051611110" TEXT="https://github.com/maythamfahmi/YouTuber"/>
+</node>
+<node CREATED="1612055056865" ID="ID_551294630" MODIFIED="1612055098831" TEXT="determine video size, report after download, free vs used space on disk"/>
+<node CREATED="1612051280199" ID="ID_974178025" MODIFIED="1612051313021" TEXT="on explicit request"/>
+<node CREATED="1612051263544" ID="ID_1049491771" MODIFIED="1612051270331" TEXT="store original url"/>
+<node CREATED="1612051226731" ID="ID_1632021611" MODIFIED="1612051235595" TEXT="play in the app"/>
+</node>
+</node>
+<node CREATED="1612058848399" ID="ID_1564152634" MODIFIED="1612058859420" TEXT="hyperlink bookmarks to html pages">
+<node CREATED="1612058860100" ID="ID_629908563" MODIFIED="1612058880225" TEXT="save locally with wget, then import"/>
+</node>
+<node CREATED="1612058961640" ID="ID_977407865" MODIFIED="1612058977142" TEXT="help">
+<node CREATED="1612058978197" ID="ID_142692270" MODIFIED="1612059054240" TEXT="on external programs setup"/>
+<node CREATED="1612058986460" ID="ID_1139059258" MODIFIED="1612059002065" TEXT="show as html right in the app">
+<node CREATED="1612059017230" ID="ID_825435312" MODIFIED="1612059045369" TEXT="extract from resource to files if not present on disk"/>
+</node>
 </node>
 <node CREATED="1588495795366" ID="ID_30108608" MODIFIED="1588495803525" TEXT="filter/search tree">
 <node CREATED="1588495958494" ID="ID_1193273347" LINK="http://www.kware.net/?p=204" MODIFIED="1588495958494" TEXT="kware.net &gt;  ? ..."/>
@@ -117,7 +149,9 @@
 <node CREATED="1610679913324" ID="ID_1284243434" MODIFIED="1610679936627" TEXT="module-info: opens db.migration;"/>
 </node>
 </node>
-<node CREATED="1587890600355" ID="ID_1173560764" MODIFIED="1587890644808" TEXT="use spotbugs and checkstyle, pmd"/>
+<node CREATED="1587890600355" ID="ID_1173560764" MODIFIED="1612052046664" TEXT="use spotbugs and checkstyle, pmd">
+<icon BUILTIN="button_ok"/>
+</node>
 <node CREATED="1584896707850" ID="ID_1676780731" MODIFIED="1587993105846" TEXT="migrate h2 db to newest format if old detected">
 <arrowlink DESTINATION="ID_1077488781" ENDARROW="Default" ENDINCLINATION="135;0;" ID="Arrow_ID_1689615997" STARTARROW="None" STARTINCLINATION="135;0;"/>
 <arrowlink DESTINATION="ID_1420041225" ENDARROW="Default" ENDINCLINATION="293;0;" ID="Arrow_ID_1426341861" STARTARROW="None" STARTINCLINATION="293;0;"/>
