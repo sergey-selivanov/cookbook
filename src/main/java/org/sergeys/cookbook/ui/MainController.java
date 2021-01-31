@@ -1,7 +1,7 @@
 package org.sergeys.cookbook.ui;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -194,7 +194,7 @@ public class MainController {
             this.singleExecutor.awaitTermination(3, TimeUnit.SECONDS);
             //RecipeLibrary.getInstance().shutdown();
 
-        } catch (FileNotFoundException | InterruptedException ex) {
+        } catch (IOException | InterruptedException ex) {
             log.error("error on exit", ex);
         }
 

@@ -4,7 +4,7 @@ module cookbook {
     // TODO make separate open module for flyway sql files?
 
     requires java.sql;
-    requires java.desktop;	// java.beans
+    requires java.desktop;	// java.beans.XMLDecoder
     requires java.xml;
     requires java.net.http;
 

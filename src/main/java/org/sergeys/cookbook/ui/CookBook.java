@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.Properties;
 
 import org.kordamp.bootstrapfx.BootstrapFX;
-import org.sergeys.cookbook.logic.CookbookException;
 import org.sergeys.cookbook.logic.Database;
 import org.sergeys.cookbook.logic.Settings;
 import org.slf4j.Logger;

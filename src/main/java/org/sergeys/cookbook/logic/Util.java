@@ -1,14 +1,15 @@
 package org.sergeys.cookbook.logic;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.jar.Attributes;
@@ -40,9 +41,9 @@ public abstract class Util {
 
     private static void addJarEntry(String baseDir, File source, JarOutputStream target) throws IOException
     {
-      BufferedInputStream in = null;
-      try
-      {
+      //BufferedInputStream in = null;
+//      try
+//      {
         if (source.isDirectory())
         {
           String name = source.getPath().replace("\\", "/");
@@ -68,6 +69,8 @@ public abstract class Util {
         JarEntry entry = new JarEntry(name);
         entry.setTime(source.lastModified());
         target.putNextEntry(entry);
+
+        /*
         in = new BufferedInputStream(new FileInputStream(source));
 
         byte[] buffer = new byte[1024];
@@ -79,14 +82,20 @@ public abstract class Util {
           }
           target.write(buffer, 0, count);
         }
-        target.closeEntry();
-      }
-      finally
-      {
-        if (in != null){
-          in.close();
+        */
+        try(InputStream is = Files.newInputStream(source.toPath(), StandardOpenOption.READ)){
+            // TODO inputstream is not buffered, performance?
+            is.transferTo(target);
         }
-      }
+
+        target.closeEntry();
+//      }
+//      finally
+//      {
+//        if (in != null){
+//          in.close();
+//        }
+//      }
     }
 
 
@@ -122,13 +131,16 @@ public abstract class Util {
 
     public static void unpackJar(File jar, String targetDir){
         try {
-            JarInputStream jis = new JarInputStream(new FileInputStream(jar));
+            //JarInputStream jis = new JarInputStream(new FileInputStream(jar));
+            try(JarInputStream jis = new JarInputStream(Files.newInputStream(jar.toPath(), StandardOpenOption.READ))) {
             JarEntry je;
             while((je = jis.getNextJarEntry()) != null){	// manifest not included
 //				System.out.println("entry " + je.getName());
 
                 File f = new File(targetDir + File.separator + je.getName().substring(1)); // name starts with slash
                 f.getParentFile().mkdirs();
+
+                /*
                 FileOutputStream fos = new FileOutputStream(f);
 
                 byte[] buf = new byte[20480];
@@ -140,9 +152,14 @@ public abstract class Util {
                 }
 
                 fos.close();
+                */
+                try(OutputStream os = Files.newOutputStream(f.toPath(), StandardOpenOption.CREATE_NEW)){
+                    jis.transferTo(os);
+                }
             }
 
-            jis.close();
+            //jis.close();
+            }
         } catch (IOException e) {
             log.error("", e);
         }
@@ -153,16 +170,21 @@ public abstract class Util {
         // http://www.mkyong.com/java/java-sha-hashing-example/
 
         MessageDigest md = MessageDigest.getInstance("SHA-256");
-        FileInputStream fis = new FileInputStream(file);
+        //FileInputStream fis = new FileInputStream(file);
+        try(InputStream fis = Files.newInputStream(file.toPath(), StandardOpenOption.READ)){
 
-        byte[] dataBytes = new byte[1024];
+        //byte[] dataBytes = new byte[1024];
+        byte[] dataBytes = new byte[10240];
 
         int nread = 0;
         while ((nread = fis.read(dataBytes)) != -1) {
           md.update(dataBytes, 0, nread);
         }
 
-        fis.close();
+        //fis.close();
+        }
+
+
         byte[] mdbytes = md.digest();
 
         //convert the byte to hex format method 1

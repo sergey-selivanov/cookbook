@@ -2,15 +2,12 @@ package org.sergeys.cookbook.logic;
 
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Calendar;
-import java.util.Date;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -166,15 +163,21 @@ public class Settings {
         return recipeLibraryPath;
     }
 
-    public static void save() throws FileNotFoundException{
-        XMLEncoder e;
+    public static void save() throws IOException{
+        //XMLEncoder e;
 
         synchronized (instance) {
+            /*
             e = new XMLEncoder(
                     new BufferedOutputStream(
                         new FileOutputStream(settingsFilePath)));
             e.writeObject(instance);
             e.close();
+            */
+            // TODO refactor all FileOutputStream(
+            try(XMLEncoder e = new XMLEncoder(Files.newOutputStream(Path.of(settingsFilePath), StandardOpenOption.CREATE))){
+                e.writeObject(instance);
+            }
         }
     }
 
@@ -183,8 +186,10 @@ public class Settings {
      */
     public static void load() {
 
-        if(new File(settingsFilePath).exists()){
+        //if(new File(settingsFilePath).exists()){
+        if(Files.exists(Path.of(settingsFilePath))) {
 
+            /*
             FileInputStream is = null;
             try {
                 is = new FileInputStream(settingsFilePath);
@@ -195,6 +200,18 @@ public class Settings {
             XMLDecoder decoder = new XMLDecoder(is);
             instance = (Settings)decoder.readObject();
             decoder.close();
+            */
+            try(XMLDecoder decoder =
+                    new XMLDecoder(
+                            Files.newInputStream(Path.of(settingsFilePath), StandardOpenOption.READ))){
+
+                instance = (Settings)decoder.readObject();
+
+            } catch (IOException ex) {
+                log.error("failed to load settings, will set defaults", ex);
+                instance.setDefaults();
+            }
+
         }
         else {
             instance.setDefaults();
@@ -235,6 +252,7 @@ public class Settings {
      * @param filename
      * @param overwrite
      */
+/*
     private static void extractResource(String filename, boolean overwrite){
 
         String targetfile = dataDirPath + File.separator + filename;
@@ -266,7 +284,7 @@ public class Settings {
             }
         }
     }
-
+*/
     private void setDefaults() {
         windowPosition.setValues(50.0, 50.0, 800.0, 600.0);
     }

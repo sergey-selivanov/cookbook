@@ -3,9 +3,7 @@ package org.sergeys.cookbook.logic;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.http.HttpClient;
@@ -13,11 +11,13 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -42,7 +42,8 @@ public class ImportTask extends Task<ImportTask.Status>
 
     private void removeElements(Document doc, String tag) {
         Elements elts = doc.getElementsByTag(tag);
-        log.debug("found " + elts.size() + " element(s) of '" + tag + "' for removal");
+        //log.debug("found " + elts.size() + " element(s) of '" + tag + "' for removal");
+        log.debug("found {} element(s) of '{}' for removal", elts.size(), tag);
         elts.remove();
     }
 
@@ -55,11 +56,12 @@ public class ImportTask extends Task<ImportTask.Status>
         File targetDir = new File(targetDirname);
         if(!targetDir.exists()) {
             targetDir.mkdirs();
-            log.debug("created " + targetDir);
+            log.debug("created {}", targetDir);
         }
 
         Elements elements = doc.getElementsByTag(tag);
         elements.parallelStream().forEach(element -> {
+            // TODO review logic when attribute is not 'ref'
             String ref = element.attr(attribute); // expected relative path with subdir, e.g ./subdir/file.ext
 
 //            if(ref.startsWith("http:") || ref.startsWith("https:") || ref.isEmpty()) {
@@ -90,6 +92,9 @@ public class ImportTask extends Task<ImportTask.Status>
                         || filename.endsWith(".jpg")
                         || filename.endsWith(".png")
                         || filename.endsWith(".ico")
+
+                        //|| filename.endsWith(".html")
+                        || filename.endsWith(".json")
                     ) {
 
                         Path dest = FileSystems.getDefault().getPath(targetDirname, filename);
@@ -97,7 +102,7 @@ public class ImportTask extends Task<ImportTask.Status>
                         try {
                             if(!dest.toFile().exists()) {
 
-                                log.debug("download " + ref);
+                                log.debug("download {}", ref);
                                 HttpClient client = HttpClient.newBuilder()
                                         .build();
                                 HttpRequest req = HttpRequest.newBuilder()
@@ -110,16 +115,24 @@ public class ImportTask extends Task<ImportTask.Status>
 
                                 // save file
 
-                                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(dest.toFile()));
-                                bos.write(resp.body());
-                                bos.close();
+//                                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(dest.toFile()));
+//                                bos.write(resp.body());
+//                                bos.close();
+
+                                try(BufferedOutputStream bos = new BufferedOutputStream(Files.newOutputStream(dest, StandardOpenOption.CREATE_NEW))){
+                                    bos.write(resp.body());
+                                }
+                                catch(FileAlreadyExistsException ex) {
+                                    log.debug("already exists: {}", ex.getMessage());
+                                }
+
                                 log.debug("downloaded " + dest);
 
                                 element.attr(attribute, "./" + targetSubdirname + "/" + filename);
                                 return;
                             }
                             else {
-                                log.warn("don't download, already exists: " + dest);
+                                log.warn("don't download, already exists: {}", dest);
                             }
 
                         } catch (IOException | InterruptedException e1) {
@@ -153,7 +166,7 @@ public class ImportTask extends Task<ImportTask.Status>
                 // assume saved files keep other files in their relative subdir
                 Path src = FileSystems.getDefault().getPath(srcMainDirname, ref);
                 if(!src.toFile().exists()) {
-                    log.error("File " + src + " does not exist");
+                    log.error("File {} does not exist", src);
                     return;
                 }
 
@@ -184,6 +197,9 @@ public class ImportTask extends Task<ImportTask.Status>
 
                 element.attr(attribute, "./" + targetSubdirname + "/" + dest.toFile().getName());
             }
+            catch(FileAlreadyExistsException ex) {
+                log.debug("already exists: {}", ex.getMessage());
+            }
             catch(InvalidPathException | IOException ex) {
                 log.error("failed", ex);
                 return;
@@ -195,14 +211,14 @@ public class ImportTask extends Task<ImportTask.Status>
 
     @Override
     protected Status call() throws Exception {
-        log.debug("import " + htmlFile);
+        log.debug("import {}", htmlFile);
 
         Database db = new Database();
 
         // calculate and verify hash
 
         String hash = Util.getFileHash(htmlFile);
-        log.debug("hash: " + hash);
+        log.debug("hash: {}", hash);
         if(db.isRecipeExists(hash)) {
             db.close();
             log.debug("already exist");
@@ -212,7 +228,7 @@ public class ImportTask extends Task<ImportTask.Status>
         // parse document
 
         Document doc = Jsoup.parse(htmlFile, null);
-        log.debug("charset: " + doc.charset());
+        log.debug("charset: {}", doc.charset());
 
         // looks broken if leave scripts:
         // https://ru-kitchen.ru/TyqYxuUgdA3E9b
@@ -229,7 +245,7 @@ public class ImportTask extends Task<ImportTask.Status>
         tempDir = Files.createTempDirectory("cookbook");
         tempDir.toFile().deleteOnExit();
 
-        log.debug("temp dir: " + tempDir);
+        log.debug("temp dir: {}", tempDir);
 
         String baseOutputDir = tempDir.toString();
 
@@ -238,7 +254,7 @@ public class ImportTask extends Task<ImportTask.Status>
 
         copyReferencedFiles(doc, "img", "src",
                 htmlFile.getParentFile().getAbsolutePath(), baseOutputDir, newName);
-        copyReferencedFiles(doc, "link", "href",
+        copyReferencedFiles(doc, "link", "href",	// TODO review what is this for
                 htmlFile.getParentFile().getAbsolutePath(), baseOutputDir, newName);
 
         // extract and save plaintext (e.g. for db fulltext search)
@@ -246,15 +262,20 @@ public class ImportTask extends Task<ImportTask.Status>
         String plainText = doc.body().text();
 
         //BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetTxtFile), doc.charset()));
-        BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetTxtFile), StandardCharsets.UTF_8));
-        wr.write(plainText);
-        wr.close();
+//        BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetTxtFile), StandardCharsets.UTF_8));
+//        wr.write(plainText);
+//        wr.close();
+        try(BufferedWriter wr = Files.newBufferedWriter(Path.of(targetTxtFile), StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW)){
+            wr.write(plainText);
+        }
 
         // save html
-        wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetMainFile), doc.charset()));
-        wr.write(doc.toString());
-        wr.close();
-
+//        wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetMainFile), doc.charset()));
+//        wr.write(doc.toString());
+//        wr.close();
+        try(BufferedWriter wr = Files.newBufferedWriter(Path.of(targetMainFile), doc.charset(), StandardOpenOption.CREATE_NEW)){
+            wr.write(doc.toString());
+        }
 
         String title = "<missing title>";
         Elements elements = doc.getElementsByTag("title");

@@ -70,7 +70,7 @@ public class MassImportTask extends Task<ImportTask.Status>
                 stream
                     .filter(p -> matcher.matches(p.getFileName()))
                     .forEach(p -> {
-                        log.debug("= " + p.getFileName());
+                        log.debug("= {}", p.getFileName());
 
                         ImportTask importTask = new ImportTask(p.toFile());
                         importTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {

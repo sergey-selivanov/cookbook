@@ -1,12 +1,12 @@
 package org.sergeys.cookbook.logic;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -318,6 +318,7 @@ public final class Database {
     public long addRecipe(String hash, File jarfile, String title, String originalfile){
 
         long id = 0;
+/*
         PreparedStatement pst = null;
         InputStream is = null;
         try {
@@ -351,6 +352,31 @@ public final class Database {
         } catch (SQLException | IOException e) {
             log.error("failed to add recipe", e);
         }
+*/
+        try(PreparedStatement pst = getConnection().prepareStatement(
+                "insert into recipes (hash, title, packedfile, filesize, dateadded, originalfilename) " +
+                "values (?, ?, ?, ?, ?, ?)");
+            InputStream is = Files.newInputStream(jarfile.toPath(), StandardOpenOption.READ)
+                ){
+
+            pst.setString(1, hash);
+            pst.setString(2, title);
+            pst.setBinaryStream(3, is);
+            pst.setLong(4, jarfile.length());
+            pst.setLong(5, new Date().getTime());
+            pst.setString(6, originalfile);
+
+            pst.executeUpdate();
+
+            try(ResultSet rs = pst.getGeneratedKeys()){
+                if(rs.next()){
+                    id = rs.getLong(1);
+                }
+            }
+        } catch (IOException | SQLException ex) {
+            log.error("failed to add recipe", ex);
+        }
+
 //        finally{
 //            try {
 //                //is.close();	// findbugs says it will be null here

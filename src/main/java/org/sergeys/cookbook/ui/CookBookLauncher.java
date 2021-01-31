@@ -1,7 +1,5 @@
 package org.sergeys.cookbook.ui;
 
-import org.sergeys.cookbook.logic.CookbookException;
-import org.sergeys.cookbook.logic.Database;
 import org.sergeys.cookbook.logic.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
