@@ -1,7 +1,6 @@
 package org.sergeys.cookbook.logic;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,19 +26,19 @@ public abstract class Util {
 
     public static void deleteRecursively(File file){
         if(file.isDirectory()){
-            File[] files = file.listFiles();
+            final File[] files = file.listFiles();
             for(File f: files){
                 deleteRecursively(f);
             }
         }
 
         if(!file.delete()){
-            log.info("not deleted " + file);
+            log.info("not deleted {}", file);
             file.deleteOnExit();
         }
     }
 
-    private static void addJarEntry(String baseDir, File source, JarOutputStream target) throws IOException
+    private static void addJarEntry(final String baseDir, final File source, final JarOutputStream target) throws IOException
     {
       //BufferedInputStream in = null;
 //      try
@@ -53,7 +52,7 @@ public abstract class Util {
             if (!name.endsWith("/")){
               name += "/";
             }
-            JarEntry entry = new JarEntry(name);
+            final JarEntry entry = new JarEntry(name);
             entry.setTime(source.lastModified());
             target.putNextEntry(entry);
             target.closeEntry();
@@ -66,7 +65,7 @@ public abstract class Util {
 
         String name = source.getPath().replace("\\", "/");
         name = name.substring(baseDir.length());
-        JarEntry entry = new JarEntry(name);
+        final JarEntry entry = new JarEntry(name);
         entry.setTime(source.lastModified());
         target.putNextEntry(entry);
 
@@ -100,29 +99,35 @@ public abstract class Util {
 
 
 
-    public static void packJar(String dir, String subdir){
+    public static void packJar(final String dir, final String subdir){
         // http://stackoverflow.com/questions/1281229/how-to-use-jaroutputstream-to-create-a-jar-file
-        Manifest manifest = new Manifest();
+        final Manifest manifest = new Manifest();
         manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-        JarOutputStream target;
+        //JarOutputStream target;
         try {
-            String jarname = FileSystems.getDefault().getPath(dir, subdir + ".jar").toString();
-            target = new JarOutputStream(new FileOutputStream(jarname), manifest);
+            final String jarname = FileSystems.getDefault().getPath(dir, subdir + ".jar").toString();
+            //target = new JarOutputStream(new FileOutputStream(jarname), manifest);
 
-            // TODO this is app-specific, pack all files instead
+            try(JarOutputStream jos =
+                    new JarOutputStream(Files.newOutputStream(Path.of(jarname), StandardOpenOption.CREATE_NEW),
+                            manifest)){
 
-            Path path = FileSystems.getDefault().getPath(dir, subdir + ".html");
-            addJarEntry(dir, path.toFile(), target);
+                // TODO this is app-specific, pack all files instead
 
-            path = FileSystems.getDefault().getPath(dir, subdir + ".txt");
-            addJarEntry(dir, path.toFile(), target);
+                Path path = FileSystems.getDefault().getPath(dir, subdir + ".html");
+                addJarEntry(dir, path.toFile(), jos);
 
-            DirectoryStream<Path> subfiles = Files.newDirectoryStream(FileSystems.getDefault().getPath(dir, subdir));
-            for(Path entry: subfiles) {
-                addJarEntry(dir, entry.toFile(), target);
+                path = FileSystems.getDefault().getPath(dir, subdir + ".txt");
+                addJarEntry(dir, path.toFile(), jos);
+
+                try(DirectoryStream<Path> subfiles = Files.newDirectoryStream(FileSystems.getDefault().getPath(dir, subdir))){
+                    for(Path entry: subfiles) {
+                        addJarEntry(dir, entry.toFile(), jos);
+                    }
+
+                }
             }
-            subfiles.close();
-            target.close();
+
         } catch (IOException e) {
             log.error("", e);
         }
@@ -133,32 +138,18 @@ public abstract class Util {
         try {
             //JarInputStream jis = new JarInputStream(new FileInputStream(jar));
             try(JarInputStream jis = new JarInputStream(Files.newInputStream(jar.toPath(), StandardOpenOption.READ))) {
-            JarEntry je;
-            while((je = jis.getNextJarEntry()) != null){	// manifest not included
-//				System.out.println("entry " + je.getName());
+                JarEntry je;
+                while((je = jis.getNextJarEntry()) != null){	// manifest not included
+    //				System.out.println("entry " + je.getName());
 
-                File f = new File(targetDir + File.separator + je.getName().substring(1)); // name starts with slash
-                f.getParentFile().mkdirs();
+                    final File f = new File(targetDir + File.separator + je.getName().substring(1)); // name starts with slash
+                    f.getParentFile().mkdirs();
 
-                /*
-                FileOutputStream fos = new FileOutputStream(f);
-
-                byte[] buf = new byte[20480];
-                int count;
-
-                while((count = jis.read(buf)) > 0){
-//					System.out.println("read bytes " + count);
-                    fos.write(buf, 0, count);
+                    try(OutputStream os = Files.newOutputStream(f.toPath(), StandardOpenOption.CREATE_NEW)){
+                        jis.transferTo(os);
+                    }
                 }
 
-                fos.close();
-                */
-                try(OutputStream os = Files.newOutputStream(f.toPath(), StandardOpenOption.CREATE_NEW)){
-                    jis.transferTo(os);
-                }
-            }
-
-            //jis.close();
             }
         } catch (IOException e) {
             log.error("", e);
@@ -169,26 +160,23 @@ public abstract class Util {
     {
         // http://www.mkyong.com/java/java-sha-hashing-example/
 
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        final MessageDigest md = MessageDigest.getInstance("SHA-256");
         //FileInputStream fis = new FileInputStream(file);
         try(InputStream fis = Files.newInputStream(file.toPath(), StandardOpenOption.READ)){
 
-        //byte[] dataBytes = new byte[1024];
-        byte[] dataBytes = new byte[10240];
+            //byte[] dataBytes = new byte[1024];
+            final byte[] dataBytes = new byte[10240];
 
-        int nread = 0;
-        while ((nread = fis.read(dataBytes)) != -1) {
-          md.update(dataBytes, 0, nread);
+            int nread = 0;
+            while ((nread = fis.read(dataBytes)) != -1) {
+              md.update(dataBytes, 0, nread);
+            }
         }
 
-        //fis.close();
-        }
-
-
-        byte[] mdbytes = md.digest();
+        final byte[] mdbytes = md.digest();
 
         //convert the byte to hex format method 1
-        StringBuffer sb = new StringBuffer();
+        final StringBuffer sb = new StringBuffer();
         for (int i = 0; i < mdbytes.length; i++) {
             sb.append(String.format("%02x", mdbytes[i]));
         }

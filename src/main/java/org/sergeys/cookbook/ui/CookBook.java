@@ -36,12 +36,12 @@ public class CookBook extends Application
         Properties version = Settings.getInstance().getVersion();
 
         log.info("=================================================================");
-        log.info("CookBook " + version.getProperty("version", "unknown version"));
-        log.info("rev      " + version.getProperty("git.commit", "unknown") + " " + version.getProperty("git.date", ""));
-        log.info("built    " + version.getProperty("build.date", " at unknown date"));
-        log.info("built by " + version.getProperty("build.host", "- host unknown"));
-        log.info("build number " + version.getProperty("hudson.build.number", "unknown"));
-        log.info(System.getProperty("java.vm.name") + " " + System.getProperty("java.runtime.version") + " " + System.getProperty("java.home"));
+        log.info("CookBook {}", version.getProperty("version", "unknown version"));
+        log.info("rev      {} {}", version.getProperty("git.commit", "unknown"), version.getProperty("git.date", ""));
+        log.info("built    {}", version.getProperty("build.date", " at unknown date"));
+        log.info("built by {}", version.getProperty("build.host", "- host unknown"));
+        log.info("build number {}", version.getProperty("hudson.build.number", "unknown"));
+        log.info("{} {} {}", System.getProperty("java.vm.name"), System.getProperty("java.runtime.version"), System.getProperty("java.home"));
         log.info("-----------------------------------------------------------------");
 
         try {
@@ -52,48 +52,6 @@ public class CookBook extends Application
         }
 
         launch(args);
-    }
-
-    private void startOld() throws IOException {
-        URL location = getClass().getResource("/fxml/MainScene.fxml");
-        FXMLLoader fxmlLoader = new FXMLLoader(location);
-
-        //Pane root = (Pane)fxmlLoader.load();
-        Object o = fxmlLoader.load();
-        Pane root = (Pane)o;
-
-        final MainController controller = (MainController)fxmlLoader.getController();
-        Scene scene = new Scene(root);
-        //Scene scene = new Scene(panel);
-        //scene.getStylesheets().add("org/kordamp/bootstrapfx/bootstrapfx.css"); // https://github.com/kordamp/bootstrapfx
-        scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
-        primaryStage.setScene(scene);
-        //primaryStage.sizeToScene();
-//        controller.myInit(primaryStage);
-
-        primaryStage.setTitle("CookBook");
-        primaryStage.getIcons().add(new Image(CookBook.class.getResourceAsStream("/images/amor.png")));
-
-        // http://stackoverflow.com/questions/15041332/javafx-splitpane-divider-position-inconsistent-behaviour
-
-//        primaryStage.setX(Settings.getInstance().getWinPosition().getWidth());
-//        primaryStage.setY(Settings.getInstance().getWinPosition().getHeight());
-//        primaryStage.setWidth(Settings.getInstance().getWinSize().getWidth());
-//        primaryStage.setHeight(Settings.getInstance().getWinSize().getHeight());
-
-        primaryStage.setX(Settings.getInstance().getWindowPosition().getX());
-        primaryStage.setY(Settings.getInstance().getWindowPosition().getY());
-        primaryStage.setWidth(Settings.getInstance().getWindowPosition().getWidth());
-        primaryStage.setHeight(Settings.getInstance().getWindowPosition().getHeight());
-
-        primaryStage.show();
-
-        Platform.runLater(new Runnable(){
-            @Override
-            public void run() {
-                controller.setDivider();
-            }});
-
     }
 
     private void startTransparent() throws IOException {
@@ -137,16 +95,12 @@ public class CookBook extends Application
     @Override
     public void start(Stage stage) throws Exception {
         log.debug("start");
-
         this.primaryStage = stage;
-
-        //startOld();
         startTransparent();
     }
 
     @Override
     public void init() throws Exception {
-
         super.init();
         log.debug("init");
     }

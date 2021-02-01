@@ -1,7 +1,6 @@
 package org.sergeys.cookbook.logic;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -24,8 +23,6 @@ import org.flywaydb.core.api.ErrorCode;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.flywaydb.core.api.output.ValidateOutput;
 import org.flywaydb.core.api.output.ValidateResult;
-
-//import org.h2.tools.RunScript;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,33 +60,36 @@ public final class Database {
 
     /**
      *	Validate and migrate with flywaydb, create if does not exist
+     *
      * @throws CookbookException
      */
     public static void validate() throws CookbookException {
 
-        // check if db file exists
+        // TODO use DataSource?
+        final FluentConfiguration config = Flyway.configure()
+                .dataSource(connectionUrl, LOGIN, PASSWD)
+                //.locations("classpath:org/sergeys/cookbook/logic")
+                .installedBy("cookbook")
+                .baselineVersion("1.0.0");
+
+//        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+//        //ClassLoader classLoader1 = CookBook.class.getClassLoader();
+//
+//        ClassicConfiguration config1 = new ClassicConfiguration(classLoader);
+//        config1.setDataSource(connectionUrl, LOGIN, PASSWD);
+
+        final Flyway flyway = config.load();
+        //Flyway flyway = new Flyway(config);
+
+        if(flyway.info().all().length == 0) {
+            throw new CookbookException("no flywaydb migration files found");
+        }
+
         String baseFilename = Settings.getDataDirPath() + File.separator + FILENAME;
+
+        // check if db file exists
         if(Files.exists(Path.of(baseFilename + ".mv.db"))
                 || Files.exists(Path.of(baseFilename + ".h2.db"))) {
-
-            // TODO use DataSource?
-            FluentConfiguration config = Flyway.configure()
-                    .dataSource(connectionUrl, LOGIN, PASSWD)
-                    //.locations("classpath:org/sergeys/cookbook/logic")
-                    .installedBy("cookbook");
-
-//            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-//            //ClassLoader classLoader1 = CookBook.class.getClassLoader();
-//
-//            ClassicConfiguration config1 = new ClassicConfiguration(classLoader);
-//            config1.setDataSource(connectionUrl, LOGIN, PASSWD);
-
-            Flyway flyway = config.load();
-            //Flyway flyway = new Flyway(config);
-
-            if(flyway.info().all().length == 0) {
-                throw new CookbookException("no migration files found");
-            }
 
             // check if old database needs baselining
             ValidateResult validateResult = flyway.validateWithResult();
@@ -101,47 +101,44 @@ public final class Database {
 
                     if(validateOutput.version.equals("1.0.0")
                             && validateOutput.errorDetails.errorCode == ErrorCode.RESOLVED_VERSIONED_MIGRATION_NOT_APPLIED) {
+                        // migration 1.0.0 was not applied
 
-                        try {
-                            Connection connection = DriverManager.getConnection(connectionUrl, LOGIN, PASSWD);
-                            Statement st = connection.createStatement();
-                            ResultSet rs = st.executeQuery("show tables");
+                        Set<String> tables = new HashSet<>();
 
-                            Set<String> tables = new HashSet<>();
-
+                        try(Connection connection = DriverManager.getConnection(connectionUrl, LOGIN, PASSWD);
+                                Statement st = connection.createStatement();
+                                ResultSet rs = st.executeQuery("show tables")
+                                ){
                             while(rs.next()){
                                 log.debug(rs.getString("table_name"));
                                 tables.add(rs.getString("table_name"));
                             }
-                            st.close();
-                            connection.close();
+                        } catch (SQLException ex) {
+                            throw new CookbookException("failed", ex);
+                        }
+
+                        if(tables.isEmpty()) {
+                            log.info("schema is empty, migrate");
+                            //MigrateResult result = flyway.migrate(); // will throw on error
+                            //flywayMigrate();
+                            flyway.migrate();
+                            return;
+                        }
+                        else {
+                            //tables.containsAll()
+                            tables.removeAll(Set.of("PROPERTIES", "RECIPES", "RECIPETAGS", "TAGS"));
 
                             if(tables.isEmpty()) {
-                                log.info("schema is empty, migrate");
-                                //MigrateResult result = flyway.migrate(); // will throw on error
-                                flywayMigrate();
+                                log.info("existing db looks good, baseline");
+                                //flyway = config.baselineVersion("1.0.0").load();
+                                flyway.baseline();
                                 return;
                             }
                             else {
-                                //tables.containsAll()
-                                tables.removeAll(Set.of("PROPERTIES", "RECIPES", "RECIPETAGS", "TAGS"));
-
-                                if(tables.isEmpty()) {
-                                    log.info("existing db looks good, baseline");
-                                    flyway = config.baselineVersion("1.0.0").load();
-                                    flyway.baseline();
-                                    return;
-                                }
-                                else {
-                                    //log.error("found extra tables");
-                                    throw new CookbookException("existing database has extra tables");
-                                }
+                                throw new CookbookException("existing database has extra tables");
                             }
                         }
-                        catch(SQLException ex) {
-                            log.error(ex.getMessage(), ex);
-                            throw new CookbookException("failed", ex);
-                        }
+
                     }
                     else {
                         // 1st invalid migration is not 1.0.0
@@ -150,26 +147,24 @@ public final class Database {
 
                 }
                 else {
-                    // no invalid migrations
+                    // validation not successful but no invalid migrations
                     throw new CookbookException(validateResult.errorDetails.errorMessage);
                 }
             }
             else {
-                // TODO gets here when no migration files found, must be error
-//            	if(validateResult.validateCount == 0) {
-//
-//            	}
                 log.debug("db validation successful");
             }
         }
         else {
             // no database file yet, just create
             log.debug("no database file yet");
-            flywayMigrate();
+            //flywayMigrate();
+            flyway.migrate();
         }
 
     }
 
+/*
     private static void flywayMigrate() throws CookbookException {
 
 // migrations are not visible after jlink
@@ -193,7 +188,7 @@ public final class Database {
         //MigrateResult result = flyway.migrate(); // will throw on error
         flyway.migrate(); // will throw on error
     }
-
+*/
     public void close() throws SQLException {
         if(connection != null) {
             connection.close();
@@ -220,149 +215,34 @@ public final class Database {
         return connection;
     }
 
-/*
-    private void upgrade() throws SQLException, IOException
-    {
-        Statement st = null;
-        ResultSet rs = null;
-        InputStream in = null;
-        try {
-            st = getConnection().createStatement();
-            rs = st.executeQuery("select val from properties where property='version'");
-            rs.next();
-            String version = rs.getString("val");
-            //rs.close();
-            int ver = Integer.valueOf(version);
-
-            // apply all existing upgrades
-            in = getClass().getResourceAsStream("/upgrade" + ver + ".sql");
-            while(in != null){
-                RunScript.execute(getConnection(), new InputStreamReader(in, Charset.defaultCharset()));
-                in.close();
-                log.info("Upgraded database from version " + ver);
-                ver++;
-                in = getClass().getResourceAsStream("/upgrade" + ver + ".sql");
-            }
-
-            //st.close();
-        } catch (SQLException | IOException e) {
-            log.error("failed to upgrade db", e);
-        }
-        finally{
-            if(in != null){
-                in.close();
-            }
-            if(rs != null){
-                rs.close();
-            }
-            if(st != null){
-                st.close();
-            }
-        }
-    }
-*/
-
-/*
-    // TODO use flyway?
-    //private void upgradeOrCreateIfNeeded() throws Exception {
-    public void upgradeOrCreateIfNeeded() throws Exception {
-
-        log.debug("upgradeOrCreateIfNeeded");
-
-        File dir = new File(Settings.getSettingsDirPath());
-        if(!dir.exists()){
-            if(!dir.mkdirs()){
-                throw new Exception("Failed to create settings dir at " + Settings.getSettingsDirPath());
-            }
-        }
-
-        Connection conn = getConnection();
-
-        try {
-            // check whether table Properties exist
-            ResultSet rs = conn.getMetaData().getTables(conn.getCatalog(), "PUBLIC", "PROPERTIES", null); // table names are uppercase
-
-            if(!rs.next()){
-                // create new structure
-                InputStream in = Database.class.getResourceAsStream("/createdb.sql");
-                RunScript.execute(conn, new InputStreamReader(in, Charset.defaultCharset()));
-            }
-
-            // apply upgrades
-            upgrade();
-
-        } catch (SQLException | IOException e) {
-            throw e;
-        }
-        finally{
-            conn.close();
-        }
-    }
-*/
-
     public boolean isRecipeExists(String hash){
-        try {
-            PreparedStatement pst = getConnection().prepareStatement("select id from recipes where hash = ?");
+
+        try(PreparedStatement pst = getConnection().prepareStatement("select id from recipes where hash = ?")){
             pst.setString(1, hash);
-            ResultSet rs = pst.executeQuery();
-            if(rs.next()){
-                return true;
+            try(ResultSet rs = pst.executeQuery()){
+                return rs.next();
             }
-        } catch (SQLException e) {
-            log.error("", e);
+        } catch (SQLException ex) {
+            log.error("", ex);
         }
 
         return false;
     }
 
-    public long addRecipe(String hash, File jarfile, String title, String originalfile){
+    public long addRecipe(String hash, Path jarfilePath, String title, String originalfile){
 
         long id = 0;
-/*
-        PreparedStatement pst = null;
-        InputStream is = null;
-        try {
-             pst = getConnection().prepareStatement(
-                    "insert into recipes (hash, title, packedfile, filesize, dateadded, originalfilename) " +
-                    "values (?, ?, ?, ?, ?, ?)");
-            pst.setString(1, hash);
-            pst.setString(2, title);
-            is = new FileInputStream(jarfile);
-            pst.setBinaryStream(3, is);
-            pst.setLong(4, jarfile.length());
-            pst.setLong(5, new Date().getTime());
-            pst.setString(6, originalfile);
 
-            pst.executeUpdate();
-
-            is.close();
-
-            ResultSet rs = pst.getGeneratedKeys();
-//ResultSetMetaData meta = rs.getMetaData();
-//int count = meta.getColumnCount();
-//while(rs.next()){
-//System.out.println("inserted " + rs.getLong(1));
-//}
-
-            if(rs.next()){
-                id = rs.getLong(1);
-            }
-
-            pst.close();
-        } catch (SQLException | IOException e) {
-            log.error("failed to add recipe", e);
-        }
-*/
         try(PreparedStatement pst = getConnection().prepareStatement(
                 "insert into recipes (hash, title, packedfile, filesize, dateadded, originalfilename) " +
                 "values (?, ?, ?, ?, ?, ?)");
-            InputStream is = Files.newInputStream(jarfile.toPath(), StandardOpenOption.READ)
+            InputStream is = Files.newInputStream(jarfilePath, StandardOpenOption.READ)
                 ){
 
             pst.setString(1, hash);
             pst.setString(2, title);
             pst.setBinaryStream(3, is);
-            pst.setLong(4, jarfile.length());
+            pst.setLong(4, jarfilePath.toFile().length());
             pst.setLong(5, new Date().getTime());
             pst.setString(6, originalfile);
 
@@ -377,33 +257,24 @@ public final class Database {
             log.error("failed to add recipe", ex);
         }
 
-//        finally{
-//            try {
-//                //is.close();	// findbugs says it will be null here
-//                //pst.close();
-//            } catch (SQLException | IOException e) {
-//                Settings.getLogger().error("", e);
-//            }
-//        }
-
         return id;
     }
 
-    public ArrayList<Recipe> getAllRecipes(){
-        ArrayList<Recipe> recipes = new ArrayList<Recipe>();
-        try {
-            //PreparedStatement pst = getConnection().prepareStatement("select hash, title from recipes");
-            Statement st = getConnection().createStatement();
-            ResultSet rs = st.executeQuery("select id, hash, title from recipes");
+    public List<Recipe> getAllRecipes(){
+        final ArrayList<Recipe> recipes = new ArrayList<Recipe>();
+
+        try(Statement st = getConnection().createStatement();
+                ResultSet rs = st.executeQuery("select id, hash, title from recipes")
+                ){
+
             while(rs.next()){
-                Recipe r = new Recipe();
+                final Recipe r = new Recipe();
                 r.setId(rs.getLong("id"));
                 r.setHash(rs.getString("hash"));
                 r.setTitle(rs.getString("title"));
                 recipes.add(r);
             }
 
-            st.close();
         } catch (SQLException e) {
             log.error("", e);
         }
@@ -411,68 +282,45 @@ public final class Database {
         return recipes;
     }
 
-    public void extractRecipeFile(String hash, File targetFile){
-        try {
-            PreparedStatement pst = getConnection().prepareStatement("select packedfile from recipes where hash = ?");
+    public void extractRecipeFile(String hash, File targetEmptyFile){
+
+        try(PreparedStatement pst = getConnection().prepareStatement("select packedfile from recipes where hash = ?")){
             pst.setString(1, hash);
-            ResultSet rs = pst.executeQuery();
-            while(rs.next()){
-                InputStream is = rs.getBinaryStream("packedfile");
 
-                FileOutputStream fos = new FileOutputStream(targetFile);
-                byte[] buf = new byte[20480];
-                int count = is.read(buf);
-                while(count > 0){
-                    fos.write(buf, 0, count);
-                    count = is.read(buf);
+            try(ResultSet rs = pst.executeQuery()){
+                while(rs.next()){
+                    // one row and file is expected
+                    try(InputStream is = rs.getBinaryStream("packedfile")){
+                        is.transferTo(Files.newOutputStream(targetEmptyFile.toPath(), StandardOpenOption.CREATE));
+                    }
                 }
-
-                fos.close();
-                is.close();
-
-//				ReadableByteChannel ich = Channels.newChannel(is);
-//				FileOutputStream fos = new FileOutputStream(targetFile);
-//
-//				// magic number for Windows, 64Mb - 32Kb)
-//				int maxCount = (64 * 1024 * 1024) - (32 * 1024);
-//
-//				int available = is.available();	// returns zero here
-//				long position = 0;
-//				while(available > 0){
-//					int count = (available > maxCount) ? maxCount: available;
-//					position += fos.getChannel().transferFrom(ich, position, count);
-//					available = is.available();
-//				}
-//
-//				fos.close();
-//				ich.close();
-//				is.close();
             }
-        } catch (SQLException | IOException e) {
-            log.error("", e);
+        } catch (SQLException | IOException ex) {
+            log.error("failed", ex);
         }
     }
 
-    public ArrayList<Tag> getRootTags(){
-        ArrayList<Tag> tags = new ArrayList<Tag>();
+    public List<Tag> getRootTags(){
+        final ArrayList<Tag> tags = new ArrayList<Tag>();
 
-        try {
-            Statement st = getConnection().createStatement();
-            ResultSet rs = st.executeQuery(
-                    "select id, parentid, val, specialid" +
-                    " from tags where parentid is null" +
-                    " order by displayorder, val");
+        try(Statement st = getConnection().createStatement();
+                ResultSet rs = st.executeQuery(
+                        "select id, parentid, val, specialid" +
+                        " from tags where parentid is null" +
+                        " order by displayorder, val")
+                ){
+
             while(rs.next()){
-                Tag t = new Tag();
+                final Tag t = new Tag();
                 t.setId(rs.getLong("id"));
                 t.setParentid(rs.getLong("parentid"));
                 t.setVal(rs.getString("val"));
-                int i = rs.getInt("specialid");	// 0 if null
-                t.setSpecialid(i);
+//                int i = rs.getInt("specialid");	// 0 if null
+//                t.setSpecialid(i);
+                t.setSpecialid(rs.getInt("specialid"));
                 tags.add(t);
             }
 
-            st.close();
         } catch (SQLException e) {
             log.error("", e);
         }
@@ -480,28 +328,26 @@ public final class Database {
         return tags;
     }
 
-    public ArrayList<Tag> getChildrenTags(String tag){
-        ArrayList<Tag> tags = new ArrayList<Tag>();
+    public List<Tag> getChildrenTags(String tag){
+        final ArrayList<Tag> tags = new ArrayList<Tag>();
 
-        try {
-            String sql =
+        final String sql =
 "select child.id, child.parentid, child.val" +
 " from tags t" +
 " left join tags child on child.parentid = t.id" +
 " where child.parentid is not null and t.val = ?";
 
-            PreparedStatement pst = getConnection().prepareStatement(sql);
+        try(PreparedStatement pst = getConnection().prepareStatement(sql)){
             pst.setString(1, tag);
-            ResultSet rs = pst.executeQuery();
-            while(rs.next()){
-                Tag t = new Tag();
-                t.setId(rs.getLong("id"));
-                t.setParentid(rs.getLong("parentid"));
-                t.setVal(rs.getString("val"));
-                tags.add(t);
+            try(ResultSet rs = pst.executeQuery()){
+                while(rs.next()){
+                    final Tag t = new Tag();
+                    t.setId(rs.getLong("id"));
+                    t.setParentid(rs.getLong("parentid"));
+                    t.setVal(rs.getString("val"));
+                    tags.add(t);
+                }
             }
-
-            pst.close();
         } catch (SQLException e) {
             log.error("", e);
         }
@@ -509,52 +355,49 @@ public final class Database {
         return tags;
     }
 
-    public ArrayList<Recipe> getRecipesWithoutTags(){
-        ArrayList<Recipe> recipes = new ArrayList<>();
+    public List<Recipe> getRecipesWithoutTags(){
+        final ArrayList<Recipe> recipes = new ArrayList<>();
 
-        Statement st;
-        try {
-            st = getConnection().createStatement();
-            ResultSet rs = st.executeQuery(
-                    "select hash, title from recipes r" +
-                    " left join recipetags rt on rt.recipeid = r.id" +
-                    " where rt.tagid is null order by dateadded");
+        try(Statement st = getConnection().createStatement();
+                ResultSet rs = st.executeQuery(
+                        "select hash, title from recipes r" +
+                        " left join recipetags rt on rt.recipeid = r.id" +
+                        " where rt.tagid is null order by dateadded")
+                ){
 
             while(rs.next()){
-                Recipe r = new Recipe();
+                final Recipe r = new Recipe();
                 r.setHash(rs.getString("hash"));
                 r.setTitle(rs.getString("title"));
                 recipes.add(r);
             }
 
-            st.close();
         } catch (SQLException e) {
             log.error("", e);
         }
 
-
         return recipes;
     }
 
-    public ArrayList<Recipe> getRecipesByTag(String tag){
-        ArrayList<Recipe> recipes = new ArrayList<>();
+    public List<Recipe> getRecipesByTag(String tag){
+        final ArrayList<Recipe> recipes = new ArrayList<>();
 
-        try {
-            PreparedStatement pst = getConnection().prepareStatement(
-                    "select hash, title from recipes r" +
-                    " left join recipetags rt on rt.recipeid = r.id" +
-                    " left join tags t on t.id = rt.tagid" +
-                    " where t.val = ? order by dateadded");
+        try(PreparedStatement pst = getConnection().prepareStatement(
+                "select hash, title from recipes r" +
+                " left join recipetags rt on rt.recipeid = r.id" +
+                " left join tags t on t.id = rt.tagid" +
+                " where t.val = ? order by dateadded")
+                ){
+
             pst.setString(1, tag);
-            ResultSet rs = pst.executeQuery();
-            while(rs.next()){
-                Recipe r = new Recipe();
-                r.setHash(rs.getString("hash"));
-                r.setTitle(rs.getString("title"));
-                recipes.add(r);
+            try(ResultSet rs = pst.executeQuery()){
+                while(rs.next()){
+                    final Recipe r = new Recipe();
+                    r.setHash(rs.getString("hash"));
+                    r.setTitle(rs.getString("title"));
+                    recipes.add(r);
+                }
             }
-
-            pst.close();
         } catch (SQLException e) {
             log.error("", e);
         }
@@ -563,87 +406,91 @@ public final class Database {
     }
 
     /**
-     * Create tags that are missing from given list
+     * From given list, create tags that do not exist
+     *
+     * @throws SQLException
      */
-    private void validateTags(List<String> tags){
-        try {
-            PreparedStatement pstCheck = getConnection().prepareStatement("select id from tags where val = ?");
-            PreparedStatement pstAdd = getConnection().prepareStatement("insert into tags (val, displayorder) values (?, ?)");
+    private void addMissingTags(List<String> tags) throws SQLException{
 
-            getConnection().setAutoCommit(false);
+        try(PreparedStatement pstCheck = getConnection().prepareStatement("select id from tags where val = ?");
+                PreparedStatement pstAdd = getConnection().prepareStatement("insert into tags (val, displayorder) values (?, ?)")
+                ){
 
-            //int i = 1;
+            getConnection().setAutoCommit(false); // TODO is autocommit off needed for batch?
+
             for(String tag: tags){
                 pstCheck.setString(1, tag);
-                ResultSet rs = pstCheck.executeQuery();
-                if(!rs.next()){
-                    pstAdd.setString(1, tag);
-                    pstAdd.setInt(2, 1);
-                    pstAdd.addBatch();
+                try(ResultSet rs = pstCheck.executeQuery()){
+                    if(!rs.next()){
+                        pstAdd.setString(1, tag);
+                        pstAdd.setInt(2, 1);
+                        pstAdd.addBatch();
+                    }
                 }
             }
 
             pstAdd.executeBatch();
             getConnection().commit();
 
-            pstAdd.close();
-            pstCheck.close();
-
+        } catch (SQLException e) {
+            log.error("", e);
+        }
+        finally {
             getConnection().setAutoCommit(true);
-
-        } catch (SQLException e) {
-            log.error("", e);
         }
     }
 
-    public void updateRecipeTags(String hash, List<String> tags){
-        validateTags(tags);
+    public void updateRecipeTags(final String hash, final List<String> tags){
 
-        try {
-            PreparedStatement pst = getConnection().prepareStatement("select id from recipes where hash = ?");
+        try(PreparedStatement pst = getConnection().prepareStatement("select id from recipes where hash = ?")){
+
+            addMissingTags(tags);
+
             pst.setString(1, hash);
-            ResultSet rs = pst.executeQuery();
-            if(rs.next()){
-                long id = rs.getLong("id");
+            try(ResultSet rs = pst.executeQuery()){
+                if(rs.next()){
+                    final long id = rs.getLong("id");
 
-                PreparedStatement pstUpd = getConnection().prepareStatement("delete from recipetags where recipeid = ?");
-                pstUpd.setLong(1, id);
-                pstUpd.executeUpdate();
+                    try(PreparedStatement pstDel = getConnection().prepareStatement("delete from recipetags where recipeid = ?");
+                            PreparedStatement pstIns = getConnection().prepareStatement("insert into recipetags (recipeid, tagid) values (?, (select id from tags where val = ?))")
+                            ){
 
-                pstUpd = getConnection().prepareStatement("insert into recipetags (recipeid, tagid) values (?, (select id from tags where val = ?))");
-                pstUpd.setLong(1, id);
-                for(String tag: tags){
-                    pstUpd.setString(2, tag);
-                    pstUpd.addBatch();
+                        pstDel.setLong(1, id);
+                        pstDel.executeUpdate();
+
+                        pstIns.setLong(1, id);
+                        for(String tag: tags){
+                            pstIns.setString(2, tag);
+                            pstIns.addBatch();
+                        }
+                        pstIns.executeBatch();
+                    }
                 }
-                pstUpd.executeBatch();
-
-                pstUpd.close();
             }
 
-            pst.close();
         } catch (SQLException e) {
             log.error("", e);
         }
     }
 
-    public ArrayList<String> getRecipeTags(String hash){
-        ArrayList<String> tags = new ArrayList<>();
+    public List<String> getRecipeTags(final String hash){
+        final ArrayList<String> tags = new ArrayList<>();
 
-        try {
-            PreparedStatement pst = getConnection().prepareStatement(
-                    "select val from tags t" +
-                    " left join recipetags rt on rt.tagid = t.id" +
-                    " left join recipes r on r.id = rt.recipeid" +
-                    " where r.hash = ?" +
-                    " order by val");
+
+        try(PreparedStatement pst = getConnection().prepareStatement(
+                "select val from tags t" +
+                " left join recipetags rt on rt.tagid = t.id" +
+                " left join recipes r on r.id = rt.recipeid" +
+                " where r.hash = ?" +
+                " order by val")){
+
             pst.setString(1, hash);
-            ResultSet rs = pst.executeQuery();
-            while(rs.next()){
-                tags.add(rs.getString("val"));
+            try(ResultSet rs = pst.executeQuery()){
+                while(rs.next()){
+                    tags.add(rs.getString("val"));
+                }
             }
 
-            pst.close();
         } catch (SQLException e) {
             log.error("", e);
         }
@@ -651,14 +498,14 @@ public final class Database {
         return tags;
     }
 
-    public void updateRecipe(String hash, String newTitle){
-        try {
-            PreparedStatement pst = getConnection().prepareStatement(
-                    "update recipes set title = ? where hash = ?");
+    public void updateRecipe(final String hash, final String newTitle){
+        try(PreparedStatement pst = getConnection().prepareStatement(
+                "update recipes set title = ? where hash = ?")) {
+
             pst.setString(1, newTitle);
             pst.setString(2, hash);
             pst.executeUpdate();
-            pst.close();
+
         } catch (SQLException e) {
             log.error("", e);
         }

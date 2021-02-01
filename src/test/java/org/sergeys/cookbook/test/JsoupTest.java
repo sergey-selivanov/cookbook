@@ -73,13 +73,13 @@ class JsoupTest {
 
         Matcher matcher = pattern.matcher(url);
         while(matcher.find()) {
-            log.debug("== " + matcher.group());
+            log.debug("== {}", matcher.group());
         }
 
         // When there is a positive-width match at the beginning of the input sequence then an empty leading substring is included
         // Trailing empty strings will be discarded
         pattern.splitAsStream(url).forEachOrdered(str -> {
-            log.debug("-- " + str);
+            log.debug("-- {}", str);
         });
 
         String[] tokens = pattern.split(url);
@@ -90,7 +90,7 @@ class JsoupTest {
 
     private void removeElements(Document doc, String tag) {
         Elements elts = doc.getElementsByTag(tag);
-        log.debug("found " + elts.size() + " element(s) of '" + tag + "' for removal");
+        log.debug("found {} element(s) of '{}' for removal", elts.size(), tag);
         elts.remove();
     }
 
@@ -103,7 +103,7 @@ class JsoupTest {
         File targetDir = new File(targetDirname);
         if(!targetDir.exists()) {
             targetDir.mkdirs();
-            log.debug("created " + targetDir);
+            log.debug("created {}", targetDir);
         }
 
         Elements elements = doc.getElementsByTag(tag);

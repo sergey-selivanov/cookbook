@@ -40,7 +40,7 @@ plugins {
     id 'application'
     id 'eclipse'
     id 'org.openjfx.javafxplugin' version '0.0.9'
-    id 'org.beryx.jlink' version '2.23.2' // modular
+    id 'org.beryx.jlink' version '2.23.3' // modular
     //id 'org.beryx.runtime' version '1.12.1'  // non modular
 
     id 'com.github.spotbugs' version '4.6.0'
@@ -75,7 +75,7 @@ dependencies {
 
     implementation 'org.jsoup:jsoup:1.13.1'
 
-    implementation 'org.flywaydb:flyway-core:7.5.1'
+    implementation 'org.flywaydb:flyway-core:7.5.2'
 
 //    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.12.Final'
 

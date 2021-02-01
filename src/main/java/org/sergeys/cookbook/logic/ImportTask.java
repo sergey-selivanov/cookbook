@@ -1,15 +1,9 @@
 package org.sergeys.cookbook.logic;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URLDecoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystems;
@@ -70,7 +64,7 @@ public class ImportTask extends Task<ImportTask.Status>
 //            }
 
             if(ref.isEmpty()) {
-                log.debug("skipping empty ref element " + tag + ", " + attribute + ": " + ref);
+                log.debug("skipping empty ref element {}, {}: {}", tag, attribute, ref);
                 return;
             }
 
@@ -81,7 +75,7 @@ public class ImportTask extends Task<ImportTask.Status>
 
                 String[] tokens = FILENAME_IN_URL.split(ref);
                 if(tokens.length != 2) {
-                    log.error("Failed to parse filename from " + ref);
+                    log.error("Failed to parse filename from {}", ref);
                 }
                 else {
                     String filename = tokens[1];
@@ -102,7 +96,8 @@ public class ImportTask extends Task<ImportTask.Status>
                         try {
                             if(!dest.toFile().exists()) {
 
-                                log.debug("download {}", ref);
+                                log.debug(">>>> download {}", ref);
+/*
                                 HttpClient client = HttpClient.newBuilder()
                                         .build();
                                 HttpRequest req = HttpRequest.newBuilder()
@@ -110,6 +105,7 @@ public class ImportTask extends Task<ImportTask.Status>
                                         .uri(URI.create(ref))
                                         .build();
 
+                                // TODO SSLHandshakeException, ConnectException
                                 HttpResponse<byte[]> resp = client.send(req, BodyHandlers.ofByteArray());
                                 //log.debug("got " + resp.body().length + " bytes");
 
@@ -127,7 +123,7 @@ public class ImportTask extends Task<ImportTask.Status>
                                 }
 
                                 log.debug("downloaded " + dest);
-
+*/
                                 element.attr(attribute, "./" + targetSubdirname + "/" + filename);
                                 return;
                             }
@@ -135,13 +131,15 @@ public class ImportTask extends Task<ImportTask.Status>
                                 log.warn("don't download, already exists: {}", dest);
                             }
 
-                        } catch (IOException | InterruptedException e1) {
-                            log.error("failed", e1);
-                            return;
                         }
+//                        catch (IOException | InterruptedException e1) {
+//                            log.error("failed", e1);
+//                            return;
+//                        }
+                        finally {}
                     }
                     else {
-                        log.debug("skipping element " + tag + ", " + attribute + ": " + ref + ", looks like not a file");
+                        log.debug("skipping element {}, {}: {}, looks like not a file", tag, attribute, ref);
                         return;
                     }
                 }
@@ -187,10 +185,14 @@ public class ImportTask extends Task<ImportTask.Status>
                     // "Files.copy clearly specifies that it is not an atomic operation. So yes, it is possible to get interference from other entities that are creating/deleting/moving files at the same time."
 
                     //Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
+
+                    // TODO FileSystemException
+                    // java.nio.file.FileSystemException: I:\home\food2\??????? ??????? - ??????? ?? ?????? ???????_files\440.png -> j:\Temp\cookbook18270422026351628819\dc25a923a7a41db84fe20f507d7fc00a9980aaf37936afff8750c070cf9c2e83\440.png: The process cannot access the file because it is being used by another process
+                    // at sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:92) ~[?:?]
                     Files.copy(src, dest);
                 }
                 else {
-                    log.debug(dest.getFileName() + " already exists, skipped");
+                    log.debug("{} already exists, skipped", dest.getFileName());
                 }
 
                 // update reference
@@ -232,9 +234,9 @@ public class ImportTask extends Task<ImportTask.Status>
 
         // looks broken if leave scripts:
         // https://ru-kitchen.ru/TyqYxuUgdA3E9b
-        removeElements(doc, "script");
-        removeElements(doc, "noscript");
-        removeElements(doc, "noindex");
+//        removeElements(doc, "script");
+//        removeElements(doc, "noscript");
+//        removeElements(doc, "noindex");
 
         // adjust relative references and copy referenced files
 
@@ -292,7 +294,8 @@ public class ImportTask extends Task<ImportTask.Status>
         Util.packJar(baseOutputDir, newName);
 
         // put to database
-        File jarfile = new File(baseOutputDir + File.separator + newName + ".jar");
+        //File jarfile = new File(baseOutputDir + File.separator + newName + ".jar");
+        Path jarfile = Path.of(baseOutputDir, newName + ".jar");
         try {
             db.addRecipe(hash, jarfile, title, htmlFile.getAbsolutePath());
             List<String> suggestedTags = RecipeLibrary.getInstance().suggestTags(title);

@@ -11,6 +11,18 @@
 </node>
 <node CREATED="1584896374233" ID="ID_1407806878" MODIFIED="1587889006941" TEXT="remove or replace http:// links and images which can&apos;t be downloaded or failed, to placeholder"/>
 <node CREATED="1584897699030" ID="ID_1459105573" MODIFIED="1584897728224" TEXT="skip included files referenced in deleted e.g script tags"/>
+<node CREATED="1612155870839" ID="ID_82109145" MODIFIED="1612155909623" TEXT="allow external url references">
+<node CREATED="1612155910991" ID="ID_1081763846" LINK="https://stackoverflow.com/questions/16215844/javafx-webview-disable-same-origin-policy-allow-cross-domain-requests" MODIFIED="1612155917006" TEXT="https://stackoverflow.com/questions/16215844/javafx-webview-disable-same-origin-policy-allow-cross-domain-requests"/>
+<node CREATED="1612155932635" ID="ID_1321490423" LINK="https://gist.github.com/thomasdarimont/310c3839bc63501680e6" MODIFIED="1612155936337" TEXT="https://gist.github.com/thomasdarimont/310c3839bc63501680e6"/>
+<node CREATED="1612156433721" ID="ID_1282578853" LINK="https://stackoverflow.com/questions/59124197/iframes-not-loaded-when-using-javafx-webview" MODIFIED="1612156437317" TEXT="https://stackoverflow.com/questions/59124197/iframes-not-loaded-when-using-javafx-webview"/>
+<node CREATED="1612156730611" ID="ID_70165683" LINK="https://github.com/vsch/Javafx-WebView-Debugger" MODIFIED="1612156734672" TEXT="https://github.com/vsch/Javafx-WebView-Debugger"/>
+<node CREATED="1612159683333" ID="ID_306536676" LINK="https://stackoverflow.com/questions/41400222/javafx-webview-html-loader-not-loading-images" MODIFIED="1612159688609" TEXT="https://stackoverflow.com/questions/41400222/javafx-webview-html-loader-not-loading-images"/>
+</node>
+</node>
+<node CREATED="1612157092196" ID="ID_1696682167" MODIFIED="1612157101060" TEXT="HtmlEditor">
+<node CREATED="1612157101870" ID="ID_788432237" MODIFIED="1612157124463" TEXT="simple edits to visible main html page">
+<node CREATED="1612157125533" ID="ID_963088558" MODIFIED="1612157143106" TEXT="save modified but keep original"/>
+</node>
 </node>
 <node CREATED="1584921979506" ID="ID_1403350064" MODIFIED="1584921981584" TEXT="UI">
 <node CREATED="1584896627766" ID="ID_821771700" MODIFIED="1587889017356" TEXT="put vertical divider to non zero position on 1st start">

@@ -2,11 +2,11 @@ package org.sergeys.cookbook.logic;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import javafx.concurrent.Task;
 
-
 public final class RecipeLibrary {
 
     private final Logger log = LoggerFactory.getLogger(RecipeLibrary.class);
@@ -26,17 +25,20 @@ public final class RecipeLibrary {
     private static Object instanceLock = new Object();
     private static RecipeLibrary instance;
 
-    private Hashtable<String, String> fullwords = new Hashtable<String, String>();
-    private Hashtable<String, String> prefixes = new Hashtable<String, String>();
+    // word - tag, prefix - tag
+    private final Hashtable<String, String> fullwords = new Hashtable<String, String>();
+    private final Hashtable<String, String> prefixes = new Hashtable<String, String>();
 
+    // TODO howto proper singleton in java
     // singleton
     private RecipeLibrary(){
-        // TODO error handling here
-        BufferedReader br = new BufferedReader(
+
+        try(BufferedReader br = new BufferedReader(
                 new InputStreamReader(
-                        getClass().getResourceAsStream("/tagsuggestions_ru.txt"), StandardCharsets.UTF_8));
-        String s;
-        try {
+                        getClass().getResourceAsStream("/tagsuggestions_ru.txt"), StandardCharsets.UTF_8))){
+
+            String s;
+
             while((s = br.readLine()) != null){
                 if(!s.isEmpty() && !s.startsWith("#")){
                     String[] arr = s.split("=");
@@ -53,7 +55,9 @@ public final class RecipeLibrary {
                     }
                 }
             }
-        } catch (Exception e) {
+
+        } catch (IOException e) {
+        //} catch (Exception e) {
             log.error("failed to parse tag suggestions", e);
         }
     }
@@ -68,16 +72,14 @@ public final class RecipeLibrary {
         return instance;
     }
 
-    //ExecutorService executor;
-
     public void validate(){
         try {
-            Database db = new Database();
+            final Database db = new Database();
             //ArrayList<Recipe> recipes = Database.getInstance().getAllRecipes();
-            ArrayList<Recipe> recipes = db.getAllRecipes();
+            final List<Recipe> recipes = db.getAllRecipes();
             db.close();
 
-            ExecutorService executor = Executors.newCachedThreadPool();
+            final ExecutorService executor = Executors.newCachedThreadPool();
 
             for(final Recipe r: recipes){
 
@@ -89,12 +91,12 @@ public final class RecipeLibrary {
                     Task<Void> task = new Task<Void>() {
                         @Override
                         protected Void call() throws Exception {
-                            log.debug("unpacking " + f.getAbsolutePath());
+                            log.debug("unpacking {}", f.getAbsolutePath());
 
-                            File temp = File.createTempFile("cookbook", ".jar");
+                            final File temp = File.createTempFile("cookbook", ".jar");
                             temp.deleteOnExit();
 
-                            Database db = new Database();
+                            final Database db = new Database();
 
                             db.extractRecipeFile(r.getHash(), temp);
                             db.close();
@@ -124,28 +126,23 @@ public final class RecipeLibrary {
 
     public List<String> suggestTags(String phrase){
 
-        Hashtable<String, String> tags = new Hashtable<>();
+        final HashSet<String> tags = new HashSet<>();
 
-        String[] words = phrase.split("[\\n\\r\\t\\p{Space}\\p{Punct}]");
+        final String[] words = phrase.split("[\\n\\r\\t\\p{Space}\\p{Punct}]");
         for(String word: words){
             word = word.trim().toLowerCase();
             if(fullwords.containsKey(word)){
-                tags.put(fullwords.get(word), "");
+                tags.add(fullwords.get(word));
             }
 
             for(Enumeration<String> en = prefixes.keys(); en.hasMoreElements();){
-                String prefix = en.nextElement();
+                final String prefix = en.nextElement();
                 if(word.startsWith(prefix)){
-                    tags.put(prefixes.get(prefix), "");
+                    tags.add(prefixes.get(prefix));
                 }
             }
         }
 
-        return Collections.list(tags.keys());
+        return List.copyOf(tags);
     }
-
-//    public boolean shutdown() throws InterruptedException {
-//        singleExecutor.shutdown();
-//        return singleExecutor.awaitTermination(3, TimeUnit.SECONDS);
-//    }
 }

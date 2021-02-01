@@ -48,7 +48,7 @@ public class MassImportTask extends Task<ImportTask.Status>
 //        }
 
         try {
-            PathMatcher matcher = directory.getFileSystem().getPathMatcher(HTML_FILES_GLOB);
+            final PathMatcher matcher = directory.getFileSystem().getPathMatcher(HTML_FILES_GLOB);
 
             final long total;
 
@@ -58,14 +58,9 @@ public class MassImportTask extends Task<ImportTask.Status>
                     .count();
             }
 
-            AtomicLong processed = new AtomicLong();
+            final AtomicLong processed = new AtomicLong();
 
             try(Stream<Path> stream = Files.list(directory)){
-
-                // TODO count files??
-
-                //long count = stream.count();
-                //log.debug("count: " + count);
 
                 stream
                     .filter(p -> matcher.matches(p.getFileName()))
@@ -78,7 +73,7 @@ public class MassImportTask extends Task<ImportTask.Status>
                             @Override
                             public void handle(WorkerStateEvent event) {
                                 log.debug("=== done");
-                                //processed.incrementAndGet();
+
                                 updateProgress(processed.incrementAndGet(), total);
                             }
                         });

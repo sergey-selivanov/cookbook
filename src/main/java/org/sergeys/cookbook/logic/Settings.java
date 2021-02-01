@@ -132,7 +132,7 @@ public class Settings {
         // slf4j logging
         log = LoggerFactory.getLogger("cookbook");
 
-        log.debug("data dir: " + dataDirPath);
+        log.debug("data dir: {}", dataDirPath);
 
         load();
     }
@@ -174,7 +174,7 @@ public class Settings {
             e.writeObject(instance);
             e.close();
             */
-            // TODO refactor all FileOutputStream(
+
             try(XMLEncoder e = new XMLEncoder(Files.newOutputStream(Path.of(settingsFilePath), StandardOpenOption.CREATE))){
                 e.writeObject(instance);
             }

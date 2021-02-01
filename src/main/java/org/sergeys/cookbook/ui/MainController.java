@@ -19,6 +19,8 @@ import org.sergeys.cookbook.ui.RecipeTreeValue.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+//import com.sun.javafx.webkit.WebConsoleListener;
+
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -80,8 +82,6 @@ public class MainController {
         // TODO call in background
         try {
             //Database db = new Database();
-// TODO do flyway
-//log.error(">>> TODO upgradeOrCreateIfNeeded database here");
 //            db.upgradeOrCreateIfNeeded();
             //db.close();
 
@@ -96,7 +96,7 @@ public class MainController {
         RecipeLibrary.getInstance().validate();
 
 
-        TreeItem<RecipeTreeValue> treeRoot = new TreeItem<RecipeTreeValue>();
+        final TreeItem<RecipeTreeValue> treeRoot = new TreeItem<RecipeTreeValue>();
         tree.setShowRoot(false);
         tree.setRoot(treeRoot);
         treeRoot.setExpanded(true);
@@ -109,13 +109,13 @@ public class MainController {
 
 
     private void rebuildTree(){
-        BuildTreeTask treeBuilder = new BuildTreeTask();
+        final BuildTreeTask treeBuilder = new BuildTreeTask();
         treeBuilder.progressProperty().addListener(new ChangeListener<>() {
 
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 // TODO Auto-generated method stub
-                log.debug("progress: " + newValue.doubleValue());
+                log.debug("progress: {}", newValue.doubleValue());
             }
         });
 
@@ -172,14 +172,14 @@ public class MainController {
 
         try {	// TODO do in different correct place
 
-            double pos = splitPane.getDividerPositions()[0];
+            final double pos = splitPane.getDividerPositions()[0];
 //            System.out.println("<" + pos);
 
             Settings.getInstance().setWinDividerPosition(pos);
 
 //            System.out.println(Settings.getInstance().getWinDividerPosition());
 
-            Stage myStage = (Stage) mainBorderPane.getScene().getWindow();
+            final Stage myStage = (Stage) mainBorderPane.getScene().getWindow();
 
 //            Settings.getInstance().getWinPosition().setSize(myStage.getX(), myStage.getY());
 //            Settings.getInstance().getWinSize().setSize(myStage.getWidth(), myStage.getHeight());
@@ -218,11 +218,11 @@ public class MainController {
 
         mainBorderPane.setEffect(new BoxBlur());
 
-        Parent p = mainBorderPane.getParent();
-        Node progress = p.lookup("#paneProgress");
-        Node glass = p.lookup("#paneGlass");
+        final Parent p = mainBorderPane.getParent();
+        final Node progress = p.lookup("#paneProgress");
+        final Node glass = p.lookup("#paneGlass");
 
-        FadeTransition ft = new FadeTransition(Duration.millis(500), glass);
+        final FadeTransition ft = new FadeTransition(Duration.millis(500), glass);
         ft.setFromValue(0);
         ft.setToValue(0.5);
 
@@ -235,11 +235,11 @@ public class MainController {
 
         mainBorderPane.setEffect(null);
 
-        Parent p = mainBorderPane.getParent();
-        Node progress = p.lookup("#paneProgress");
-        Node glass = p.lookup("#paneGlass");
+        final Parent p = mainBorderPane.getParent();
+        final Node progress = p.lookup("#paneProgress");
+        final Node glass = p.lookup("#paneGlass");
 
-        FadeTransition ft = new FadeTransition(Duration.millis(500), glass);
+        final FadeTransition ft = new FadeTransition(Duration.millis(500), glass);
         ft.setFromValue(0.5);
         ft.setToValue(0);
 
@@ -266,7 +266,12 @@ public class MainController {
 //        webview.getEngine().load(new File(filename).toURI().toString());
 
         //webview.getEngine().load(new File(currentRecipe.getUnpackedFilename()).toURI().toString());
-        webview.getEngine().load(new File(recipe.getUnpackedFilename()).toURI().toString());
+
+        final String url = new File(recipe.getUnpackedFilename()).toURI().toString();
+        log.debug("load: {}", url);
+        webview.getEngine().load(url);
+
+        //webview.getEngine().getLoadWorker().stateProperty().
 
         setTitle(recipe);
     }
@@ -276,8 +281,8 @@ public class MainController {
 
         try {
             //List<String> t = Database.getInstance().getRecipeTags(recipe.getHash());
-            List<String> t = db.getRecipeTags(recipe.getHash());
-            StringBuilder sb = new StringBuilder();
+            final List<String> t = db.getRecipeTags(recipe.getHash());
+            final StringBuilder sb = new StringBuilder();
             for(String s: t){
                 if(sb.length() > 0){
                     sb.append(", ");
@@ -294,7 +299,7 @@ public class MainController {
 
     private void doImport(){
 
-        File prev = new File(Settings.getInstance().getLastFilechooserLocation());
+        final File prev = new File(Settings.getInstance().getLastFilechooserLocation());
         if(prev.exists()){
             fc.setInitialDirectory(prev);
         }
@@ -303,15 +308,15 @@ public class MainController {
         if(file != null){
             Settings.getInstance().setLastFilechooserLocation(file.getParent());
 
-            ImportTask importTask = new ImportTask(file);
+            final ImportTask importTask = new ImportTask(file);
 
             importTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 
                 @Override
                 public void handle(WorkerStateEvent event) {
                     try {
-                        ImportTask.Status status = importTask.get();
-                        log.debug("status: " + status);
+                        final ImportTask.Status status = importTask.get();
+                        log.debug("status: {}", status);
                         if(status == ImportTask.Status.AlreadyExist){
                             log.debug("already exist");
                         }
@@ -329,7 +334,7 @@ public class MainController {
 
                 @Override
                 public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                    log.debug("import progress: " + newValue);
+                    log.debug("import progress: {}", newValue);
                 }
             });
 
@@ -353,9 +358,9 @@ public class MainController {
 
   private void doMassImport(){
 
-      DirectoryChooser dc = new DirectoryChooser();
+      final DirectoryChooser dc = new DirectoryChooser();
 
-      File prev = new File(Settings.getInstance().getLastFilechooserLocation());
+      final File prev = new File(Settings.getInstance().getLastFilechooserLocation());
       if(prev.exists()){
           dc.setInitialDirectory(prev.getParentFile());
       }
@@ -368,16 +373,16 @@ public class MainController {
 
       Settings.getInstance().setLastFilechooserLocation(dir.toString());
 
-      MassImportTask massImportTask = new MassImportTask(dir);
+      final MassImportTask massImportTask = new MassImportTask(dir);
       massImportTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 
             @Override
             public void handle(WorkerStateEvent event) {
                 try {
-                    ImportTask.Status status = massImportTask.get();
-                    log.debug("status: " + status);
+                    final ImportTask.Status status = massImportTask.get();
+                    log.debug("status: {}", status);
                     if(status != ImportTask.Status.Complete){
-                        log.debug("failed: " + status);
+                        log.debug("failed: {}", status);
                     }
                     else{
                         // TODO reset progress
@@ -390,14 +395,13 @@ public class MainController {
                 }
 
                 hideProgress();
-
             }
       });
 
       massImportTask.setOnFailed(new EventHandler<WorkerStateEvent>() {
           @Override
           public void handle(WorkerStateEvent event) {
-              log.error("failed: " + event.getSource().getException());
+              log.error("failed: {}", event.getSource().getException());
               hideProgress();
           }
       });
@@ -406,16 +410,16 @@ public class MainController {
 
         @Override
         public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-            log.debug("import progress: " + newValue);
+            log.debug("import progress: {}", newValue);
         }
       });
 
 
-      Parent p = mainBorderPane.getParent();
-      ProgressBar progressBar = (ProgressBar)p.lookup("#progressBar");
+      final Parent p = mainBorderPane.getParent();
+      final ProgressBar progressBar = (ProgressBar)p.lookup("#progressBar");
       progressBar.progressProperty().bind(massImportTask.progressProperty()); // TODO allowed? or bind via our member field?
 
-      Label message = (Label)p.lookup("#lblMessage");
+      final Label message = (Label)p.lookup("#lblMessage");
       message.setText("Import files from " + dir);
 
       showProgress();

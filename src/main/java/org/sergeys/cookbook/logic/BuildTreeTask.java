@@ -1,7 +1,6 @@
 package org.sergeys.cookbook.logic;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.sergeys.cookbook.ui.RecipeTreeValue;
@@ -37,7 +36,7 @@ public class BuildTreeTask extends Task<ObservableList<TreeItem<RecipeTreeValue>
     @Override
     protected ObservableList<TreeItem<RecipeTreeValue>> call() throws Exception {
 
-        ObservableList<TreeItem<RecipeTreeValue>> result = FXCollections.observableArrayList();
+        final ObservableList<TreeItem<RecipeTreeValue>> result = FXCollections.observableArrayList();
 
         buildTree(result);
 
@@ -57,10 +56,10 @@ public class BuildTreeTask extends Task<ObservableList<TreeItem<RecipeTreeValue>
 
 
         try {
-            ArrayList<Tag> tags = db.getRootTags();
+            final List<Tag> tags = db.getRootTags();
             for(Tag t: tags){
 
-                TreeItem<RecipeTreeValue> item;
+                final TreeItem<RecipeTreeValue> item;
                 if(t.getVal().equals("favorites")){
                     item = new TreeItem<RecipeTreeValue>(new RecipeTreeValue(t), new ImageView(favIcon));
                 }
@@ -69,10 +68,10 @@ public class BuildTreeTask extends Task<ObservableList<TreeItem<RecipeTreeValue>
                 }
 
                 if(t.getSpecialid() == Tag.SPECIAL_OTHER){
-                    List<Recipe> recipes = db.getRecipesWithoutTags();
+                    final List<Recipe> recipes = db.getRecipesWithoutTags();
                     for(Recipe r: recipes){
                         //TreeItem<RecipeTreeValue> ritem = new TreeItem<RecipeTreeValue>(new RecipeTreeValue(r), new ImageView(recipeIcon));
-                        TreeItem<RecipeTreeValue> ritem = new TreeItem<RecipeTreeValue>(new RecipeTreeValue(r));
+                        final TreeItem<RecipeTreeValue> ritem = new TreeItem<RecipeTreeValue>(new RecipeTreeValue(r));
                         item.getChildren().add(ritem);
                     }
                     //tree.getRoot().getChildren().add(item);
@@ -92,15 +91,14 @@ public class BuildTreeTask extends Task<ObservableList<TreeItem<RecipeTreeValue>
     }
 
     private boolean buildSubtree(TreeItem<RecipeTreeValue> item, Tag tag){
-        //Settings.getLogger().debug("buildsubtree");
 
         boolean hasChildren = false;
 
         try {
 
-            List<Tag> tags = db.getChildrenTags(tag.getVal());
+            final List<Tag> tags = db.getChildrenTags(tag.getVal());
             for(Tag t: tags){
-                TreeItem<RecipeTreeValue> titem = new TreeItem<RecipeTreeValue>();
+                final TreeItem<RecipeTreeValue> titem = new TreeItem<RecipeTreeValue>();
                 titem.setValue(new RecipeTreeValue(t));
                 item.getChildren().add(titem);
                 buildSubtree(titem, t);
@@ -108,10 +106,10 @@ public class BuildTreeTask extends Task<ObservableList<TreeItem<RecipeTreeValue>
                 hasChildren = true;
             }
 
-            List<Recipe> recipes = db.getRecipesByTag(tag.getVal());
+            final List<Recipe> recipes = db.getRecipesByTag(tag.getVal());
             for(Recipe r: recipes){
                 //TreeItem<RecipeTreeValue> ritem = new TreeItem<RecipeTreeValue>(new RecipeTreeValue(r), new ImageView(recipeIcon));
-                TreeItem<RecipeTreeValue> ritem = new TreeItem<RecipeTreeValue>(new RecipeTreeValue(r));
+                final TreeItem<RecipeTreeValue> ritem = new TreeItem<RecipeTreeValue>(new RecipeTreeValue(r));
                 item.getChildren().add(ritem);
 
                 hasChildren = true;
