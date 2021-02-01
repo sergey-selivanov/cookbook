@@ -6,7 +6,7 @@ import java.util.Properties;
 
 import org.kordamp.bootstrapfx.BootstrapFX;
 import org.sergeys.cookbook.logic.Database;
-import org.sergeys.cookbook.logic.Settings;
+import org.sergeys.cookbook.logic.SettingsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,14 +26,12 @@ public class CookBook extends Application
 
     private Stage primaryStage;
 
-    static {
-        Settings.getDataDirPath(); // this initializes System.setProperty("log4j.log.file"
-    }
-
     public static void main(String[] args) {
+        SettingsManager.getInstance(); // this initializes System.setProperty("log4j.log.file"
+
         log = LoggerFactory.getLogger(CookBook.class);
 
-        Properties version = Settings.getInstance().getVersion();
+        Properties version = SettingsManager.getInstance().getVersion();
 
         log.info("=================================================================");
         log.info("CookBook {}", version.getProperty("version", "unknown version"));
@@ -78,10 +76,10 @@ public class CookBook extends Application
         primaryStage.setTitle("CookBook");
         primaryStage.getIcons().add(new Image(CookBook.class.getResourceAsStream("/images/amor.png")));
 
-        primaryStage.setX(Settings.getInstance().getWindowPosition().getX());
-        primaryStage.setY(Settings.getInstance().getWindowPosition().getY());
-        primaryStage.setWidth(Settings.getInstance().getWindowPosition().getWidth());
-        primaryStage.setHeight(Settings.getInstance().getWindowPosition().getHeight());
+        primaryStage.setX(SettingsManager.getInstance().getSettings().getWindowPosition().getX());
+        primaryStage.setY(SettingsManager.getInstance().getSettings().getWindowPosition().getY());
+        primaryStage.setWidth(SettingsManager.getInstance().getSettings().getWindowPosition().getWidth());
+        primaryStage.setHeight(SettingsManager.getInstance().getSettings().getWindowPosition().getHeight());
 
         primaryStage.show();
 

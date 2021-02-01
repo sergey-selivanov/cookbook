@@ -2,6 +2,7 @@ package org.sergeys.cookbook.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -20,24 +21,21 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.sergeys.cookbook.logic.Settings;
+import org.sergeys.cookbook.logic.SettingsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class DbTest {
 
-    static String dataDir;
+    static Path dataDir;
 
     static Logger log;
 
     @BeforeAll
     static void setUpBeforeClass() throws Exception {
 
-
-        dataDir = Settings.getDataDirPath();
-
+        dataDir = SettingsManager.getInstance().getDataDirPath();
         log = LoggerFactory.getLogger(DbTest.class);
-
     }
 
     @AfterAll

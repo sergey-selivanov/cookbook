@@ -120,7 +120,8 @@ reckon {
 }
 
 javafx {
-    version = '15.0.1'
+    //version = '15.0.1' //broken pages in webview
+    version = '16-ea+6' // pages OK
     modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.web' ]
     configuration = 'compile'
 }

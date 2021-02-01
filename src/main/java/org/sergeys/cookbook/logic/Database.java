@@ -40,7 +40,8 @@ public final class Database {
 
     private Connection connection;
 
-    private static final String connectionUrl = String.format("jdbc:h2:%s/%s;TRACE_LEVEL_FILE=4", Settings.getDataDirPath(), Database.FILENAME).replace('\\', '/');
+    private static final String connectionUrl = String.format("jdbc:h2:%s/%s;TRACE_LEVEL_FILE=4",
+            SettingsManager.getInstance().getDataDirPath(), Database.FILENAME).replace('\\', '/');
 
     public Database()
     {
@@ -85,7 +86,7 @@ public final class Database {
             throw new CookbookException("no flywaydb migration files found");
         }
 
-        String baseFilename = Settings.getDataDirPath() + File.separator + FILENAME;
+        String baseFilename = SettingsManager.getInstance().getDataDirPath() + File.separator + FILENAME;
 
         // check if db file exists
         if(Files.exists(Path.of(baseFilename + ".mv.db"))

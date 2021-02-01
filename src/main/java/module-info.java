@@ -1,7 +1,5 @@
 module cookbook {
 // open module allows flyway to work  https://www.baeldung.com/java-9-modularity
-//module cookbook {
-    // TODO make separate open module for flyway sql files?
 
     requires java.sql;
     requires java.desktop;	// java.beans.XMLDecoder

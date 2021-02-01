@@ -28,7 +28,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.sergeys.cookbook.logic.Settings;
+import org.sergeys.cookbook.logic.SettingsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -256,7 +256,7 @@ class JsoupTest {
             // adjust relative references and copy referenced files
 
             //String newName = "sample-output1";
-            String baseOutputDir = Settings.getDataDirPath();
+            String baseOutputDir = SettingsManager.getInstance().getDataDirPath().toString();
 
             //String targetSubdirName = baseOutputDir + File.separator + newName;
             String targetMainFile = baseOutputDir + File.separator + newName + ".html";

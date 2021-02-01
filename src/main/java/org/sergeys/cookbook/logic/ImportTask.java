@@ -96,7 +96,7 @@ public class ImportTask extends Task<ImportTask.Status>
                         try {
                             if(!dest.toFile().exists()) {
 
-                                log.debug(">>>> download {}", ref);
+                                log.debug(">>>> SKIPPED download {}", ref);
 /*
                                 HttpClient client = HttpClient.newBuilder()
                                         .build();
@@ -234,9 +234,9 @@ public class ImportTask extends Task<ImportTask.Status>
 
         // looks broken if leave scripts:
         // https://ru-kitchen.ru/TyqYxuUgdA3E9b
-//        removeElements(doc, "script");
-//        removeElements(doc, "noscript");
-//        removeElements(doc, "noindex");
+        removeElements(doc, "script");
+        removeElements(doc, "noscript");
+        removeElements(doc, "noindex");
 
         // adjust relative references and copy referenced files
 

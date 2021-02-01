@@ -31,12 +31,12 @@ public class Recipe {
     public void setId(long id) {
         this.id = id;
     }
-    
+
     public String getUnpackedDir(){
-    	return Settings.getRecipeLibraryPath() + File.separator + hash.charAt(0);
+        return SettingsManager.getInstance().getRecipeSubdirPath() + File.separator + hash.charAt(0);
     }
-    
+
     public String getUnpackedFilename(){
-    	return getUnpackedDir() + File.separator + hash + ".html";
+        return getUnpackedDir() + File.separator + hash + ".html";
     }
 }

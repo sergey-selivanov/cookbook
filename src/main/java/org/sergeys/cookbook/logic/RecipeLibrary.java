@@ -5,9 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,13 +25,14 @@ public final class RecipeLibrary {
     private static RecipeLibrary instance;
 
     // word - tag, prefix - tag
-    private final Hashtable<String, String> fullwords = new Hashtable<String, String>();
-    private final Hashtable<String, String> prefixes = new Hashtable<String, String>();
+    private final HashMap<String, String> fullwords = new HashMap<>();
+    private final HashMap<String, String> prefixes = new HashMap<>();
 
     // TODO howto proper singleton in java
     // singleton
     private RecipeLibrary(){
 
+        // TODO support suggestions for other languages
         try(BufferedReader br = new BufferedReader(
                 new InputStreamReader(
                         getClass().getResourceAsStream("/tagsuggestions_ru.txt"), StandardCharsets.UTF_8))){
@@ -57,7 +57,6 @@ public final class RecipeLibrary {
             }
 
         } catch (IOException e) {
-        //} catch (Exception e) {
             log.error("failed to parse tag suggestions", e);
         }
     }
@@ -75,7 +74,6 @@ public final class RecipeLibrary {
     public void validate(){
         try {
             final Database db = new Database();
-            //ArrayList<Recipe> recipes = Database.getInstance().getAllRecipes();
             final List<Recipe> recipes = db.getAllRecipes();
             db.close();
 
@@ -83,8 +81,6 @@ public final class RecipeLibrary {
 
             for(final Recipe r: recipes){
 
-                //final File f = new File(Settings.getRecipeLibraryPath() + File.separator + r.getHash() + ".html");
-                //final File dir = new File(r.getUnpackedDir());
                 final File f = new File(r.getUnpackedFilename());
                 if(!f.exists()){
 
@@ -108,7 +104,6 @@ public final class RecipeLibrary {
                         }
                     };
 
-                    //singleExecutor.execute(task);
                     executor.execute(task);
                 }
             }
@@ -134,9 +129,7 @@ public final class RecipeLibrary {
             if(fullwords.containsKey(word)){
                 tags.add(fullwords.get(word));
             }
-
-            for(Enumeration<String> en = prefixes.keys(); en.hasMoreElements();){
-                final String prefix = en.nextElement();
+            for(String prefix: prefixes.keySet()) {
                 if(word.startsWith(prefix)){
                     tags.add(prefixes.get(prefix));
                 }

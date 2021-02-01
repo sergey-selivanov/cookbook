@@ -14,12 +14,10 @@ import org.sergeys.cookbook.logic.ImportTask;
 import org.sergeys.cookbook.logic.MassImportTask;
 import org.sergeys.cookbook.logic.Recipe;
 import org.sergeys.cookbook.logic.RecipeLibrary;
-import org.sergeys.cookbook.logic.Settings;
+import org.sergeys.cookbook.logic.SettingsManager;
 import org.sergeys.cookbook.ui.RecipeTreeValue.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-//import com.sun.javafx.webkit.WebConsoleListener;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
@@ -158,7 +156,7 @@ public class MainController {
 
 
     public void setDivider(){
-        double pos = Settings.getInstance().getWinDividerPosition();
+        double pos = SettingsManager.getInstance().getSettings().getWinDividerPosition();
 
         if(pos == 0) {	// first launch
             pos = 0.2;
@@ -173,26 +171,19 @@ public class MainController {
         try {	// TODO do in different correct place
 
             final double pos = splitPane.getDividerPositions()[0];
-//            System.out.println("<" + pos);
 
-            Settings.getInstance().setWinDividerPosition(pos);
-
-//            System.out.println(Settings.getInstance().getWinDividerPosition());
+            SettingsManager.getInstance().getSettings().setWinDividerPosition(pos);
 
             final Stage myStage = (Stage) mainBorderPane.getScene().getWindow();
 
-//            Settings.getInstance().getWinPosition().setSize(myStage.getX(), myStage.getY());
-//            Settings.getInstance().getWinSize().setSize(myStage.getWidth(), myStage.getHeight());
-
-            Settings.getInstance().getWindowPosition().setValues(myStage.getX(), myStage.getY(),
+            SettingsManager.getInstance().getSettings().getWindowPosition().setValues(myStage.getX(), myStage.getY(),
                     myStage.getWidth(), myStage.getHeight());
 
-            Settings.save();
+            SettingsManager.getInstance().saveSettings();
 
             // shutdown executors
             this.singleExecutor.shutdown();
             this.singleExecutor.awaitTermination(3, TimeUnit.SECONDS);
-            //RecipeLibrary.getInstance().shutdown();
 
         } catch (IOException | InterruptedException ex) {
             log.error("error on exit", ex);
@@ -254,24 +245,12 @@ public class MainController {
         showProgress();
     }
 
-    //private Recipe currentRecipe;
-
     private void setRecipe(Recipe recipe){
-        log.debug("setrecipe");
-
-        //currentRecipe = recipe;
-
-//        String filename = Settings.getSettingsDirPath() + File.separator + Settings.RECIPES_SUBDIR +
-//                File.separator + recipe.getHash() + ".html";
-//        webview.getEngine().load(new File(filename).toURI().toString());
-
-        //webview.getEngine().load(new File(currentRecipe.getUnpackedFilename()).toURI().toString());
+//        log.debug("setrecipe");
 
         final String url = new File(recipe.getUnpackedFilename()).toURI().toString();
-        log.debug("load: {}", url);
+        //log.debug("load: {}", url);
         webview.getEngine().load(url);
-
-        //webview.getEngine().getLoadWorker().stateProperty().
 
         setTitle(recipe);
     }
@@ -279,34 +258,21 @@ public class MainController {
     private void setTitle(Recipe recipe){
         title.setText(recipe.getTitle());
 
-        try {
-            //List<String> t = Database.getInstance().getRecipeTags(recipe.getHash());
-            final List<String> t = db.getRecipeTags(recipe.getHash());
-            final StringBuilder sb = new StringBuilder();
-            for(String s: t){
-                if(sb.length() > 0){
-                    sb.append(", ");
-                }
-                sb.append(s);
-            }
-            tags.setText(sb.toString());
-        } catch (Exception e) {
-            log.error("", e);
-        }
-
+        final List<String> recipeTags = db.getRecipeTags(recipe.getHash());
+        tags.setText(String.join(", ", recipeTags));
     }
 
 
     private void doImport(){
 
-        final File prev = new File(Settings.getInstance().getLastFilechooserLocation());
+        final File prev = new File(SettingsManager.getInstance().getSettings().getLastFilechooserLocation());
         if(prev.exists()){
             fc.setInitialDirectory(prev);
         }
 
         final File file = fc.showOpenDialog(mainBorderPane.getScene().getWindow());
         if(file != null){
-            Settings.getInstance().setLastFilechooserLocation(file.getParent());
+            SettingsManager.getInstance().getSettings().setLastFilechooserLocation(file.getParent());
 
             final ImportTask importTask = new ImportTask(file);
 
@@ -360,7 +326,7 @@ public class MainController {
 
       final DirectoryChooser dc = new DirectoryChooser();
 
-      final File prev = new File(Settings.getInstance().getLastFilechooserLocation());
+      final File prev = new File(SettingsManager.getInstance().getSettings().getLastFilechooserLocation());
       if(prev.exists()){
           dc.setInitialDirectory(prev.getParentFile());
       }
@@ -371,7 +337,7 @@ public class MainController {
           return;
       }
 
-      Settings.getInstance().setLastFilechooserLocation(dir.toString());
+      SettingsManager.getInstance().getSettings().setLastFilechooserLocation(dir.toString());
 
       final MassImportTask massImportTask = new MassImportTask(dir);
       massImportTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
