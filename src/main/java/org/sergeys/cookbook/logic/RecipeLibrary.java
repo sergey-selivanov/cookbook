@@ -19,17 +19,24 @@ import javafx.concurrent.Task;
 
 public final class RecipeLibrary {
 
+    private static class LazyHolder {
+        static final RecipeLibrary INSTANCE = new RecipeLibrary();
+    }
+
+    public static RecipeLibrary getInstance() {
+        return LazyHolder.INSTANCE;
+    }
+
+
     private final Logger log = LoggerFactory.getLogger(RecipeLibrary.class);
 
-    private static Object instanceLock = new Object();
-    private static RecipeLibrary instance;
+//    private static Object instanceLock = new Object();
+    //private static RecipeLibrary instance;
 
     // word - tag, prefix - tag
     private final HashMap<String, String> fullwords = new HashMap<>();
     private final HashMap<String, String> prefixes = new HashMap<>();
 
-    // TODO howto proper singleton in java
-    // singleton
     private RecipeLibrary(){
 
         // TODO support suggestions for other languages
@@ -61,17 +68,26 @@ public final class RecipeLibrary {
         }
     }
 
-    public static RecipeLibrary getInstance() {
-        synchronized (instanceLock) {
-            if(instance == null){
-                instance = new RecipeLibrary();
-            }
-        }
-
-        return instance;
-    }
+//    public static RecipeLibrary getInstance() {
+//        synchronized (instanceLock) {
+//            if(instance == null){
+//                instance = new RecipeLibrary();
+//            }
+//        }
+//
+//        return instance;
+//    }
 
     public void validate(){
+
+//        try {
+//            Thread.sleep(1400);
+//        } catch (InterruptedException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+
+
         try {
             final Database db = new Database();
             final List<Recipe> recipes = db.getAllRecipes();

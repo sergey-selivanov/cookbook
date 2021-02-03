@@ -15,22 +15,14 @@ module cookbook {
     requires org.jsoup;
     requires org.flywaydb.core;
     requires org.kordamp.bootstrapfx.core;
-//    requires com.h2database;
 
-    requires slf4j.api;
-    requires org.apache.logging.log4j; // 2.12
-    //requires log4j.api; // 2.9.1
+    requires org.slf4j;
+    requires org.apache.logging.log4j;
 
-//    opens org.sergeys.cookbook.ui to javafx.fxml, org.flywaydb.core;
-//    opens org.sergeys.cookbook.logic to javafx.fxml, org.flywaydb.core;
     opens org.sergeys.cookbook.ui to javafx.fxml;
-//    opens org.sergeys.cookbook.logic to javafx.fxml; ??
 
-    //opens db.migration to org.flywaydb.core;	// fails
-    opens db.migration;	// works
+    opens db.migration; // for flyway
 
     exports org.sergeys.cookbook.ui;
     exports org.sergeys.cookbook.logic;
-
-//    exports db.migration;
 }

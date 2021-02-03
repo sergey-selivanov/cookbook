@@ -91,7 +91,7 @@ public class MainController {
         }
 
         // TODO call in background
-        RecipeLibrary.getInstance().validate();
+        //RecipeLibrary.getInstance().validate();
 
 
         final TreeItem<RecipeTreeValue> treeRoot = new TreeItem<RecipeTreeValue>();

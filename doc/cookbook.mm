@@ -11,7 +11,8 @@
 </node>
 <node CREATED="1584896374233" ID="ID_1407806878" MODIFIED="1587889006941" TEXT="remove or replace http:// links and images which can&apos;t be downloaded or failed, to placeholder"/>
 <node CREATED="1584897699030" ID="ID_1459105573" MODIFIED="1584897728224" TEXT="skip included files referenced in deleted e.g script tags"/>
-<node CREATED="1612155870839" ID="ID_82109145" MODIFIED="1612155909623" TEXT="allow external url references">
+<node CREATED="1612155870839" FOLDED="true" ID="ID_82109145" MODIFIED="1612322188753" TEXT="broken webpage: allow external url references?">
+<icon BUILTIN="button_cancel"/>
 <node CREATED="1612155910991" ID="ID_1081763846" LINK="https://stackoverflow.com/questions/16215844/javafx-webview-disable-same-origin-policy-allow-cross-domain-requests" MODIFIED="1612155917006" TEXT="https://stackoverflow.com/questions/16215844/javafx-webview-disable-same-origin-policy-allow-cross-domain-requests"/>
 <node CREATED="1612155932635" ID="ID_1321490423" LINK="https://gist.github.com/thomasdarimont/310c3839bc63501680e6" MODIFIED="1612155936337" TEXT="https://gist.github.com/thomasdarimont/310c3839bc63501680e6"/>
 <node CREATED="1612156433721" ID="ID_1282578853" LINK="https://stackoverflow.com/questions/59124197/iframes-not-loaded-when-using-javafx-webview" MODIFIED="1612156437317" TEXT="https://stackoverflow.com/questions/59124197/iframes-not-loaded-when-using-javafx-webview"/>
@@ -31,8 +32,12 @@
 <node CREATED="1587789554078" ID="ID_701394392" MODIFIED="1587889020278" TEXT="app icon and titile in the window">
 <icon BUILTIN="button_ok"/>
 </node>
-<node CREATED="1610538397437" ID="ID_1672359442" MODIFIED="1610538432597" TEXT="preloader, show something on slow app start"/>
-<node CREATED="1584921987568" ID="ID_1417423787" MODIFIED="1584922013760" TEXT="indicate wait and progress on import"/>
+<node CREATED="1587912869757" ID="ID_1707158386" MODIFIED="1612322083969" TEXT="splash screen, background db check and unpack">
+<icon BUILTIN="button_ok"/>
+</node>
+<node CREATED="1584921987568" ID="ID_1417423787" MODIFIED="1612322134441" TEXT="indicate wait and progress on mass import">
+<icon BUILTIN="button_ok"/>
+</node>
 <node CREATED="1587789185264" ID="ID_1449283039" MODIFIED="1587789196583" TEXT="modern ui, burger menu etc">
 <node CREATED="1587992571089" ID="ID_892413157" LINK="https://github.com/HanSolo/tilesfx" MODIFIED="1587992571089" TEXT="https://github.com/HanSolo/tilesfx">
 <node CREATED="1587992604264" LINK="https://mvnrepository.com/artifact/eu.hansolo/tilesfx" MODIFIED="1587992604264" TEXT="https://mvnrepository.com/artifact/eu.hansolo/tilesfx"/>
@@ -53,10 +58,6 @@
 <linktarget COLOR="#b0b0b0" DESTINATION="ID_1793013010" ENDARROW="Default" ENDINCLINATION="124;0;" ID="Arrow_ID_1798381807" SOURCE="ID_1160705164" STARTARROW="None" STARTINCLINATION="124;0;"/>
 </node>
 <node CREATED="1612051781710" ID="ID_1479441051" MODIFIED="1612051818881" TEXT="show occupied space for db, unpacked pages, saved videos"/>
-<node CREATED="1587912869757" ID="ID_1707158386" MODIFIED="1587912892099" TEXT="splash screen, preloader, background unpack">
-<node CREATED="1587912914420" ID="ID_802295243" LINK="https://www.genuinecoder.com/javafx-splash-screen-loading-screen/" MODIFIED="1587912931867" TEXT=""/>
-<node CREATED="1587912954761" ID="ID_387067235" LINK="https://stackoverflow.com/questions/14972199/how-to-create-splash-screen-with-transparent-background-in-javafx" MODIFIED="1587912970100" TEXT=""/>
-</node>
 <node CREATED="1612050831729" ID="ID_462673375" MODIFIED="1612058847456" TEXT="hyperlink bookmarks to video pages, e.g to youtube">
 <node CREATED="1612051035630" ID="ID_1234758592" MODIFIED="1612051057455" TEXT="add url menu entry">
 <node CREATED="1612051074434" ID="ID_1481632190" MODIFIED="1612051097544" TEXT="auto paste from clipboard if looks like url"/>
@@ -127,8 +128,6 @@
 <node CREATED="1584842918172" ID="ID_1539987114" MODIFIED="1610538447428" TEXT="generate installers">
 <node CREATED="1587914076985" ID="ID_1319999710" MODIFIED="1611609215959" TEXT="non-modular packaging because of h2">
 <icon BUILTIN="button_cancel"/>
-<node CREATED="1587914151598" ID="ID_1265877550" LINK="https://badass-jlink-plugin.beryx.org/releases/latest/" MODIFIED="1587914169579" TEXT="jlink plugin"/>
-<node CREATED="1587914179377" ID="ID_1016000389" LINK="https://badass-runtime-plugin.beryx.org/releases/latest/" MODIFIED="1587914188890" TEXT="runtime plugin"/>
 </node>
 <node CREATED="1610538505625" ID="ID_1103569502" MODIFIED="1611609240536" TEXT="remove .bat file">
 <icon BUILTIN="button_ok"/>
@@ -146,9 +145,6 @@
 </node>
 <node CREATED="1609194366274" ID="ID_1580511782" MODIFIED="1610581295352" TEXT="replace h2 to hsqldb for modular build">
 <icon BUILTIN="button_cancel"/>
-</node>
-<node CREATED="1610581304228" ID="ID_277576879" MODIFIED="1610581316193" TEXT="use try with resources">
-<node CREATED="1610581316840" ID="ID_1621623329" MODIFIED="1610581323176" TEXT="at least for streams"/>
 </node>
 <node CREATED="1584843045443" ID="ID_562658722" MODIFIED="1611609266688" TEXT="use hibernate">
 <icon BUILTIN="down"/>
@@ -241,6 +237,8 @@
 <node CREATED="1611717105037" ID="ID_1052884281" LINK="https://blog.codecentric.de/en/2015/09/javafx-how-to-easily-implement-application-preloader-2/" MODIFIED="1611717109073" TEXT="https://blog.codecentric.de/en/2015/09/javafx-how-to-easily-implement-application-preloader-2/"/>
 <node CREATED="1611717171910" ID="ID_886930241" LINK="https://gist.github.com/jewelsea/2305098" MODIFIED="1611717176274" TEXT="https://gist.github.com/jewelsea/2305098"/>
 <node CREATED="1611717122881" ID="ID_1355260795" LINK="https://docs.oracle.com/javafx/2/deployment/preloaders.htm" MODIFIED="1611717127249" TEXT="https://docs.oracle.com/javafx/2/deployment/preloaders.htm"/>
+<node CREATED="1587912954761" ID="ID_387067235" LINK="https://stackoverflow.com/questions/14972199/how-to-create-splash-screen-with-transparent-background-in-javafx" MODIFIED="1587912970100" TEXT=""/>
+<node CREATED="1587912914420" ID="ID_802295243" LINK="https://www.genuinecoder.com/javafx-splash-screen-loading-screen/" MODIFIED="1587912931867" TEXT=""/>
 </node>
 </node>
 </node>

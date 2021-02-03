@@ -20,10 +20,8 @@ import java.util.Set;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.ErrorCode;
-import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.flywaydb.core.api.output.ValidateOutput;
 import org.flywaydb.core.api.output.ValidateResult;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,9 +29,6 @@ public final class Database {
     private static final String FILENAME = "cookbook";
     private static final String LOGIN = "sa";
     private static final String PASSWD = "sa";
-
-    //private static Object instanceLock = new Object();
-    //private static Database instance;
 
     // TODO static vs nonstatic Logger?
     private final static Logger log = LoggerFactory.getLogger(Database.class);
@@ -43,21 +38,8 @@ public final class Database {
     private static final String connectionUrl = String.format("jdbc:h2:%s/%s;TRACE_LEVEL_FILE=4",
             SettingsManager.getInstance().getDataDirPath(), Database.FILENAME).replace('\\', '/');
 
-    public Database()
-    {
-        //upgradeOrCreateIfNeeded();
-    }
+    //public Database(){}
 
-//    public static Database getInstance() throws Exception
-//    {
-//        synchronized (instanceLock) {
-//            if(instance == null){
-//                instance = new Database();
-//            }
-//        }
-//
-//        return instance;
-//    }
 
     /**
      *	Validate and migrate with flywaydb, create if does not exist
@@ -66,21 +48,18 @@ public final class Database {
      */
     public static void validate() throws CookbookException {
 
-        // TODO use DataSource?
-        final FluentConfiguration config = Flyway.configure()
-                .dataSource(connectionUrl, LOGIN, PASSWD)
-                //.locations("classpath:org/sergeys/cookbook/logic")
-                .installedBy("cookbook")
-                .baselineVersion("1.0.0");
+//        final FluentConfiguration config = Flyway.configure()
+//                .dataSource(connectionUrl, LOGIN, PASSWD)
+//                //.locations("classpath:org/sergeys/cookbook/logic")
+//                .installedBy("cookbook")
+//                .baselineVersion("1.0.0");
 
-//        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-//        //ClassLoader classLoader1 = CookBook.class.getClassLoader();
-//
-//        ClassicConfiguration config1 = new ClassicConfiguration(classLoader);
-//        config1.setDataSource(connectionUrl, LOGIN, PASSWD);
-
-        final Flyway flyway = config.load();
-        //Flyway flyway = new Flyway(config);
+        //final Flyway flyway = config.load();
+        final Flyway flyway = Flyway.configure()
+              .dataSource(connectionUrl, LOGIN, PASSWD)
+              .installedBy("cookbook")
+              .baselineVersion("1.0.0")
+              .load();
 
         if(flyway.info().all().length == 0) {
             throw new CookbookException("no flywaydb migration files found");
@@ -165,40 +144,12 @@ public final class Database {
 
     }
 
-/*
-    private static void flywayMigrate() throws CookbookException {
 
-// migrations are not visible after jlink
-// https://stackoverflow.com/questions/59902719/flyway-is-not-able-to-find-migrations-in-classpath-only-if-i-run-application-aft
-
-        log.debug("migrate");
-
-        // TODO use DataSource?
-        FluentConfiguration config = Flyway.configure()
-                .dataSource(connectionUrl, LOGIN, PASSWD)
-//                .locations("classpath:db/migration",	// default
-//                        "classpath:cookbook/db/migration")	// after jlink?
-                .installedBy("cookbook");
-
-        Flyway flyway = config.load();
-
-        if(flyway.info().all().length == 0) {
-            throw new CookbookException("no migration files found");
-        }
-
-        //MigrateResult result = flyway.migrate(); // will throw on error
-        flyway.migrate(); // will throw on error
-    }
-*/
     public void close() throws SQLException {
         if(connection != null) {
             connection.close();
         }
     }
-
-//    public static Database getInstance() throws SQLException {
-//        throw new SQLException("not supported");
-//    }
 
 
     //@edu.umd.cs.findbugs.annotations.SuppressWarnings(value="DMI_CONSTANT_DB_PASSWORD", justification="I know what I'm doing")
