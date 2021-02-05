@@ -41,7 +41,6 @@ public class CookBook extends Application
         void complete();
     }
 
-    //private static final Logger log = LoggerFactory.getLogger(CookBook.class); // not initialized yet
     private static Logger log;
 
     private Stage primaryStage;

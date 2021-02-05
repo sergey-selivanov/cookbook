@@ -281,9 +281,9 @@ public class MainController {
                 @Override
                 public void handle(WorkerStateEvent event) {
                     try {
-                        final ImportTask.Status status = importTask.get();
+                        final ImportTask.ImportResult status = importTask.get();
                         log.debug("status: {}", status);
-                        if(status == ImportTask.Status.AlreadyExist){
+                        if(status == ImportTask.ImportResult.AlreadyExist){
                             log.debug("already exist");
                         }
                         else{
@@ -345,16 +345,22 @@ public class MainController {
             @Override
             public void handle(WorkerStateEvent event) {
                 try {
-                    final ImportTask.Status status = massImportTask.get();
-                    log.debug("status: {}", status);
-                    if(status != ImportTask.Status.Complete){
-                        log.debug("failed: {}", status);
-                    }
-                    else{
-                        // TODO reset progress
-                        RecipeLibrary.getInstance().validate();
-                        rebuildTree();
-                    }
+                    final MassImportTask.MassImportResult status = massImportTask.get();
+                    //log.debug("status: {}", status);
+//                    if(status != ImportTask.Status.Complete){
+//                        log.debug("failed: {}", status);
+//                    }
+//                    else{
+//                        // TODO reset progress
+//                        RecipeLibrary.getInstance().validate();
+//                        rebuildTree();
+//                    }
+                    log.debug("processed: {}, alreadyExist: {}, imported: {}, failed: {}",
+                            status.getProcessed(), status.getAlreadyExist(),
+                            status.getImported(), status.getFailed());
+
+                    RecipeLibrary.getInstance().validate();
+                    rebuildTree();
 
                 } catch (InterruptedException | ExecutionException ex) {
                     log.error("", ex);

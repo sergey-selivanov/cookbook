@@ -23,9 +23,10 @@ import org.slf4j.LoggerFactory;
 
 import javafx.concurrent.Task;
 
-public class ImportTask extends Task<ImportTask.Status>
+public class ImportTask extends Task<ImportTask.ImportResult>
 {
-    public enum Status { Unknown, InProgress, Complete, AlreadyExist, Failed };
+    //public enum Status { Unknown, InProgress, Complete, AlreadyExist, Failed };
+    public enum ImportResult { Success, AlreadyExist, Failure };
 
     private final Logger log = LoggerFactory.getLogger(ImportTask.class);
     private final File htmlFile;
@@ -212,7 +213,7 @@ public class ImportTask extends Task<ImportTask.Status>
 
 
     @Override
-    protected Status call() throws Exception {
+    protected ImportResult call() throws Exception {
         log.debug("import {}", htmlFile);
 
         Database db = new Database();
@@ -224,7 +225,7 @@ public class ImportTask extends Task<ImportTask.Status>
         if(db.isRecipeExists(hash)) {
             db.close();
             log.debug("already exist");
-            return Status.AlreadyExist;
+            return ImportResult.AlreadyExist;
         }
 
         // parse document
@@ -303,12 +304,12 @@ public class ImportTask extends Task<ImportTask.Status>
             db.close();
         } catch (Exception ex) {
             log.error("", ex);
-            return Status.Failed;
+            return ImportResult.Failure;
         }
 
         Util.deleteRecursively(tempDir.toFile());
 
-        return Status.Complete;
+        return ImportResult.Success;
     }
 
 }

@@ -29,7 +29,7 @@ public class SettingsManager {
 
     private Settings settings;
 
-    private Logger log;
+    private final Logger log;
 
     // https://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom#Example_Java_Implementation
     private static class LazyHolder {

@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -95,6 +97,42 @@ public final class RecipeLibrary {
 
             final ExecutorService executor = Executors.newCachedThreadPool();
 
+            Instant start = Instant.now();
+
+
+            recipes.parallelStream().forEach(r -> {
+
+                final File f = new File(r.getUnpackedFilename());
+                if(!f.exists()){
+                    Task<Void> task = new Task<Void>() {
+                        @Override
+                        protected Void call() throws Exception {
+                            log.debug("unpacking {}", f.getAbsolutePath());
+
+                            final File temp = File.createTempFile("cookbook", ".jar");
+                            temp.deleteOnExit();
+
+                            final Database db = new Database();
+
+                            db.extractRecipeFile(r.getHash(), temp);
+                            db.close();
+
+                            Util.unpackJar(temp, r.getUnpackedDir());
+
+                            temp.delete();
+                            return null;
+                        }
+                    };
+
+                    executor.execute(task);
+                }
+                else {
+//                    log.debug("already unpacked {}", f.getAbsolutePath());
+                }
+
+            });
+
+/*
             for(final Recipe r: recipes){
 
                 final File f = new File(r.getUnpackedFilename());
@@ -122,13 +160,18 @@ public final class RecipeLibrary {
 
                     executor.execute(task);
                 }
+                else {
+                    log.debug("already unpacked {}", f.getAbsolutePath());
+                }
             }
-
+*/
             log.debug("======================== shutdown validate ========================");
             executor.shutdown();
             executor.awaitTermination(5, TimeUnit.MINUTES);
             log.debug("======================== done validate ========================");
 
+            Instant finish = Instant.now();
+            log.debug("=== validation time: {}", Duration.between(start, finish));
 
         } catch (Exception e) {
             log.error("", e);

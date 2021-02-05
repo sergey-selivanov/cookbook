@@ -57,29 +57,24 @@ public class BuildTreeTask extends Task<ObservableList<TreeItem<RecipeTreeValue>
 
         try {
             final List<Tag> tags = db.getRootTags();
+
             for(Tag t: tags){
 
-                final TreeItem<RecipeTreeValue> item;
-                if(t.getVal().equals("favorites")){
-                    item = new TreeItem<RecipeTreeValue>(new RecipeTreeValue(t), new ImageView(favIcon));
-                }
-                else{
-                    item = new TreeItem<RecipeTreeValue>(new RecipeTreeValue(t), new ImageView(tagIcon));
-                }
+                final TreeItem<RecipeTreeValue> item =
+                        new TreeItem<RecipeTreeValue>(new RecipeTreeValue(t), new ImageView(
+                                "favorites".equals(t.getVal()) ? favIcon : tagIcon
+                        ));
 
                 if(t.getSpecialid() == Tag.SPECIAL_OTHER){
                     final List<Recipe> recipes = db.getRecipesWithoutTags();
                     for(Recipe r: recipes){
-                        //TreeItem<RecipeTreeValue> ritem = new TreeItem<RecipeTreeValue>(new RecipeTreeValue(r), new ImageView(recipeIcon));
                         final TreeItem<RecipeTreeValue> ritem = new TreeItem<RecipeTreeValue>(new RecipeTreeValue(r));
                         item.getChildren().add(ritem);
                     }
-                    //tree.getRoot().getChildren().add(item);
                     treeItemsList.add(item);
                 }
                 else{
                     if(buildSubtree(item, t)){
-                        //tree.getRoot().getChildren().add(item);
                         treeItemsList.add(item);
                     }
                 }
