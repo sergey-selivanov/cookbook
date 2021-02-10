@@ -30,8 +30,10 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
@@ -43,6 +45,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -242,7 +245,21 @@ public class MainController {
 
     public void onMenuItemAbout(ActionEvent e){
         log.debug("about");
-        showProgress();
+        //showProgress();
+
+        try {
+            Pane aboutPane = (Pane)new FXMLLoader(getClass().getResource("/fxml/About.fxml")).load();
+            aboutPane.setVisible(true);
+
+            Stage stage = new Stage();
+            Scene scene = new Scene(aboutPane);
+            stage.setScene(scene);
+            stage.showAndWait();
+
+        } catch (IOException ex) {
+            log.error("failed", ex);
+        }
+
     }
 
     private void setRecipe(Recipe recipe){

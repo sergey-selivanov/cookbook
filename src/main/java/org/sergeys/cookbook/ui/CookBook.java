@@ -211,10 +211,13 @@ public class CookBook extends Application
 
         loadProgress = new ProgressBar();
         loadProgress.setPrefWidth(SPLASH_WIDTH - 20);
-        progressText = new Label("Will find friends for peanuts . . .");
+        //progressText = new Label("Will find friends for peanuts . . .");
+        progressText = new Label("");
         splashLayout = new VBox();
-        splashLayout.getChildren().addAll(splash, loadProgress, progressText);
+        //splashLayout.getChildren().addAll(splash, loadProgress, progressText);
+        splashLayout.getChildren().addAll(splash, progressText, loadProgress);
         progressText.setAlignment(Pos.CENTER);
+        /*
         splashLayout.setStyle(
                 "-fx-padding: 5; " +
                 "-fx-background-color: cornsilk; " +
@@ -226,6 +229,7 @@ public class CookBook extends Application
                         "derive(chocolate, 50%)" +
                     ");"
         );
+        */
 
         splashLayout.setEffect(new DropShadow());
     }
