@@ -32,8 +32,8 @@
 <node CREATED="1587789554078" ID="ID_701394392" MODIFIED="1587889020278" TEXT="app icon and titile in the window">
 <icon BUILTIN="button_ok"/>
 </node>
-<node CREATED="1587912869757" ID="ID_1707158386" MODIFIED="1612322083969" TEXT="splash screen, background db check and unpack">
-<icon BUILTIN="button_ok"/>
+<node CREATED="1587912869757" ID="ID_1707158386" MODIFIED="1613008911441" TEXT="splash screen, background db check and unpack">
+<node CREATED="1613008913122" ID="ID_744462065" MODIFIED="1613008927774" TEXT="show errors from background checks"/>
 </node>
 <node CREATED="1584921987568" ID="ID_1417423787" MODIFIED="1612322134441" TEXT="indicate wait and progress on mass import">
 <icon BUILTIN="button_ok"/>
@@ -50,14 +50,11 @@
 </node>
 </node>
 </node>
-<node CREATED="1588673909860" ID="ID_1160705164" MODIFIED="1588673927092" TEXT="about box">
-<arrowlink DESTINATION="ID_1793013010" ENDARROW="Default" ENDINCLINATION="124;0;" ID="Arrow_ID_1798381807" STARTARROW="None" STARTINCLINATION="124;0;"/>
-</node>
-</node>
-<node CREATED="1587889072372" ID="ID_1793013010" MODIFIED="1588673927091" TEXT="include version and build info properties">
-<linktarget COLOR="#b0b0b0" DESTINATION="ID_1793013010" ENDARROW="Default" ENDINCLINATION="124;0;" ID="Arrow_ID_1798381807" SOURCE="ID_1160705164" STARTARROW="None" STARTINCLINATION="124;0;"/>
-</node>
+<node CREATED="1588673909860" ID="ID_1160705164" MODIFIED="1613008786834" TEXT="about box">
+<node CREATED="1587889072372" ID="ID_1793013010" MODIFIED="1613008786834" TEXT="include version and build info properties"/>
 <node CREATED="1612051781710" ID="ID_1479441051" MODIFIED="1612051818881" TEXT="show occupied space for db, unpacked pages, saved videos"/>
+</node>
+</node>
 <node CREATED="1612050831729" ID="ID_462673375" MODIFIED="1612058847456" TEXT="hyperlink bookmarks to video pages, e.g to youtube">
 <node CREATED="1612051035630" ID="ID_1234758592" MODIFIED="1612051057455" TEXT="add url menu entry">
 <node CREATED="1612051074434" ID="ID_1481632190" MODIFIED="1612051097544" TEXT="auto paste from clipboard if looks like url"/>
@@ -150,7 +147,13 @@
 <icon BUILTIN="down"/>
 </node>
 <node CREATED="1584843066257" ID="ID_45678986" MODIFIED="1587789321086" TEXT="use flywaydb">
-<node CREATED="1610665451976" ID="ID_794295993" MODIFIED="1610665468982" TEXT="only validate and migrate if app version changed"/>
+<node CREATED="1610665451976" ID="ID_794295993" MODIFIED="1610665468982" TEXT="only validate and migrate if app version changed">
+<node CREATED="1613008839036" ID="ID_119894313" MODIFIED="1613008862830" TEXT="check if other version was run before">
+<node CREATED="1613008950977" ID="ID_1804180818" MODIFIED="1613008957748" TEXT="semver compare"/>
+</node>
+<node CREATED="1613008972993" ID="ID_1754553879" MODIFIED="1613008987877" TEXT="serialize settings as properies to remove desktop module"/>
+<node CREATED="1613009021048" ID="ID_38384817" MODIFIED="1613009030297" TEXT="offer to backup database"/>
+</node>
 <node CREATED="1610679469805" ID="ID_1704154375" MODIFIED="1610679910462" TEXT="flyway sees but can&apos;t read sql files from module">
 <icon BUILTIN="button_ok"/>
 <node CREATED="1610679511222" ID="ID_49557647" LINK="https://www.baeldung.com/java-9-modularity" MODIFIED="1610679532143" TEXT=""/>
@@ -216,6 +219,7 @@
 <node CREATED="1612047959364" ID="ID_643898811" MODIFIED="1612047961763" TEXT="photos">
 <node CREATED="1612047962618" ID="ID_1273549049" LINK="https://www.freepik.com/valeria-aksakova" MODIFIED="1612047967271" TEXT="https://www.freepik.com/valeria-aksakova"/>
 <node CREATED="1612048254669" ID="ID_1464388862" LINK="https://www.freepik.com/free-photo/flat-lay-local-food-meal-assortment-with-copy-space_12202439.htm#page=2&amp;query=cooking&amp;position=11" MODIFIED="1612048262523" TEXT="https://www.freepik.com/free-photo/flat-lay-local-food-meal-assortment-with-copy-space_12202439.htm#page=2&amp;query=cooking&amp;position=11"/>
+<node CREATED="1613013248830" ID="ID_139760677" LINK="https://pixabay.com/images/search/food" MODIFIED="1613013259226" TEXT="https://pixabay.com/images/search/food"/>
 </node>
 <node CREATED="1588007246872" ID="ID_855997294" MODIFIED="1588007254817" TEXT="graphics generators">
 <node CREATED="1588003894134" ID="ID_1395078384" LINK="https://iconsflow.com/editor" MODIFIED="1588003894134" TEXT="https://iconsflow.com/editor"/>

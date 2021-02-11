@@ -44,6 +44,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.effect.BoxBlur;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.web.WebView;
@@ -222,7 +223,6 @@ public class MainController {
 
         progress.setVisible(true);
         ft.play();
-
     }
 
     private void hideProgress() {
@@ -243,23 +243,35 @@ public class MainController {
         ft.play();
     }
 
+    private Stage aboutStage; //may leave app running?
+
     public void onMenuItemAbout(ActionEvent e){
         log.debug("about");
-        //showProgress();
+
+        //Stage aboutStage = null;
 
         try {
-            Pane aboutPane = (Pane)new FXMLLoader(getClass().getResource("/fxml/About.fxml")).load();
-            aboutPane.setVisible(true);
+            if(aboutStage == null) {
+                Pane aboutPane = (Pane)new FXMLLoader(getClass().getResource("/fxml/About.fxml")).load();
+                ((Label)aboutPane.lookup("#lblVersion"))
+                    .setText(SettingsManager.getInstance().getVersion().getProperty("version"));
+                ((Label)aboutPane.lookup("#lblJava"))
+                    .setText(String.join(" ", System.getProperty("java.vm.name"),
+                            System.getProperty("java.runtime.version"), System.getProperty("java.home")));
 
-            Stage stage = new Stage();
-            Scene scene = new Scene(aboutPane);
-            stage.setScene(scene);
-            stage.showAndWait();
+                aboutStage = new Stage();
+                aboutStage.setScene(new Scene(aboutPane));
+                aboutStage.setResizable(false);
+                aboutStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/amor.png")));
+                aboutStage.setTitle("About CookBook");
+                aboutStage.setAlwaysOnTop(true);
+            }
+
+            aboutStage.showAndWait();
 
         } catch (IOException ex) {
             log.error("failed", ex);
         }
-
     }
 
     private void setRecipe(Recipe recipe){

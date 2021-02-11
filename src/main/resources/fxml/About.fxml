@@ -6,20 +6,24 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="426.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <ImageView pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../images/garlic-1341268_640.jpg" />
+            <Image url="@../images/preparing-raw-barbeque-chicken-cooking.jpg" />
          </image>
       </ImageView>
-      <Label fx:id="lblVersion" layoutX="55.0" layoutY="110.0" text="1.0.0" textFill="WHITE" />
-      <Label layoutX="55.0" layoutY="47.0" text="CookBook" textFill="WHITE">
+      <Label fx:id="lblVersion" layoutX="298.0" layoutY="96.0" text="1.0.0" textFill="WHITE" />
+      <Label layoutX="298.0" layoutY="40.0" text="CookBook" textFill="WHITE">
          <font>
             <Font size="36.0" />
          </font>
       </Label>
-      <Label fx:id="lblJava" layoutX="55.0" layoutY="134.0" text="OpenJDK 1.5.0 /home/svs/openjdk-1.5.0" textFill="WHITE" />
+      <Label fx:id="lblJava" alignment="TOP_LEFT" layoutX="298.0" layoutY="123.0" prefHeight="69.0" prefWidth="324.0" text="OpenJDK 64-Bit Server VM 15.0.2+7-27 D:\git\cookbook\build\jpackage\Cook Book\runtime" textFill="#656565" wrapText="true" />
+      <Label fx:id="lblMessage2" layoutX="328.0" layoutY="193.0" text="Background photo created by valeria_aksakova - www.freepik.com" textFill="#808080">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Label>
    </children>
 </Pane>

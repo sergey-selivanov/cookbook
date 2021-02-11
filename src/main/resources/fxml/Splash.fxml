@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+
+<Pane xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ImageView fitHeight="214.0" fitWidth="626.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/preparing-raw-barbeque-chicken-cooking.jpg" />
+         </image>
+      </ImageView>
+      <Label fx:id="lblMessage" layoutX="298.0" layoutY="118.0" text="Progress..." textFill="WHITE" />
+      <ProgressBar fx:id="progressBar" layoutX="298.0" layoutY="146.0" prefHeight="18.0" prefWidth="302.0" progress="0.0" />
+      <Label fx:id="lblMessage1" layoutX="298.0" layoutY="40.0" text="CookBook" textFill="WHITE">
+         <font>
+            <Font size="36.0" />
+         </font>
+      </Label>
+      <Label fx:id="lblMessage2" layoutX="328.0" layoutY="193.0" text="Background photo created by valeria_aksakova - www.freepik.com" textFill="#808080">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Label>
+   </children>
+</Pane>
