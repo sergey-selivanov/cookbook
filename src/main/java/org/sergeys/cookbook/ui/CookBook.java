@@ -116,7 +116,7 @@ public class CookBook extends Application
                     Database.validate();
                     updateProgress(1, 2);
 
-                    updateMessage("Validating files...");
+                    updateMessage("Validating library...");
                     RecipeLibrary.getInstance().validate();
                     updateProgress(2, 2);
 
@@ -198,7 +198,9 @@ public class CookBook extends Application
 //	                fadeSplash.setOnFinished(actionEvent -> initStage.hide());
 //	                fadeSplash.play();
 
-                    splashPane.setVisible(false);
+                    //splashPane.setVisible(false);
+                    initStage.hide();
+
 
                     initCompletionHandler.complete();
                 } // todo add code to gracefully handle other task states.
