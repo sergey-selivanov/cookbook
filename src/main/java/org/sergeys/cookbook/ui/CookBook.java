@@ -10,9 +10,9 @@ import org.sergeys.cookbook.logic.SettingsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXMLLoader;
@@ -27,6 +27,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 
 public class CookBook extends Application
 {
@@ -59,46 +60,67 @@ public class CookBook extends Application
 
     private final MainController mainController = new MainController();
 
-    private void startTransparent() throws IOException {
-        final Pane root = new StackPane();
+    private void fadeSplash() {
+        initStage1.toFront();
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/MainScene.fxml"));
+        final FadeTransition fadeSplash = new FadeTransition(Duration.seconds(1.2), splashPane);
+        fadeSplash.setFromValue(1.0);
+        fadeSplash.setToValue(0.0);
+        fadeSplash.setOnFinished(actionEvent -> {
+            primaryStage.toFront();
+            initStage1.hide();
+            splashPane.setVisible(false);
+        });
 
-        fxmlLoader.setController(mainController);
+        fadeSplash.play();
+    }
 
-        final Pane mainPane = (Pane)fxmlLoader.load();
-        //final MainController mainController = (MainController)fxmlLoader.getController();
+    //private void startTransparent() throws IOException {
+    private void showPrimaryStage() {
+        try {
+            final Pane root = new StackPane();
 
-        //fxmlLoader.setLocation(getClass().getResource("/fxml/ProgressPane.fxml"));
-        fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ProgressPane.fxml"));
-        final Pane progressPane = (Pane)fxmlLoader.load();
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/MainScene.fxml"));
+            fxmlLoader.setController(mainController);
+            final Pane mainPane = (Pane)fxmlLoader.load();
+            //final MainController mainController = (MainController)fxmlLoader.getController();
 
-        root.getChildren().addAll(mainPane, progressPane);
-        progressPane.setVisible(false);
+            fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ProgressPane.fxml"));
+            final Pane progressPane = (Pane)fxmlLoader.load();
 
-        final Scene scene = new Scene(root);
-        //scene.getStylesheets().add("org/kordamp/bootstrapfx/bootstrapfx.css"); // https://github.com/kordamp/bootstrapfx
-        scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
+            root.getChildren().addAll(mainPane, progressPane);
+            progressPane.setVisible(false);
 
-        primaryStage = new Stage(StageStyle.DECORATED);
+            final Scene scene = new Scene(root);
+            //scene.getStylesheets().add("org/kordamp/bootstrapfx/bootstrapfx.css"); // https://github.com/kordamp/bootstrapfx
+            scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
 
-        primaryStage.setScene(scene);
+            primaryStage = new Stage(StageStyle.DECORATED);
+            primaryStage.setScene(scene);
+            primaryStage.setOnShown(evt -> {
+                log.debug("shown");
+                fadeSplash();
+            });
 
-        primaryStage.setTitle("CookBook");
-        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/amor.png")));
+            primaryStage.setTitle("CookBook");
+            primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/amor.png")));
 
-        primaryStage.setX(SettingsManager.getInstance().getSettings().getWindowPosition().getX());
-        primaryStage.setY(SettingsManager.getInstance().getSettings().getWindowPosition().getY());
-        primaryStage.setWidth(SettingsManager.getInstance().getSettings().getWindowPosition().getWidth());
-        primaryStage.setHeight(SettingsManager.getInstance().getSettings().getWindowPosition().getHeight());
+            primaryStage.setX(SettingsManager.getInstance().getSettings().getWindowPosition().getX());
+            primaryStage.setY(SettingsManager.getInstance().getSettings().getWindowPosition().getY());
+            primaryStage.setWidth(SettingsManager.getInstance().getSettings().getWindowPosition().getWidth());
+            primaryStage.setHeight(SettingsManager.getInstance().getSettings().getWindowPosition().getHeight());
 
-        primaryStage.show();
+            primaryStage.show();
 
-        Platform.runLater(new Runnable(){
-            @Override
-            public void run() {
-                mainController.setDivider();
-            }});
+            Platform.runLater(new Runnable(){
+                @Override
+                public void run() {
+                    mainController.setDivider();
+                }});
+        }
+        catch(IOException ex) {
+            log.error("failed", ex);
+        }
     }
 
     @Override
@@ -129,17 +151,18 @@ public class CookBook extends Application
                 catch(Exception ex) {
                     log.error("failed", ex);
                     updateMessage(ex.getMessage());
-                    return false;
+                    return Boolean.FALSE;
                 }
 
-                return true;
+                return Boolean.TRUE;
             }
         };
 
         showSplash(
                 initStage,
                 initTask,
-                () -> showMainStage(initTask.valueProperty())
+                //() -> showMainStage(initTask.valueProperty())
+                () -> showPrimaryStage()
         );
 
         new Thread(initTask).start();
@@ -148,6 +171,9 @@ public class CookBook extends Application
     // preparing-raw-barbeque-chicken-cooking.jpg
     private static final int SPLASH_WIDTH = 626;
     private static final int SPLASH_HEIGHT = 214;
+
+    private Pane splashPane;
+    private Stage initStage1;
 
     private void showSplash(
             final Stage initStage,
@@ -185,7 +211,10 @@ public class CookBook extends Application
         */
 
         try {
-            final Pane splashPane = (Pane)new FXMLLoader(getClass().getResource("/fxml/Splash.fxml")).load();
+            initStage1 = initStage;
+
+            //final Pane splashPane = (Pane)new FXMLLoader(getClass().getResource("/fxml/Splash.fxml")).load();
+            splashPane = (Pane)new FXMLLoader(getClass().getResource("/fxml/Splash.fxml")).load();
 
             ((Label)splashPane.lookup("#lblMessage")).textProperty().bind(task.messageProperty());
             final ProgressBar progressBar = ((ProgressBar)splashPane.lookup("#progressBar"));
@@ -195,15 +224,16 @@ public class CookBook extends Application
                 if (newState == Worker.State.SUCCEEDED) {
                     progressBar.progressProperty().unbind();
                     progressBar.setProgress(1);
-                    initStage.toFront();
-//	                FadeTransition fadeSplash = new FadeTransition(Duration.seconds(1.2), splashLayout);
-//	                fadeSplash.setFromValue(1.0);
-//	                fadeSplash.setToValue(0.0);
-//	                fadeSplash.setOnFinished(actionEvent -> initStage.hide());
-//	                fadeSplash.play();
 
-                    //splashPane.setVisible(false);
-                    initStage.hide();
+//                    initStage.toFront();
+////	                FadeTransition fadeSplash = new FadeTransition(Duration.seconds(1.2), splashLayout);
+////	                fadeSplash.setFromValue(1.0);
+////	                fadeSplash.setToValue(0.0);
+////	                fadeSplash.setOnFinished(actionEvent -> initStage.hide());
+////	                fadeSplash.play();
+//
+//                    //splashPane.setVisible(false);
+//                    initStage.hide();
 
 
                     initCompletionHandler.complete();
@@ -225,13 +255,13 @@ public class CookBook extends Application
         }
     }
 
-    private void showMainStage(ReadOnlyObjectProperty<Boolean> success) {
-        try {
-            startTransparent();
-        } catch (IOException e) {
-            log.error("", e);
-        }
-    }
+//    private void showMainStage(ReadOnlyObjectProperty<Boolean> success) {
+//        try {
+//            startTransparent();
+//        } catch (IOException e) {
+//            log.error("", e);
+//        }
+//    }
 
 //    private Pane splashLayout;
 //    private ProgressBar loadProgress;

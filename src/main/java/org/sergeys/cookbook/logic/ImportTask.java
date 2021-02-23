@@ -28,7 +28,7 @@ public class ImportTask extends Task<ImportTask.ImportResult>
     //public enum Status { Unknown, InProgress, Complete, AlreadyExist, Failed };
     public enum ImportResult { Success, AlreadyExist, Failure };
 
-    private final Logger log = LoggerFactory.getLogger(ImportTask.class);
+    private static final Logger log = LoggerFactory.getLogger(ImportTask.class);
     private final File htmlFile;
 
     public ImportTask(final File htmlFile) {

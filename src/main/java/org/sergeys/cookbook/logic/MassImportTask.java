@@ -19,7 +19,7 @@ import javafx.event.EventHandler;
 
 public class MassImportTask extends Task<MassImportTask.MassImportResult>
 {
-    public class MassImportResult{
+    public static class MassImportResult{
         final AtomicLong processed = new AtomicLong();
         final AtomicLong alreadyExist = new AtomicLong();
         final AtomicLong imported = new AtomicLong();
@@ -40,7 +40,7 @@ public class MassImportTask extends Task<MassImportTask.MassImportResult>
     }
 
     private static final String HTML_FILES_GLOB = "glob:*.{html,htm}"; // case insensitive
-    private final Logger log = LoggerFactory.getLogger(MassImportTask.class);
+    private static final Logger log = LoggerFactory.getLogger(MassImportTask.class);
 
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private final Path directory;
@@ -101,6 +101,7 @@ public class MassImportTask extends Task<MassImportTask.MassImportResult>
                                     switch(st) {
                                         case AlreadyExist:
                                             result.getAlreadyExist().incrementAndGet();
+                                            break;
                                         case Failure:
                                             result.getFailed().incrementAndGet();
                                             break;

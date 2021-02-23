@@ -45,7 +45,7 @@ public abstract class Util {
 //      {
         if (source.isDirectory())
         {
-          String name = source.getPath().replace("\\", "/");
+          String name = source.getPath().replace('\\', '/');
           name = name.substring(baseDir.length());
           if (!name.isEmpty())
           {
@@ -63,7 +63,7 @@ public abstract class Util {
           return;
         }
 
-        String name = source.getPath().replace("\\", "/");
+        String name = source.getPath().replace('\\', '/');
         name = name.substring(baseDir.length());
         final JarEntry entry = new JarEntry(name);
         entry.setTime(source.lastModified());
@@ -88,13 +88,6 @@ public abstract class Util {
         }
 
         target.closeEntry();
-//      }
-//      finally
-//      {
-//        if (in != null){
-//          in.close();
-//        }
-//      }
     }
 
 
@@ -140,7 +133,6 @@ public abstract class Util {
             try(JarInputStream jis = new JarInputStream(Files.newInputStream(jar.toPath(), StandardOpenOption.READ))) {
                 JarEntry je;
                 while((je = jis.getNextJarEntry()) != null){	// manifest not included
-    //				System.out.println("entry " + je.getName());
 
                     final File f = new File(targetDir + File.separator + je.getName().substring(1)); // name starts with slash
                     f.getParentFile().mkdirs();

@@ -30,8 +30,7 @@ public final class Database {
     private static final String LOGIN = "sa";
     private static final String PASSWD = "sa";
 
-    // TODO static vs nonstatic Logger?
-    private final static Logger log = LoggerFactory.getLogger(Database.class);
+    private static final Logger log = LoggerFactory.getLogger(Database.class);
 
     private Connection connection;
 
@@ -73,10 +72,17 @@ public final class Database {
 
             // check if old database needs baselining
             ValidateResult validateResult = flyway.validateWithResult();
-            if(!validateResult.validationSuccessful) {
+            if(validateResult.validationSuccessful){
+                log.debug("db validation successful");
+            }
+            else {
                 log.error(validateResult.errorDetails.errorMessage);
 
-                if(!validateResult.invalidMigrations.isEmpty()) {
+                if(validateResult.invalidMigrations.isEmpty()) {
+                    // validation not successful but no invalid migrations
+                    throw new CookbookException(validateResult.errorDetails.errorMessage);
+                }
+                else {
                     ValidateOutput validateOutput = validateResult.invalidMigrations.get(0);
 
                     if(validateOutput.version.equals("1.0.0")
@@ -105,7 +111,6 @@ public final class Database {
                             return;
                         }
                         else {
-                            //tables.containsAll()
                             tables.removeAll(Set.of("PROPERTIES", "RECIPES", "RECIPETAGS", "TAGS"));
 
                             if(tables.isEmpty()) {
@@ -118,21 +123,12 @@ public final class Database {
                                 throw new CookbookException("existing database has extra tables");
                             }
                         }
-
                     }
                     else {
                         // 1st invalid migration is not 1.0.0
                         throw new CookbookException(validateResult.errorDetails.errorMessage);
                     }
-
                 }
-                else {
-                    // validation not successful but no invalid migrations
-                    throw new CookbookException(validateResult.errorDetails.errorMessage);
-                }
-            }
-            else {
-                log.debug("db validation successful");
             }
         }
         else {
@@ -141,16 +137,13 @@ public final class Database {
             //flywayMigrate();
             flyway.migrate();
         }
-
     }
-
 
     public void close() throws SQLException {
         if(connection != null) {
             connection.close();
         }
     }
-
 
     //@edu.umd.cs.findbugs.annotations.SuppressWarnings(value="DMI_CONSTANT_DB_PASSWORD", justification="I know what I'm doing")
     protected Connection getConnection() throws SQLException

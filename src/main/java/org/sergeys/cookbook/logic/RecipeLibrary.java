@@ -29,11 +29,7 @@ public final class RecipeLibrary {
         return LazyHolder.INSTANCE;
     }
 
-
-    private final Logger log = LoggerFactory.getLogger(RecipeLibrary.class);
-
-//    private static Object instanceLock = new Object();
-    //private static RecipeLibrary instance;
+    private static final Logger log = LoggerFactory.getLogger(RecipeLibrary.class);
 
     // word - tag, prefix - tag
     private final HashMap<String, String> fullwords = new HashMap<>();
@@ -70,16 +66,6 @@ public final class RecipeLibrary {
         }
     }
 
-//    public static RecipeLibrary getInstance() {
-//        synchronized (instanceLock) {
-//            if(instance == null){
-//                instance = new RecipeLibrary();
-//            }
-//        }
-//
-//        return instance;
-//    }
-
     public void validate(){
 
 //        try {
@@ -99,11 +85,13 @@ public final class RecipeLibrary {
 
             Instant start = Instant.now();
 
-
             recipes.parallelStream().forEach(r -> {
 
                 final File f = new File(r.getUnpackedFilename());
-                if(!f.exists()){
+                if(f.exists()){
+                    //log.debug("already unpacked {}", f.getAbsolutePath());
+                }
+                else {
                     Task<Void> task = new Task<Void>() {
                         @Override
                         protected Void call() throws Exception {
@@ -126,45 +114,8 @@ public final class RecipeLibrary {
 
                     executor.execute(task);
                 }
-                else {
-//                    log.debug("already unpacked {}", f.getAbsolutePath());
-                }
-
             });
 
-/*
-            for(final Recipe r: recipes){
-
-                final File f = new File(r.getUnpackedFilename());
-                if(!f.exists()){
-
-                    Task<Void> task = new Task<Void>() {
-                        @Override
-                        protected Void call() throws Exception {
-                            log.debug("unpacking {}", f.getAbsolutePath());
-
-                            final File temp = File.createTempFile("cookbook", ".jar");
-                            temp.deleteOnExit();
-
-                            final Database db = new Database();
-
-                            db.extractRecipeFile(r.getHash(), temp);
-                            db.close();
-
-                            Util.unpackJar(temp, r.getUnpackedDir());
-
-                            temp.delete();
-                            return null;
-                        }
-                    };
-
-                    executor.execute(task);
-                }
-                else {
-                    log.debug("already unpacked {}", f.getAbsolutePath());
-                }
-            }
-*/
             log.debug("======================== shutdown validate ========================");
             executor.shutdown();
             executor.awaitTermination(5, TimeUnit.MINUTES);
@@ -181,18 +132,19 @@ public final class RecipeLibrary {
     public List<String> suggestTags(String phrase){
 
         final HashSet<String> tags = new HashSet<>();
-
         final String[] words = phrase.split("[\\n\\r\\t\\p{Space}\\p{Punct}]");
+
         for(String word: words){
-            word = word.trim().toLowerCase();
-            if(fullwords.containsKey(word)){
-                tags.add(fullwords.get(word));
+            final String wordLc = word.trim().toLowerCase();
+
+            if(fullwords.containsKey(wordLc)){
+                tags.add(fullwords.get(wordLc));
             }
-            for(String prefix: prefixes.keySet()) {
-                if(word.startsWith(prefix)){
-                    tags.add(prefixes.get(prefix));
+            prefixes.entrySet().forEach(e -> {
+                if(wordLc.startsWith(e.getKey())) {
+                    tags.add(e.getValue());
                 }
-            }
+            });
         }
 
         return List.copyOf(tags);

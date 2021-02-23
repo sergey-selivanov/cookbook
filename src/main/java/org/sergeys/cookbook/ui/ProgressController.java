@@ -17,7 +17,7 @@ import javafx.util.Duration;
 
 public class ProgressController {
 
-    private final Logger log = LoggerFactory.getLogger(ProgressController.class);
+    private static final Logger log = LoggerFactory.getLogger(ProgressController.class);
 
     @FXML private StackPane paneProgress;
     @FXML private AnchorPane paneGlass;

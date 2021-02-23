@@ -55,7 +55,7 @@ import javafx.util.Duration;
 
 public class MainController {
 
-    private final Logger log = LoggerFactory.getLogger(MainController.class);
+    private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
     @FXML private BorderPane mainBorderPane;
     @FXML private SplitPane splitPane;
@@ -79,8 +79,7 @@ public class MainController {
 
     // called by fxml loader by convention
     public void initialize(){
-        log.debug("init");
-
+        log.debug("initialize");
 
         final TreeItem<RecipeTreeValue> treeRoot = new TreeItem<RecipeTreeValue>();
         tree.setShowRoot(false);
@@ -383,7 +382,7 @@ public class MainController {
       massImportTask.setOnFailed(new EventHandler<WorkerStateEvent>() {
           @Override
           public void handle(WorkerStateEvent event) {
-              log.error("failed: {}", event.getSource().getException());
+              log.error("failed", event.getSource().getException());
               hideProgress();
           }
       });

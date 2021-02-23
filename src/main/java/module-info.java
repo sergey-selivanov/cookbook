@@ -6,7 +6,7 @@ module cookbook {
     requires java.xml;
     requires java.net.http;
 
-    //requires javafx.base;
+    requires javafx.base;
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;	// TODO transitive?

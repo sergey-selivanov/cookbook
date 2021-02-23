@@ -16,22 +16,17 @@ import javafx.scene.image.ImageView;
 
 public class BuildTreeTask extends Task<ObservableList<TreeItem<RecipeTreeValue>>>{
 
-    private final static Image tagIcon;
-    private final static Image favIcon;
+    private static final Image tagIcon;
+    private static final Image favIcon;
 
     static {
         tagIcon = new Image(BuildTreeTask.class.getResourceAsStream("/images/folder_yellow.png"));
         favIcon = new Image(BuildTreeTask.class.getResourceAsStream("/images/metacontact_online.png"));
     }
 
-
-    private final Logger log = LoggerFactory.getLogger(BuildTreeTask.class);
+    private static final Logger log = LoggerFactory.getLogger(BuildTreeTask.class);
 
     private final Database db = new Database();
-
-    public BuildTreeTask() {
-
-    }
 
     @Override
     protected ObservableList<TreeItem<RecipeTreeValue>> call() throws Exception {

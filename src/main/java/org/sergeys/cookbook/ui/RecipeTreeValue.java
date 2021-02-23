@@ -24,7 +24,7 @@ public class RecipeTreeValue {
         return type;
     }
 
-    public void setType(Type type) {
+    public final void setType(Type type) {
         this.type = type;
     }
 
@@ -44,20 +44,20 @@ public class RecipeTreeValue {
         this.recipe = recipe;
     }
 
-	@Override
-	public String toString() {
-		
-		if(type == Type.Recipe){
-			return recipe.getTitle();
-		}
-		else{
-			String t = tag.getVal();
-			if(t.length() > 1){
-				return t.substring(0, 1).toUpperCase() + t.substring(1);
-			}
-			else{
-				return t;
-			}			 
-		}				 
-	}
+    @Override
+    public String toString() {
+
+        if(type == Type.Recipe){
+            return recipe.getTitle();
+        }
+        else{
+            String t = tag.getVal();
+            if(t.length() > 1){
+                return t.substring(0, 1).toUpperCase() + t.substring(1);
+            }
+            else{
+                return t;
+            }
+        }
+    }
 }
