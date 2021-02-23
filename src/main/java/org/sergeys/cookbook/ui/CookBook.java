@@ -57,13 +57,17 @@ public class CookBook extends Application
         launch(args);
     }
 
+    private final MainController mainController = new MainController();
+
     private void startTransparent() throws IOException {
         final Pane root = new StackPane();
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/MainScene.fxml"));
 
+        fxmlLoader.setController(mainController);
+
         final Pane mainPane = (Pane)fxmlLoader.load();
-        final MainController mainController = (MainController)fxmlLoader.getController();
+        //final MainController mainController = (MainController)fxmlLoader.getController();
 
         //fxmlLoader.setLocation(getClass().getResource("/fxml/ProgressPane.fxml"));
         fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ProgressPane.fxml"));
@@ -273,7 +277,7 @@ public class CookBook extends Application
 
     @Override
     public void stop() throws Exception {
-        super.stop();
         log.debug("stop");
+        mainController.shutdown();
     }
 }

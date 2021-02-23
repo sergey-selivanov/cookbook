@@ -43,7 +43,7 @@ plugins {
     id 'org.beryx.jlink' version '2.23.3' // modular
     //id 'org.beryx.runtime' version '1.12.1'  // non modular
 
-    id 'com.github.spotbugs' version '4.6.0'
+    id 'com.github.spotbugs' version '4.6.2'
     id 'checkstyle'
     id 'pmd'
     //id 'jacoco'
@@ -75,7 +75,7 @@ dependencies {
 
     implementation 'org.jsoup:jsoup:1.13.1'
 
-    implementation 'org.flywaydb:flyway-core:7.5.3'
+    implementation 'org.flywaydb:flyway-core:7.5.4'
 
 //    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.12.Final'
 
@@ -121,7 +121,7 @@ reckon {
 
 javafx {
     //version = '15.0.1' //broken pages in webview
-    version = '16-ea+6' // pages OK
+    version = '16-ea+7' // pages OK
     modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.web' ]
     configuration = 'compile'
 }

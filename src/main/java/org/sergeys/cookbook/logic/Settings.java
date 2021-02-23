@@ -2,7 +2,7 @@ package org.sergeys.cookbook.logic;
 
 public class Settings {
 
-    public class WindowPosition{
+    public static class WindowPosition{
         private double x;
         private double y;
         private double width;

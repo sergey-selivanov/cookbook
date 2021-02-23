@@ -77,25 +77,9 @@ public class MainController {
 
     private final Database db = new Database();
 
-    // called by convention
+    // called by fxml loader by convention
     public void initialize(){
         log.debug("init");
-
-        // TODO call in background
-        try {
-            //Database db = new Database();
-//            db.upgradeOrCreateIfNeeded();
-            //db.close();
-
-            // TODO maybe in other place, while fx ui loads?
-            //Database.validate();
-
-        } catch (Exception ex) {
-            log.error("", ex);
-        }
-
-        // TODO call in background
-        //RecipeLibrary.getInstance().validate();
 
 
         final TreeItem<RecipeTreeValue> treeRoot = new TreeItem<RecipeTreeValue>();
@@ -116,7 +100,6 @@ public class MainController {
 
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                // TODO Auto-generated method stub
                 log.debug("progress: {}", newValue.doubleValue());
             }
         });
@@ -169,20 +152,17 @@ public class MainController {
         splitPane.setDividerPositions(pos);
     }
 
-    public void onMenuItemExit(ActionEvent e){
-        log.info("application exit");
+    public void shutdown() {
+        log.info("shutdown");
 
-        try {	// TODO do in different correct place
-
+        try {
             final double pos = splitPane.getDividerPositions()[0];
-
             SettingsManager.getInstance().getSettings().setWinDividerPosition(pos);
 
             final Stage myStage = (Stage) mainBorderPane.getScene().getWindow();
-
-            SettingsManager.getInstance().getSettings().getWindowPosition().setValues(myStage.getX(), myStage.getY(),
+            SettingsManager.getInstance().getSettings().getWindowPosition().setValues(
+                    myStage.getX(), myStage.getY(),
                     myStage.getWidth(), myStage.getHeight());
-
             SettingsManager.getInstance().saveSettings();
 
             // shutdown executors
@@ -190,12 +170,13 @@ public class MainController {
             this.singleExecutor.awaitTermination(3, TimeUnit.SECONDS);
 
         } catch (IOException | InterruptedException ex) {
-            log.error("error on exit", ex);
+            log.error("error on shutdown", ex);
         }
-
-        Platform.exit();
     }
 
+    public void onMenuItemExit(ActionEvent e){
+        Platform.exit();
+    }
 
     public void onMenuImport(ActionEvent e){
         doImport();
