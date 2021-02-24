@@ -4,7 +4,7 @@ import org.sergeys.cookbook.logic.Recipe;
 import org.sergeys.cookbook.logic.Tag;
 
 public class RecipeTreeValue {
-    public enum Type { Tag, Recipe };
+    public enum Type { Tag, Recipe }
 
     private Type type;
     private Tag tag;

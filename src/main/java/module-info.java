@@ -3,8 +3,8 @@ module cookbook {
 
     requires java.sql;
     requires java.desktop;	// java.beans.XMLDecoder
-    requires java.xml;
-    requires java.net.http;
+    //requires java.xml;
+    //requires java.net.http;
 
     requires javafx.base;
     requires javafx.controls;

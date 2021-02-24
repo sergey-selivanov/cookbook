@@ -140,9 +140,15 @@ public final class RecipeLibrary {
             if(fullwords.containsKey(wordLc)){
                 tags.add(fullwords.get(wordLc));
             }
-            prefixes.entrySet().forEach(e -> {
-                if(wordLc.startsWith(e.getKey())) {
-                    tags.add(e.getValue());
+//            prefixes.entrySet().forEach(e -> {
+//                if(wordLc.startsWith(e.getKey())) {
+//                    tags.add(e.getValue());
+//                }
+//            });
+
+            prefixes.forEach((k, v) -> {
+                if(wordLc.startsWith(k)){
+                    tags.add(v);
                 }
             });
         }

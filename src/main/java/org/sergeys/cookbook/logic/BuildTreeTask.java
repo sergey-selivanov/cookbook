@@ -29,7 +29,7 @@ public class BuildTreeTask extends Task<ObservableList<TreeItem<RecipeTreeValue>
     private final Database db = new Database();
 
     @Override
-    protected ObservableList<TreeItem<RecipeTreeValue>> call() throws Exception {
+    protected ObservableList<TreeItem<RecipeTreeValue>> call() {
 
         final ObservableList<TreeItem<RecipeTreeValue>> result = FXCollections.observableArrayList();
 

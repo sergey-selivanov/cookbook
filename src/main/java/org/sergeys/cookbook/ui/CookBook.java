@@ -82,11 +82,11 @@ public class CookBook extends Application
 
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/MainScene.fxml"));
             fxmlLoader.setController(mainController);
-            final Pane mainPane = (Pane)fxmlLoader.load();
+            final Pane mainPane = fxmlLoader.load();
             //final MainController mainController = (MainController)fxmlLoader.getController();
 
             fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ProgressPane.fxml"));
-            final Pane progressPane = (Pane)fxmlLoader.load();
+            final Pane progressPane = fxmlLoader.load();
 
             root.getChildren().addAll(mainPane, progressPane);
             progressPane.setVisible(false);
@@ -103,7 +103,10 @@ public class CookBook extends Application
             });
 
             primaryStage.setTitle("CookBook");
-            primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/amor.png")));
+
+            // on linux(?), only icon added to initStage is shown on other app windows
+            // no need to set here
+            //primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/amor.png")));
 
             primaryStage.setX(SettingsManager.getInstance().getSettings().getWindowPosition().getX());
             primaryStage.setY(SettingsManager.getInstance().getSettings().getWindowPosition().getY());
@@ -124,7 +127,7 @@ public class CookBook extends Application
     }
 
     @Override
-    public void start(final Stage initStage) throws Exception {
+    public void start(final Stage initStage) {
         log.debug("start");
 
         //this.primaryStage = initStage;
@@ -214,7 +217,7 @@ public class CookBook extends Application
             initStage1 = initStage;
 
             //final Pane splashPane = (Pane)new FXMLLoader(getClass().getResource("/fxml/Splash.fxml")).load();
-            splashPane = (Pane)new FXMLLoader(getClass().getResource("/fxml/Splash.fxml")).load();
+            splashPane = new FXMLLoader(getClass().getResource("/fxml/Splash.fxml")).load();
 
             ((Label)splashPane.lookup("#lblMessage")).textProperty().bind(task.messageProperty());
             final ProgressBar progressBar = ((ProgressBar)splashPane.lookup("#progressBar"));
@@ -242,6 +245,8 @@ public class CookBook extends Application
 
             final Scene splashScene = new Scene(splashPane, Color.TRANSPARENT);
 //            splashScene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
+
+            initStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/amor.png")));
 
             final Rectangle2D bounds = Screen.getPrimary().getBounds();
             initStage.setScene(splashScene);
@@ -306,7 +311,7 @@ public class CookBook extends Application
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         log.debug("stop");
         mainController.shutdown();
     }

@@ -10,10 +10,10 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URLDecoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
+//import java.net.http.HttpClient;
+//import java.net.http.HttpRequest;
+//import java.net.http.HttpResponse;
+//import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -139,6 +139,7 @@ class JsoupTest {
                         || filename.endsWith(".png")
                         || filename.endsWith(".ico")
                     ) {
+/*
                         log.debug("download " + ref);
                         HttpClient client = HttpClient.newBuilder()
                                 .build();
@@ -170,6 +171,7 @@ class JsoupTest {
                             log.error("failed", e1);
                             return;
                         }
+*/
                     }
                     else {
                         log.debug("skipping element " + tag + ", " + attribute + ": " + ref + ", looks like not a file");

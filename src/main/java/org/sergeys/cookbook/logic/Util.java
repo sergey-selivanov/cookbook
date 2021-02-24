@@ -168,9 +168,13 @@ public abstract class Util {
         final byte[] mdbytes = md.digest();
 
         //convert the byte to hex format method 1
-        final StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < mdbytes.length; i++) {
-            sb.append(String.format("%02x", mdbytes[i]));
+        //final StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
+//        for (int i = 0; i < mdbytes.length; i++) {
+//            sb.append(String.format("%02x", mdbytes[i]));
+//        }
+        for(byte mdbyte : mdbytes) {
+            sb.append(String.format("%02x", mdbyte));
         }
 
         return sb.toString();

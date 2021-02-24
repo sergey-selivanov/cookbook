@@ -125,7 +125,7 @@ public class MainController {
         singleExecutor.execute(treeBuilder);
     }
 
-    private ChangeListener<TreeItem<RecipeTreeValue>> treeListener = new ChangeListener<TreeItem<RecipeTreeValue>>(){
+    private final ChangeListener<TreeItem<RecipeTreeValue>> treeListener = new ChangeListener<TreeItem<RecipeTreeValue>>(){
 
         @Override
         public void changed(
@@ -232,7 +232,7 @@ public class MainController {
 
         try {
             if(aboutStage == null) {
-                Pane aboutPane = (Pane)new FXMLLoader(getClass().getResource("/fxml/About.fxml")).load();
+                Pane aboutPane = new FXMLLoader(getClass().getResource("/fxml/About.fxml")).load();
                 ((Label)aboutPane.lookup("#lblVersion"))
                     .setText(SettingsManager.getInstance().getVersion().getProperty("version"));
                 ((Label)aboutPane.lookup("#lblJava"))

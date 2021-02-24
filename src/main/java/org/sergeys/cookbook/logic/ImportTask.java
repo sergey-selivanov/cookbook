@@ -26,7 +26,7 @@ import javafx.concurrent.Task;
 public class ImportTask extends Task<ImportTask.ImportResult>
 {
     //public enum Status { Unknown, InProgress, Complete, AlreadyExist, Failed };
-    public enum ImportResult { Success, AlreadyExist, Failure };
+    public enum ImportResult { Success, AlreadyExist, Failure }
 
     private static final Logger log = LoggerFactory.getLogger(ImportTask.class);
     private final File htmlFile;
@@ -94,7 +94,7 @@ public class ImportTask extends Task<ImportTask.ImportResult>
 
                         Path dest = FileSystems.getDefault().getPath(targetDirname, filename);
 
-                        try {
+                        //try {
                             if(!dest.toFile().exists()) {
 
                                 log.debug(">>>> SKIPPED download {}", ref);
@@ -132,12 +132,12 @@ public class ImportTask extends Task<ImportTask.ImportResult>
                                 log.warn("don't download, already exists: {}", dest);
                             }
 
-                        }
+                        //}
 //                        catch (IOException | InterruptedException e1) {
 //                            log.error("failed", e1);
 //                            return;
 //                        }
-                        finally {}
+                        //finally {}
                     }
                     else {
                         log.debug("skipping element {}, {}: {}, looks like not a file", tag, attribute, ref);
