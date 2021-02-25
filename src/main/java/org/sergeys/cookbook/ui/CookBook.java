@@ -105,8 +105,8 @@ public class CookBook extends Application
             primaryStage.setTitle("CookBook");
 
             // on linux(?), only icon added to initStage is shown on other app windows
-            // no need to set here
-            //primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/amor.png")));
+            // on windows, still need to set here
+            primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/amor.png")));
 
             primaryStage.setX(SettingsManager.getInstance().getSettings().getWindowPosition().getX());
             primaryStage.setY(SettingsManager.getInstance().getSettings().getWindowPosition().getY());
@@ -246,6 +246,7 @@ public class CookBook extends Application
             final Scene splashScene = new Scene(splashPane, Color.TRANSPARENT);
 //            splashScene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
 
+            initStage.setTitle("CookBook");
             initStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/amor.png")));
 
             final Rectangle2D bounds = Screen.getPrimary().getBounds();
